@@ -3,19 +3,23 @@ name = "bayinx"
 version = "0.4.1"
 description = "Bayesian Inference with JAX"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
-    "equinox>=0.11.12",
-    "jax>=0.4.38",
+    "diffrax>=0.7.0",
+    "equinox>=0.13.2",
+    "jax>=0.8.0",
     "jaxtyping>=0.2.36",
     "optax>=0.2.4",
 ]
-authors = [{ name = "Todd McCready" }]
-maintainers = [{ name = "Todd McCready" }]
+authors = [{ name = "Todd Pocuca" }]
+maintainers = [{ name = "Todd Pocuca" }]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bayinx"]
 
 [tool.pytest.ini_options]
 addopts = "-q --benchmark-min-rounds=30 --benchmark-columns=rounds,mean,median,stddev --benchmark-group-by=func"
@@ -43,4 +47,20 @@ pre_commit_hooks = []
 post_commit_hooks = []
 
 [dependency-groups]
-dev = ["matplotlib>=3.10.1", "pytest>=8.3.5", "pytest-benchmark>=5.1.0"]
+dev = ["pytest>=8.3.5", "pytest-benchmark>=5.1.0"]
+
+[tool.ruff.lint]
+ignore = ["F811"]
+extend-ignore = ["F722"]
+
+[tool.pyright]
+include = ["src"]
+exclude = [".venv"]
+
+#reportRedeclaration = "none"
+#reportIncompatibleMethodOverride = "none"
+
+[tool.pyrefly]
+project-includes = ["src"]
+project-excludes = [".venv"]
+infer-with-first-use = false
