@@ -1,0 +1,54 @@
+name: Documentation Build and Deploy
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed for deployment action
+
+      - name: Install uv ⚡
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python with uv
+        # Use uv to install a specific Python version (matching your release YML)
+        run: uv python install 3.12
+
+      - name: Install dependencies 📦
+        # Use uv to install Sphinx and your project (for autodoc)
+        # Assuming you have Sphinx and its extensions listed in a dependency file
+        # like requirements-docs.txt, or you can install them explicitly.
+        run: |
+          # If your package root requires a requirements-docs.txt:
+          # uv pip install -r requirements-docs.txt
+
+          # Explicit installation for clarity (using the default alabaster theme)
+          uv pip install sphinx
+          # Install your project in editable mode so autodoc can find it
+          uv pip install -e .
+
+      - name: Build Sphinx Documentation 🏗️
+        run: |
+          cd docs
+          # Re-run apidoc to ensure the API files are current
+          sphinx-apidoc -o source ../src/bayinx -f
+          make html
+
+      - name: Deploy to GitHub Pages 🌐
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/main' # Only deploy from the main branch
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html # The output directory from 'make html'
+          publish_branch: gh-pages # The branch GitHub Pages will serve from
