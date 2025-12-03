@@ -1,6 +1,6 @@
 [project]
 name = "bayinx"
-version = "0.4.1"
+version = "0.5.0"
 description = "Bayesian Inference with JAX"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -25,7 +25,7 @@ packages = ["src/bayinx"]
 addopts = "-q --benchmark-min-rounds=30 --benchmark-columns=rounds,mean,median,stddev --benchmark-group-by=func"
 
 [tool.bumpversion]
-current_version = "0.4.1"
+current_version = "0.5.0"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
 serialize = ["{major}.{minor}.{patch}"]
 search = "{current_version}"
