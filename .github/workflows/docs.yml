@@ -14,41 +14,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Needed for deployment action
+          fetch-depth: 0
 
       - name: Install uv ⚡
         uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
 
-      - name: Set up Python with uv
-        # Use uv to install a specific Python version (matching your release YML)
-        run: uv python install 3.12
+      # --- REMOVE THIS STEP ---
+      # - name: Set up Python with uv
+      #   run: uv python install 3.12
+      # The 'uv venv' step below will handle Python installation/selection
+
+      - name: Create and Activate Virtual Environment 🐍
+        # This step creates a standard .venv directory using Python 3.12
+        run: |
+          uv venv --python 3.12
+          echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Install dependencies 📦
-        # Use uv to install Sphinx and your project (for autodoc)
-        # Assuming you have Sphinx and its extensions listed in a dependency file
-        # like requirements-docs.txt, or you can install them explicitly.
+        # uv now automatically installs into the virtual environment
+        # because the VIRTUAL_ENV and PATH variables are set.
         run: |
-          # If your package root requires a requirements-docs.txt:
-          # uv pip install -r requirements-docs.txt
-
-          # Explicit installation for clarity (using the default alabaster theme)
           uv pip install sphinx
-          # Install your project in editable mode so autodoc can find it
           uv pip install -e .
 
       - name: Build Sphinx Documentation 🏗️
         run: |
           cd docs
-          # Re-run apidoc to ensure the API files are current
           sphinx-apidoc -o source ../src/bayinx -f
           make html
 
       - name: Deploy to GitHub Pages 🌐
         uses: peaceiris/actions-gh-pages@v4
-        if: github.ref == 'refs/heads/main' # Only deploy from the main branch
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build/html # The output directory from 'make html'
-          publish_branch: gh-pages # The branch GitHub Pages will serve from
+          publish_dir: docs/build/html
+          publish_branch: gh-pages
