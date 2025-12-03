@@ -23,17 +23,13 @@ jobs:
 
       - name: Create and Activate Virtual Environment 🐍
         run: |
-          # Use 3.12 as 3.13 might not be fully supported by all dependencies yet.
-          # We'll stick to a widely supported version for CI stability.
-          uv venv --python 3.12
+          uv venv --python 3.13
           echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Install dependencies 📦
         run: |
-          # Add a common Sphinx theme like Furo or ReadTheDocs for better output
           uv pip install sphinx furo
-          # Ensure your package is installed so sphinx-apidoc can find it
           uv pip install -e .
 
       - name: Build Sphinx Documentation 🏗️
