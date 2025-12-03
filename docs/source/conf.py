@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 project = 'Bayinx'
 copyright = '2025, Todd Pocuca'
 author = 'Todd Pocuca'
-release = '0.5.0'
+release = '0.5.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

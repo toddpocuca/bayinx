@@ -19,21 +19,14 @@ jobs:
       - name: Install uv ⚡
         uses: astral-sh/setup-uv@v3
 
-      # --- REMOVE THIS STEP ---
-      # - name: Set up Python with uv
-      #   run: uv python install 3.12
-      # The 'uv venv' step below will handle Python installation/selection
-
       - name: Create and Activate Virtual Environment 🐍
         # This step creates a standard .venv directory using Python 3.12
         run: |
-          uv venv --python 3.12
+          uv venv --python 3.13
           echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Install dependencies 📦
-        # uv now automatically installs into the virtual environment
-        # because the VIRTUAL_ENV and PATH variables are set.
         run: |
           uv pip install sphinx
           uv pip install -e .
