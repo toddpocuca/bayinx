@@ -9,6 +9,8 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -20,20 +22,24 @@ jobs:
         uses: astral-sh/setup-uv@v3
 
       - name: Create and Activate Virtual Environment 🐍
-        # This step creates a standard .venv directory using Python 3.12
         run: |
-          uv venv --python 3.13
+          # Use 3.12 as 3.13 might not be fully supported by all dependencies yet.
+          # We'll stick to a widely supported version for CI stability.
+          uv venv --python 3.12
           echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
       - name: Install dependencies 📦
         run: |
-          uv pip install sphinx
+          # Add a common Sphinx theme like Furo or ReadTheDocs for better output
+          uv pip install sphinx furo
+          # Ensure your package is installed so sphinx-apidoc can find it
           uv pip install -e .
 
       - name: Build Sphinx Documentation 🏗️
         run: |
           cd docs
+          # Assumes the source code is under src/bayinx, and docs config is in docs/
           sphinx-apidoc -o source ../src/bayinx -f
           make html
 
@@ -44,3 +50,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/build/html
           publish_branch: gh-pages
+          force_orphan: true
