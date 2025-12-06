@@ -16,26 +16,17 @@ jobs:
         with:
           persist-credentials: false
 
-      # 1. Setup Python
-      - uses: actions/setup-python@v6
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version-file: ".python-version"
 
-      # 2. Install uv binary directly (NEW STEP)
-      # This downloads and installs the uv binary to the path.
-      - name: Install uv tool binary
-        uses: astral-sh/actions/setup-uv@v1
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
-      # 3. Install your package and its runtime dependencies
-      # uv is now available.
       - name: Install package and dependencies with uv
-        run: uv pip install .
+        run: uv pip install -e
 
-      # 4. Install development dependencies (where pdoc is listed)
-      - name: Install development dependencies with uv
-        run: uv pip install '.[dev]'
-
-      # 5. Build the documentation with pdoc
       - name: Build documentation with pdoc
         run: pdoc -o docs/ bayinx
 
