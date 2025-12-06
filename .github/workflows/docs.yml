@@ -1,49 +1,51 @@
-name: Documentation Build and Deploy
+name: website
 
+# build the documentation whenever there are new commits on main
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
+    # Alternative: only build for tags.
+    # tags:
+    #   - '*'
+
+# security: restrict permissions for CI jobs.
+permissions:
+  contents: read
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy Docs
+  # Build the documentation and upload the static HTML files as an artifact.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      # ADJUST THIS: install all dependencies (including pdoc)
+      - run: pip install -e .
+      # ADJUST THIS: build your documentation into docs/.
+      # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
+      - run: python docs/make.py
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs/
+
+  # Deploy the artifact to GitHub pages.
+  # This is a separate job so that only actions/deploy-pages has the necessary permissions.
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install uv ⚡
-        uses: astral-sh/setup-uv@v3
-
-      - name: Create and Activate Virtual Environment 🐍
-        run: |
-          uv venv --python 3.13
-          echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
-          echo "$PWD/.venv/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies 📦
-        run: |
-          uv pip install sphinx furo
-          uv pip install -e .
-
-      - name: Build Sphinx Documentation 🏗️
-        run: |
-          cd docs
-          # Assumes the source code is under src/bayinx, and docs config is in docs/
-          sphinx-apidoc -o source ../src/bayinx -f
-          make html
-
-      - name: Deploy to GitHub Pages 🌐
-        uses: peaceiris/actions-gh-pages@v4
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build/html
-          publish_branch: gh-pages
-          force_orphan: true
+      - id: deployment
+        uses: actions/deploy-pages@v4

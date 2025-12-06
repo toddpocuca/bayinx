@@ -29,12 +29,7 @@ def prob(
     # Cast to Array
     x, lam = jnp.asarray(x), jnp.asarray(lam)
 
-    result = lam * lax.exp(-lam * x)
-
-    # Handle values outside of support
-    result = lax.select(x >= 0, result, jnp.array(0.0))
-
-    return result
+    return lam * lax.exp(-lam * x)
 
 
 def logprob(
@@ -54,12 +49,7 @@ def logprob(
     # Cast to Array
     x, lam = jnp.asarray(x), jnp.asarray(lam)
 
-    result = lax.log(lam) - lam * x
-
-    # Handle values outside of support
-    result = lax.select(x >= 0, result, -jnp.inf)
-
-    return result
+    return lax.log(lam) - lam * x
 
 def cdf(
     x: Real[ArrayLike, "..."],

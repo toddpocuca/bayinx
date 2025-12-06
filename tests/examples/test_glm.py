@@ -1,7 +1,7 @@
 """
-Test inference for a linear model:
+Test inference for a generalized linear model:
 
-    Y_i ~ Normal(x_i * beta, sigma)
+    Y_i ~ Poisson(e^{x_i * beta}, sigma)
 """
 
 import jax.numpy as jnp
