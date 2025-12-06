@@ -21,12 +21,24 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.14"
 
-      # ADJUST THIS: install all dependencies (including pdoc)
-      - run: pip install -e .
+      # 1. Install uv and Python
+      # Replace actions/setup-python with astral-sh/setup-uv for a seamless setup.
+      # This action installs uv, the specified Python version, and can set up caching.
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@v1
+        with:
+          python-version: "3.14" # Use the desired Python version
+          # Optionally enable caching for faster runs
+          enable-cache: true
+
+      # 2. Install dependencies (including dev dependencies)
+      # uv sync installs the project in editable mode, along with its dependencies.
+      # The --dev flag ensures packages in the [dependency-groups.dev] table of your
+      # pyproject.toml are also installed (where pdoc should be listed).
+      - name: Install dependencies with uv
+        run: uv sync --dev
+
       # ADJUST THIS: build your documentation into docs/.
       # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
       - run: pdoc -o docs/ bayinx
@@ -36,7 +48,6 @@ jobs:
           path: docs/
 
   # Deploy the artifact to GitHub pages.
-  # This is a separate job so that only actions/deploy-pages has the necessary permissions.
   deploy:
     needs: build
     runs-on: ubuntu-latest
