@@ -28,7 +28,7 @@ jobs:
         run: uv sync
 
       - name: Build documentation with pdoc
-        run: pdoc -o docs/ bayinx
+        run: uv run pdoc -o docs/ bayinx
 
       - uses: actions/upload-pages-artifact@v4
         with:
