@@ -75,4 +75,4 @@ print(mean_draws.mean())
 
 ## Roadmap
 - [ ] Implement OT-Flow: https://arxiv.org/abs/2006.00104
-- [ ]
+- [ ] Allow shape definitions to include expressions (e.g., shape = 'n_obs + 1' will evaluate to the correct specification)
