@@ -27,7 +27,6 @@ jobs:
         with:
           python-version: "3.14"
           # This key ensures uv is installed and available in the path
-          cache: "uv"
 
       # 2. Install your package and its runtime dependencies
       # This replaces `pip install -e .` for the package's core dependencies.
