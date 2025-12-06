@@ -22,26 +22,29 @@ jobs:
         with:
           persist-credentials: false
 
-      # 1. Install uv and Python
-      # Replace actions/setup-python with astral-sh/setup-uv for a seamless setup.
-      # This action installs uv, the specified Python version, and can set up caching.
-      - name: Install uv and Python
-        uses: astral-sh/setup-uv@v1
+      # 1. Setup Python and Install uv
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.14" # Use the desired Python version
-          # Optionally enable caching for faster runs
-          enable-cache: true
+          python-version: "3.14"
+          # This key ensures uv is installed and available in the path
+          cache: "uv"
 
-      # 2. Install dependencies (including dev dependencies)
-      # uv sync installs the project in editable mode, along with its dependencies.
-      # The --dev flag ensures packages in the [dependency-groups.dev] table of your
-      # pyproject.toml are also installed (where pdoc should be listed).
-      - name: Install dependencies with uv
-        run: uv sync --dev
+      # 2. Install your package and its runtime dependencies
+      # This replaces `pip install -e .` for the package's core dependencies.
+      # The `-e .` is generally not needed here unless pdoc *requires* an editable install,
+      # but a standard install of your package is sufficient to make its modules available.
+      - name: Install package and dependencies with uv
+        run: uv pip install .
 
-      # ADJUST THIS: build your documentation into docs/.
-      # We use a custom build script for pdoc itself, ideally you just run `pdoc -o docs/ ...` here.
-      - run: pdoc -o docs/ bayinx
+      # 3. Install development dependencies (where pdoc is listed)
+      # This assumes your dev dependencies (like pdoc) are listed in a 'dev' extra,
+      # e.g., in pyproject.toml as `[project.optional-dependencies] dev = ["pdoc", ...]`.
+      - name: Install development dependencies with uv
+        run: uv pip install '.[dev]'
+
+      # 4. Build the documentation into docs/.
+      - name: Build documentation with pdoc
+        run: pdoc -o docs/ bayinx
 
       - uses: actions/upload-pages-artifact@v4
         with:
