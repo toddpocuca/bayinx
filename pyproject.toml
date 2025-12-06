@@ -5,9 +5,9 @@ description = "Bayesian Inference with JAX"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "jax >= 0.8.0",
     "diffrax>=0.7.0",
     "equinox>=0.13.2",
-    "jax>=0.8.0",
     "jaxtyping>=0.2.36",
     "optax>=0.2.4",
 ]
