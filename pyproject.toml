@@ -57,14 +57,11 @@ dev = [
 ignore = ["F811"]
 extend-ignore = ["F722"]
 
-[tool.pyright]
-include = ["src"]
-exclude = [".venv"]
+[tool.pdoc]
+# The package name(s) you are documenting
+modules = [
+    "bayinx",
+]
 
-#reportRedeclaration = "none"
-#reportIncompatibleMethodOverride = "none"
-
-[tool.pyrefly]
-project-includes = ["src"]
-project-excludes = [".venv"]
-infer-with-first-use = false
+# Set the title for the main documentation page
+html_title = "Bayinx: Bayesian Inference with JAX"
