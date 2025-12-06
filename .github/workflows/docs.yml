@@ -1,20 +1,14 @@
 name: website
 
-# build the documentation whenever there are new commits on main
 on:
   push:
     branches:
       - main
-    # Alternative: only build for tags.
-    # tags:
-    #   - '*'
 
-# security: restrict permissions for CI jobs.
 permissions:
   contents: read
 
 jobs:
-  # Build the documentation and upload the static HTML files as an artifact.
   build:
     runs-on: ubuntu-latest
     steps:
@@ -22,26 +16,26 @@ jobs:
         with:
           persist-credentials: false
 
-      # 1. Setup Python and Install uv
+      # 1. Setup Python
       - uses: actions/setup-python@v6
         with:
           python-version: "3.14"
-          # This key ensures uv is installed and available in the path
 
-      # 2. Install your package and its runtime dependencies
-      # This replaces `pip install -e .` for the package's core dependencies.
-      # The `-e .` is generally not needed here unless pdoc *requires* an editable install,
-      # but a standard install of your package is sufficient to make its modules available.
+      # 2. Install uv binary directly (NEW STEP)
+      # This downloads and installs the uv binary to the path.
+      - name: Install uv tool binary
+        uses: astral-sh/actions/setup-uv@v1
+
+      # 3. Install your package and its runtime dependencies
+      # uv is now available.
       - name: Install package and dependencies with uv
         run: uv pip install .
 
-      # 3. Install development dependencies (where pdoc is listed)
-      # This assumes your dev dependencies (like pdoc) are listed in a 'dev' extra,
-      # e.g., in pyproject.toml as `[project.optional-dependencies] dev = ["pdoc", ...]`.
+      # 4. Install development dependencies (where pdoc is listed)
       - name: Install development dependencies with uv
         run: uv pip install '.[dev]'
 
-      # 4. Build the documentation into docs/.
+      # 5. Build the documentation with pdoc
       - name: Build documentation with pdoc
         run: pdoc -o docs/ bayinx
 
@@ -49,7 +43,6 @@ jobs:
         with:
           path: docs/
 
-  # Deploy the artifact to GitHub pages.
   deploy:
     needs: build
     runs-on: ubuntu-latest
