@@ -1,6 +1,5 @@
 import jax.numpy as jnp
 import jax.tree as jt
-from jaxtyping import Array, ArrayLike, Real
 
 from bayinx.core.node import Node
 from bayinx.core.utils import _extract_obj
@@ -12,12 +11,8 @@ def exp(node: Node) -> Node:
     """
     obj, filter_spec = _extract_obj(node)
 
-    # Helper function for the single-leaf exponential transform
-    def leaf_exp(x: Real[ArrayLike, "..."]) -> Array:
-        return jnp.exp(x)
-
     # Apply exponential
-    new_obj = jt.map(leaf_exp, obj)
+    new_obj = jt.map(lambda x: jnp.exp(x), obj)
 
     return type(node)(new_obj, filter_spec)
 
@@ -29,12 +24,8 @@ def log(node: Node) -> Node:
     """
     obj, filter_spec = _extract_obj(node)
 
-    # Helper function for the single-leaf log transform
-    def leaf_log(x: Real[ArrayLike, "..."]) -> Array:
-        return jnp.log(x)
-
     # Apply logarithm
-    new_obj = jt.map(leaf_log, obj)
+    new_obj = jt.map(lambda x: jnp.log(x), obj)
 
     return type(node)(new_obj, filter_spec)
 
@@ -45,12 +36,8 @@ def sin(node: Node) -> Node:
     """
     obj, filter_spec = _extract_obj(node)
 
-    # Helper function for the single-leaf sine transform
-    def leaf_sin(x: Real[ArrayLike, "..."]) -> Array:
-        return jnp.sin(x)
-
     # Apply sine
-    new_obj = jt.map(leaf_sin, obj)
+    new_obj = jt.map(lambda x: jnp.sin(x), obj)
 
     return type(node)(new_obj, filter_spec)
 
@@ -61,12 +48,8 @@ def cos(node: Node) -> Node:
     """
     obj, filter_spec = _extract_obj(node)
 
-    # Helper function for the single-leaf cosine transform
-    def leaf_cos(x: Real[ArrayLike, "..."]) -> Array:
-        return jnp.cos(x)
-
     # Apply cosine
-    new_obj = jt.map(leaf_cos, obj)
+    new_obj = jt.map(lambda x: jnp.cos(x), obj)
 
     return type(node)(new_obj, filter_spec)
 
@@ -77,12 +60,9 @@ def tanh(node: Node) -> Node:
     """
     obj, filter_spec = _extract_obj(node)
 
-    # Helper function for the single-leaf tanh transform
-    def leaf_tanh(x: Real[ArrayLike, "..."]) -> Array:
-        return jnp.tanh(x)
 
     # Apply tanh
-    new_obj = jt.map(leaf_tanh, obj)
+    new_obj = jt.map(lambda x: jnp.tanh(x), obj)
 
     return type(node)(new_obj, filter_spec)
 
@@ -94,11 +74,7 @@ def sigmoid(node: Node) -> Node:
     """
     obj, filter_spec = _extract_obj(node)
 
-    # Helper function for the single-leaf sigmoid transform
-    def leaf_sigmoid(x: Real[ArrayLike, "..."]) -> Array:
-        return 1.0 / (1.0 + jnp.exp(-x)) # type: ignore
-
     # Apply sigmoid
-    new_obj = jt.map(leaf_sigmoid, obj)
+    new_obj = jt.map(lambda x: 1.0 / (1.0 + jnp.exp(-x)), obj)
 
     return type(node)(new_obj, filter_spec)

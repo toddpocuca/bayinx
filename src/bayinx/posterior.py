@@ -2,7 +2,6 @@
 from functools import partial
 from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type
 
-import equinox as eqx
 import jax
 import jax.random as jr
 from jax.lax import scan
@@ -27,22 +26,24 @@ class Posterior(Generic[M]):
     config: Dict[str, Any]
 
     def __init__(self, model_def: Type[M], **kwargs: Any):
-        # (hopefully) omit intermediate model construction through jit
-        @eqx.filter_jit
-        def construct_base(model_def):
-            # Construct model
-            model = model_def(**kwargs)
-
-            return Standard(model)
+        # Construct toy model
+        model = model_def(**kwargs)
 
         # Construct standard normal base distribution
-        self.vari = construct_base(model_def)
+        base = Standard(model)
+
+        # Construct default normalizing flow
+        self.vari = NormalizingFlow(
+            base = base,
+            flows = [],
+            model = model
+        )
 
         # Include default attributes
         self.config = {
             "learning_rate": 0.1 / self.vari.dim**0.5,
             "tolerance": 1e-4,
-            "grad_draws": 4,
+            "grad_draws": 1,
             "batch_size": 1
         }
 

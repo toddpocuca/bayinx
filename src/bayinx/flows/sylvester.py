@@ -156,11 +156,11 @@ class SylvesterLayer(FlowLayer):
         # diag_term_i = 1 + h'_i * (R2_ii * R1_ii)
         diag_term = 1.0 + diag_h_prime * d_r2 * d_r1
 
-        lja = jnp.sum(jnp.log(diag_term))
+        log_jac = jnp.sum(jnp.log(diag_term))
 
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return lja
+        return log_jac
 
     @eqx.filter_jit
     def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
@@ -196,12 +196,12 @@ class SylvesterLayer(FlowLayer):
 
         # Log-det of triangular matrix
         diag_term = 1.0 + diag_h_prime * d_r2 * d_r1
-        lja = jnp.sum(jnp.log(jnp.abs(diag_term)))
+        log_jac = jnp.sum(jnp.log(jnp.abs(diag_term)))
 
         assert len(draw_new.shape) == 1
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return draw_new, lja
+        return draw_new, log_jac
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
@@ -211,7 +211,7 @@ class SylvesterLayer(FlowLayer):
 
 class Sylvester(FlowSpec):
     """
-    A specification for the Orthogonal Sylvester flow.
+    A specification for the Sylvester flow.
     """
     rank: int
 

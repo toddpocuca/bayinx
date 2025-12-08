@@ -62,7 +62,6 @@ class Node(eqx.Module, Generic[T]):
             # Create a new Node for the current element
             yield Node(obj_i, spec_i)
 
-
     ## Arithmetic ----
     def __add__(self, other: Any) -> "Node":
         # Extract internal objects and their filter specifications
@@ -199,3 +198,16 @@ class Node(eqx.Module, Generic[T]):
         )
 
         return Node(new_obj, new_filter_spec)
+
+    def __call__(self, *args, **kwargs) -> "Node":
+        # Unpack positional arguments using a list comprehension
+        args = [_extract_obj(arg)[0] for arg in args]
+
+        # Unpack keyword arguments using a dictionary comprehension
+        kwargs = {k: _extract_obj(v)[0] for k, v in kwargs.items()}
+
+        # Call the internal object's __call__ method
+        new_obj = self.obj(*args, **kwargs)
+
+        # Return the result wrapped in a new Node
+        return Node(new_obj, True)

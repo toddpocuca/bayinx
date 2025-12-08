@@ -86,10 +86,10 @@ class PlanarLayer(FlowLayer):
         a = draw.dot(w) + b
 
         # Compute log-Jacobian adjustment
-        lja: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
+        log_jac: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
 
-        assert lja.shape == ()
-        return lja
+        assert log_jac.shape == ()
+        return log_jac
 
     @eqx.filter_jit
     def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
@@ -111,12 +111,12 @@ class PlanarLayer(FlowLayer):
         draw = draw + u * _h(a)
 
         # Compute log-Jacobian adjustment
-        lja: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
+        log_jac: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
 
         assert len(draw.shape) == 1
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return draw, lja
+        return draw, log_jac
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:

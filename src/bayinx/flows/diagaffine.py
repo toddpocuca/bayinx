@@ -70,11 +70,11 @@ class DiagAffineLayer(FlowLayer):
         scale: Float[Array, " dim"] = params["scale"]
 
         # Compute log-Jacobian adjustment
-        lja: Array = jnp.log(scale).sum()
+        log_jac: Array = jnp.log(scale).sum()
 
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return lja
+        return log_jac
 
     @eqx.filter_jit
     def adjust(self, draws: Float[Array, "draws dim"]) -> Float[Array, "draws dim"]:
@@ -96,11 +96,11 @@ class DiagAffineLayer(FlowLayer):
         assert len(draw.shape) == 1
 
         # Compute log-Jacobian adjustment
-        lja: Scalar = jnp.log(scale).sum()
+        log_jac: Scalar = jnp.log(scale).sum()
 
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return draw, lja
+        return draw, log_jac
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "draws dim"]) -> Tuple[Float[Array, "draws dim"], Scalar]:

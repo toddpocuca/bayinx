@@ -24,3 +24,12 @@ class Identity(Constraint):
         log_jac: Scalar = jnp.array(0.0)
 
         return obj, log_jac
+
+    def check(self, obj: T, filter_spec: PyTree) -> bool:
+        """
+        Checks for nothing.
+
+        # Returns
+        `True`
+        """
+        return True

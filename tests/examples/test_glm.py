@@ -13,7 +13,6 @@ from bayinx import define
 from bayinx.dists import Poisson
 from bayinx.flows import LowRankAffine
 from bayinx.nodes import Continuous, Observed
-from bayinx.ops import exp
 
 
 # Define model
@@ -21,19 +20,16 @@ class PoissonModel(byx.Model):
     beta: Continuous[Scalar] = define(shape = 'n_predictors')
 
     X: Observed[Array] = define(shape = ('n_obs', 'n_predictors'))
-    y: Observed[Array] = define(shape = 'n_obs')
+    y: Observed[Array] = define(shape = 'n_obs', lower = 0)
 
     def model(self, target):
-        # Compute expected response
-        mu = exp(self.X @ self.beta)
-
         # Accumulate likelihood
-        self.y << Poisson(mu)
+        self.y << Poisson(log_rate = self.X @ self.beta)
 
         return target
 
 # Simulate sample
-n_obs = 2500
+n_obs = 1000
 n_predictors = 5
 X: Array = jr.normal(jr.key(0), (n_obs, n_predictors - 1))
 X = jnp.column_stack((jnp.ones((n_obs,)), X))

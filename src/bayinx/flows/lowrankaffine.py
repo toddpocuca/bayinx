@@ -111,11 +111,11 @@ class LowRankAffineLayer(FlowLayer):
         diag: Array = params["diag_scale"]
 
         # Compute log-Jacobian adjustment
-        lja: Scalar = jnp.log(diag).sum()
+        log_jac: Scalar = jnp.log(diag).sum()
 
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return lja
+        return log_jac
 
     @eqx.filter_jit
     def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
@@ -133,7 +133,7 @@ class LowRankAffineLayer(FlowLayer):
         U, V = params["offdiag_scale"]
 
         # Compute log-Jacobian adjustment
-        lja: Scalar = jnp.log(diag).sum()
+        log_jac: Scalar = jnp.log(diag).sum()
 
         # Compute forward transformation
         _, draw = scan(
@@ -143,9 +143,9 @@ class LowRankAffineLayer(FlowLayer):
         )
 
         assert len(draw.shape) == 1
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return draw, lja
+        return draw, log_jac
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:

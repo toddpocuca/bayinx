@@ -8,7 +8,7 @@ from jax.flatten_util import ravel_pytree
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
 from bayinx.core.variational import M, Variational
-from bayinx.dists import normal
+from bayinx.dists.normal.pars.mean_scale import _logprob
 
 
 class Standard(Variational[M]):
@@ -48,10 +48,10 @@ class Standard(Variational[M]):
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
-        return normal.logprob(
+        return _logprob(
             x=draws,
-            mu=jnp.array(0.0),
-            sigma=jnp.array(1.0),
+            mean=0.0,
+            scale=1.0,
         ).sum(axis=1)
 
     @property

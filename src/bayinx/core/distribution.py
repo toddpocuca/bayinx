@@ -1,19 +1,53 @@
 from typing import Protocol, Tuple
 
+import equinox as eqx
+import jax.numpy as jnp
 import jax.random as jr
-from jaxtyping import PRNGKeyArray, Scalar
+import jax.tree as jt
+from jaxtyping import ArrayLike, PRNGKeyArray, Scalar
 
 from bayinx.core.node import Node
 
 
+class Parameterization(Protocol):
+    """
+    A protocol used for defining distribution parameterizations.
+    """
+
+    def logprob(self, x: ArrayLike) -> Scalar: ...
+
+    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray): ...
+
+
 class Distribution(Protocol):
     """
-    A protocol used for defining the structure of distributions.
+    A protocol used for defining distributions.
     """
+    par: Parameterization
 
-    def logprob(self, node: Node) -> Scalar: ...
+    def logprob(self, node: Node) -> Scalar:
+        obj, par = (
+            node.obj,
+            self.par,
+        )
 
-    def sample(self, shape: int | Tuple[int, ...], key: PRNGKeyArray = jr.key(0)): ...
+        # Filter out irrelevant values
+        obj, _ = eqx.partition(obj, node._filter_spec)
+
+        # Compute log probabilities across leaves
+        eval_obj = jt.map(lambda x: par.logprob(x).sum(), obj)
+
+        # Compute total sum
+        total = jt.reduce_associative(lambda x,y: x + y, eval_obj, identity=0.0)
+
+        return jnp.asarray(total)
+
+    def sample(self, shape: int | Tuple[int, ...], key: PRNGKeyArray = jr.key(0)):
+        # Coerce to tuple
+        if isinstance(shape, int):
+            shape = (shape, )
+
+        return self.par.sample(shape, key)
 
     def __rlshift__(self, node: Node):
         """

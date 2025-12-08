@@ -75,11 +75,11 @@ class FullAffineLayer(FlowLayer):
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
         # Compute log-Jacobian adjustments
-        lja: Array = jnp.log(jnp.diag(scale)).sum()
+        log_jac: Array = jnp.log(jnp.diag(scale)).sum()
 
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return lja
+        return log_jac
 
     @eqx.filter_jit
     def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
@@ -100,12 +100,12 @@ class FullAffineLayer(FlowLayer):
 
         assert len(draw.shape) == 1
 
-        # Compute lja
-        lja: Scalar = jnp.log(jnp.diag(scale)).sum()
+        # Compute log_jac
+        log_jac: Scalar = jnp.log(jnp.diag(scale)).sum()
 
-        assert lja.shape == ()
+        assert log_jac.shape == ()
 
-        return draw, lja
+        return draw, log_jac
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:

@@ -1,0 +1,2 @@
+from .prob_failure import ProbFailureBernoulli as ProbFailureBernoulli
+from .prob_success import ProbSuccessBernoulli as ProbSuccessBernoulli

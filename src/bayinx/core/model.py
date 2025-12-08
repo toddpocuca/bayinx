@@ -31,6 +31,12 @@ def define(
 ):
     """
     Define a stochastic node.
+
+    # Parameters
+    - `shape`: Specify the shape of the node.
+    - `init`: Specify the node in the definition.
+    - `lower`: Enforce a lower bound on a stochastic node.
+    - `upper`: Enforce an upper bound on a stochastic bode.
     """
     metadata: Dict = {}
 
@@ -80,7 +86,7 @@ class Model(eqx.Module):
         if not shape_params.issubset(kwargs.keys()):
             missing_params = shape_params - kwargs.keys()
             raise TypeError(
-                f"Following shape parameters were not specified during model initialization: {", ".join(missing_params)}"
+                f"Following shape parameters were not specified during model initialization: '{", ".join(missing_params)}'."
             )
 
         # Define all initialized dimensions
@@ -107,14 +113,14 @@ class Model(eqx.Module):
                 obj = kwargs[node_defn.name]
             elif "init" in node_defn.metadata: # Initialized in model definition
                 obj = node_defn.metadata["init"]
-            elif shape is not None: # Shape defined in model definition
+            elif issubclass(node_type, Stochastic) and shape is not None: # Shape for stochastic node defined in model definition
                 obj = jnp.zeros(shape) # TODO: will change later for discrete objects
             else:
                 raise ValueError(f"Node '{node_defn.name}' not initialized or defined.")
 
             # Check shape
             if shape is not None and jnp.shape(obj) != shape:
-                raise ValueError(f"Expected shape {shape} for {node_defn.name} but got {jnp.shape(obj)}.")
+                raise ValueError(f"Expected shape {shape} for '{node_defn.name}' but got {jnp.shape(obj)}.")
 
             if issubclass(node_type, Stochastic):
                 if node_type == Continuous:
@@ -124,8 +130,15 @@ class Model(eqx.Module):
                         Continuous(obj, node_defn.metadata["constraint"]),
                     )
                 else:
-                    TypeError(f"{node_type.__name__} is not implemented yet")
+                    TypeError(f"'{node_type.__name__}' is not implemented yet")
             elif issubclass(node_type, Observed):
+                # Construct node
+                node = Observed(obj)
+
+                # Check constraints (if available)
+                if not node_defn.metadata['constraint'].check(node.obj, node._filter_spec):
+                    raise ValueError(f"Observed values for '{node_defn.name}' do not satisfy constraint '{node_defn.metadata['constraint']}'.")
+
                 setattr(self, node_defn.name, Observed(obj))
             else:
                 raise TypeError(f"{node_defn.name} node is neither Stochastic nor Observed but {node_type.__name__}.")
@@ -193,7 +206,7 @@ class Model(eqx.Module):
             # Check if node has a constraint
             if isinstance(node, HasConstraint):
                 # Apply constraint
-                obj, laj = node._constraint.constrain(node.obj, node._filter_spec)
+                obj, log_jac = node._constraint.constrain(node.obj, node._filter_spec)
 
                 # Update values with constrained counterpart
                 model = eqx.tree_at(
@@ -204,7 +217,7 @@ class Model(eqx.Module):
 
                 # Adjust posterior density
                 if jacobian:
-                    target += laj
+                    target += log_jac
 
         return model, target
 

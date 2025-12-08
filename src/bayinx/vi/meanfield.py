@@ -8,7 +8,7 @@ from jax.flatten_util import ravel_pytree
 from jaxtyping import Array, PRNGKeyArray, Scalar
 
 from bayinx.core.variational import M, Variational
-from bayinx.dists import normal
+from bayinx.dists.normal.pars.mean_scale import _logprob
 
 
 class MeanField(Variational, Generic[M]):
@@ -73,10 +73,10 @@ class MeanField(Variational, Generic[M]):
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
-        return normal.logprob(
+        return _logprob(
             x=draws,
-            mu=self.mean,
-            sigma=jnp.exp(self.log_std),
+            mean=self.mean,
+            scale=jnp.exp(self.log_std),
         ).sum(axis=1)
 
     @eqx.filter_jit

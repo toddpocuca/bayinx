@@ -29,7 +29,7 @@ from bayinx.nodes import Continuous, Observed
 
 
 # Define model
-class SimpleNormalModel(byx.Model, init=False):
+class SimpleNormalModel(byx.Model):
     mu: Continuous[Scalar] = define(shape = ())
     sigma: Continuous[Scalar] = define(shape = (), lower = 0.0)
 
