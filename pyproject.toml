@@ -10,6 +10,8 @@ dependencies = [
     "equinox>=0.13.2",
     "jaxtyping>=0.2.36",
     "optax>=0.2.4",
+    "bayinx-example",
+    "arviz>=0.22.0",
 ]
 authors = [{ name = "Todd Pocuca" }]
 maintainers = [{ name = "Todd Pocuca" }]
@@ -59,3 +61,11 @@ dev = [
 [tool.ruff.lint]
 ignore = ["F811"]
 extend-ignore = ["F722"]
+
+[tool.uv.workspace]
+members = [
+    "bayinx_example",
+]
+
+[tool.uv.sources]
+bayinx-example = { workspace = true }

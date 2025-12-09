@@ -16,3 +16,12 @@ wheels/
 
 # My stuff
 uv.lock
+
+# emacs chaff
+*~
+
+# jupyter chaff
+.ipynb_*
+
+# bmb uv project
+bayinx_example/
