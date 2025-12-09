@@ -14,20 +14,18 @@ First, as Bayinx is embedded in Python, model definitions are Pythonic and
 rely on you defining a class that inherits from the `Model` base class:
 
 ```py
-class MyModel(Model, init=False):
+class MyModel(Model):
     # ...
 ```
 
-> Note: Users should specify `init=False` to avoid static type checkers from
-raising irrelevant errors, but more importantly it should remind you that
-you should **NOT** implement your own `__init__` method!
+> Note: You should **NOT** implement your own `__init__` method!
 
 The `data` and `parameters` blocks in Stan are then combined into the attribute
 definitions with Bayinx. For example, if we are modelling a simple normal distribution
 with an unknown mean and variance 1, then we might write:
 
 ```py
-class MyModel(Model, init=False):
+class MyModel(Model):
     mean: Continuous[Array] = define(shape = ()) # a scalar mean parameter
     x: Observed[Array] = define(shape = 'n_obs') # a vector of observed values
 
@@ -37,7 +35,7 @@ class MyModel(Model, init=False):
 The `model` block in Stan is then defined by implementing the `model` method with Bayinx:
 
 ```py
-class MyModel(Model, init=False):
+class MyModel(Model):
     mean: Continuous[Array] = define(shape = ())
     x: Observed[Array] = define(shape = 'n_obs')
 
@@ -76,4 +74,5 @@ print(mean_draws.mean())
 ## Roadmap
 - [ ] Implement OT-Flow: https://arxiv.org/abs/2006.00104
 - [ ] Allow shape definitions to include expressions (e.g., shape = 'n_obs + 1' will evaluate to the correct specification)
-- [ ] Figure out how to dynamically construct distributions such that parameterizations don't require calling new functions, just defining `Exponential(rate ...)` vs. `Exponential(scale = ...)`
+- [ ] Find a nice way to track the ELBO trajectory to implement early stoppage (tolerance currently does nothing).
+- [ ] Allow users to specify custom tolerance criteria.
