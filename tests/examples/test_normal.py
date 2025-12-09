@@ -48,7 +48,7 @@ def test_inference():
     # Define posterior
     posterior = byx.Posterior(SimpleNormalModel, n_obs = n_obs, x = x)
     posterior.configure([DiagAffine()])
-    posterior.fit()
+    posterior.fit(max_iters = int(1e5), learning_rate = 1e-3)
 
     # Get posterior
     mu_draws = posterior.sample('mu', int(1e6))

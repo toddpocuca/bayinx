@@ -114,16 +114,14 @@ class Variational(eqx.Module, Generic[M]):
         dyn, static = eqx.partition(self, self.filter_spec)
 
         # Construct scheduler
-        schedule = opx.warmup_cosine_decay_schedule(
-            1e-8,
+        schedule = opx.cosine_decay_schedule(
             learning_rate,
-            int(max_iters / 10),
-            max_iters - int(max_iters / 10)
+            max_iters
         )
 
         # Initialize optimizer
         optim: GradientTransformation = opx.chain(
-            opx.scale(-1.0), opx.adam(schedule) # replace learning_rate with scheduler
+            opx.scale(-1.0), opx.adam(schedule, nesterov = True) # replace learning_rate with scheduler
         )
         opt_state: OptState = optim.init(dyn)
 
