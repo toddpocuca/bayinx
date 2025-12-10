@@ -17,7 +17,7 @@ def _prob(
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
-    return rate * lax.exp(-rate * x)
+    return rate * jnp.exp(-rate * x)
 
 
 def _logprob(
@@ -27,7 +27,7 @@ def _logprob(
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
-    return lax.log(rate) - rate * x
+    return jnp.log(rate) - rate * x
 
 def _cdf(
     x: Real[ArrayLike, "..."],
@@ -36,7 +36,7 @@ def _cdf(
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
-    result = 1.0 - lax.exp(-rate * x)
+    result = 1.0 - jnp.exp(-rate * x)
     result = lax.select(x >= 0, result, jnp.array(0.0))
 
     return result
@@ -48,10 +48,8 @@ def _logcdf(
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
-    result = lax.log1p(-lax.exp(-rate * x))
-
-    # Handle values outside of support (x < 0)
-    result = lax.select(x >= 0, result, -jnp.inf)
+    result = jnp.log1p(-jnp.exp(-rate * x))
+    result = lax.select(x >= 0.0, result, -jnp.inf)
 
     return result
 
@@ -63,8 +61,8 @@ def _ccdf(
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
-    result = lax.exp(-rate * x)
-    result = lax.select(x >= 0, result, jnp.array(1.0))
+    result = jnp.exp(-rate * x)
+    result = lax.select(x >= 0.0, result, 1.0)
 
     return result
 
@@ -77,7 +75,7 @@ def _logccdf(
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
     result = -rate * x
-    result = lax.select(x >= 0, result, jnp.array(0.0))
+    result = lax.select(x >= 0.0, result, 0.0)
 
     return result
 

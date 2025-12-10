@@ -2,7 +2,6 @@
 
 from typing import Tuple
 
-import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
@@ -23,7 +22,7 @@ def _prob(
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
-    return 1 / (scale * lax.sqrt(2.0 * PI)) * lax.exp(-0.5 * lax.square((x - mean) / scale))
+    return 1 / (scale * jnp.sqrt(2.0 * PI)) * jnp.exp(-0.5 * jnp.square((x - mean) / scale))
 
 
 def _logprob(
@@ -34,7 +33,7 @@ def _logprob(
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
-    return -lax.log(lax.sqrt(2.0 * PI)) - lax.log(scale) - 0.5 * lax.square((x - mean) / scale)
+    return -jnp.log(jnp.sqrt(2.0 * PI)) - jnp.log(scale) - 0.5 * jnp.square((x - mean) / scale)
 
 
 def _cdf(

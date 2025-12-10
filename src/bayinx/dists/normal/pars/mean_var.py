@@ -22,7 +22,7 @@ def _prob(
     # Cast to Array
     x, mean, var = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(var)
 
-    return 1 / (jnp.sqrt(var) * jnp.sqrt(2.0 * PI)) * jnp.exp(-0.5 * (x - mean)**2 / var)
+    return 1 / (jnp.sqrt(var) * jnp.sqrt(2.0 * PI)) * jnp.exp(-0.5 * jnp.square(x - mean) / var)
 
 
 def _logprob(
@@ -33,7 +33,7 @@ def _logprob(
     # Cast to Array
     x, mean, var = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(var)
 
-    return -jnp.log(jnp.sqrt(2.0 * PI)) - 0.5 * jnp.log(var) - 0.5 * (x - mean)**2 / jnp.sqrt(var)
+    return -jnp.log(jnp.sqrt(2.0 * PI)) - 0.5 * jnp.log(var) - 0.5 * jnp.square(x - mean) / jnp.sqrt(var)
 
 
 def _cdf(

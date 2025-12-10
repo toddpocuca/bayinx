@@ -1,6 +1,5 @@
 from typing import Tuple
 
-import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
@@ -21,7 +20,7 @@ def _prob(
     # Cast to Array
     x, mean, prec = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(prec)
 
-    return lax.sqrt(prec) / lax.sqrt(2.0 * PI) * lax.exp(-0.5 * prec * lax.square(x - mean))
+    return jnp.sqrt(prec) / jnp.sqrt(2.0 * PI) * jnp.exp(-0.5 * prec * jnp.square(x - mean))
 
 
 def _logprob(
@@ -32,7 +31,7 @@ def _logprob(
     # Cast to Array
     x, mean, prec = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(prec)
 
-    return 0.5 * lax.log(prec) - lax.log(lax.sqrt(2.0 * PI)) - 0.5 * prec * lax.square(x - mean)
+    return 0.5 * jnp.log(prec) - jnp.log(jnp.sqrt(2.0 * PI)) - 0.5 * prec * jnp.square(x - mean)
 
 
 def _cdf(
@@ -43,7 +42,7 @@ def _cdf(
     # Cast to Array
     x, mean, prec = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(prec)
 
-    return jsp.ndtr((x - mean) * lax.sqrt(prec))
+    return jsp.ndtr((x - mean) * jnp.sqrt(prec))
 
 
 def _logcdf(
@@ -54,7 +53,7 @@ def _logcdf(
     # Cast to Array
     x, mean, prec = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(prec)
 
-    return jsp.log_ndtr((x - mean) * lax.sqrt(prec))
+    return jsp.log_ndtr((x - mean) * jnp.sqrt(prec))
 
 
 def _ccdf(
@@ -65,7 +64,7 @@ def _ccdf(
     # Cast to Array
     x, mean, prec = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(prec)
 
-    return jsp.ndtr((mean - x) * lax.sqrt(prec))
+    return jsp.ndtr((mean - x) * jnp.sqrt(prec))
 
 
 def _logccdf(
@@ -76,7 +75,7 @@ def _logccdf(
     # Cast to Array
     x, mean, prec = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(prec)
 
-    return jsp.log_ndtr((mean - x) * lax.sqrt(prec))
+    return jsp.log_ndtr((mean - x) * jnp.sqrt(prec))
 
 
 class MeanPrecisionNormal(Parameterization):
@@ -110,4 +109,4 @@ class MeanPrecisionNormal(Parameterization):
         return _logprob(x, self.mean.obj, self.prec.obj)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.normal(key, shape) / lax.sqrt(self.prec.obj) + self.mean.obj
+        return jr.normal(key, shape) / jnp.sqrt(self.prec.obj) + self.mean.obj

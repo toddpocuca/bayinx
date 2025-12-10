@@ -17,7 +17,7 @@ def _prob(
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
-    return lax.exp(-x / scale) / scale
+    return jnp.exp(-x / scale) / scale
 
 
 def _logprob(
@@ -27,7 +27,7 @@ def _logprob(
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
-    return -lax.log(scale) - x / scale
+    return -jnp.log(scale) - x / scale
 
 
 def _cdf(
@@ -37,8 +37,8 @@ def _cdf(
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
-    result = 1.0 - lax.exp(-x / scale)
-    result = lax.select(x >= 0, result, jnp.array(0.0))
+    result = 1.0 - jnp.exp(-x / scale)
+    result = lax.select(x >= 0, result, 0.0)
 
     return result
 
@@ -49,8 +49,8 @@ def _logcdf(
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
-    result = lax.log1p(-lax.exp(-x / scale))
-    result = lax.select(x >= 0, result, -jnp.inf)
+    result = jnp.log1p(-jnp.exp(-x / scale))
+    result = lax.select(x >= 0.0, result, -jnp.inf)
 
     return result
 
@@ -62,8 +62,8 @@ def _ccdf(
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
-    result = lax.exp(-x / scale)
-    result = lax.select(x >= 0, result, jnp.array(1.0))
+    result = jnp.exp(-x / scale)
+    result = lax.select(x >= 0.0, result, 1.0)
 
     return result
 
@@ -76,7 +76,7 @@ def _logccdf(
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
     result = -x / scale
-    result = lax.select(x >= 0, result, jnp.array(0.0))
+    result = lax.select(x >= 0.0, result, 0.0)
 
     return result
 

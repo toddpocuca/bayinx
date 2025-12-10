@@ -1,6 +1,5 @@
 from typing import Tuple
 
-import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
@@ -24,7 +23,7 @@ def _prob(
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return lax.exp(_logprob(x, n, p))
+    return jnp.exp(_logprob(x, n, p))
 
 
 def _logprob(
@@ -35,7 +34,7 @@ def _logprob(
     # Cast to Array
     k, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return _log_binom_coeff(n, k) + k * lax.log(p) + (n - k) * lax.log1p(-p)
+    return _log_binom_coeff(n, k) + k * jnp.log(p) + (n - k) * jnp.log1p(-p)
 
 
 def _cdf(
@@ -57,7 +56,7 @@ def _logcdf(
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return lax.log(_cdf(x, n, p)) # TODO
+    return jnp.log(_cdf(x, n, p)) # TODO
 
 
 def _ccdf(
@@ -79,7 +78,7 @@ def _logccdf(
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return lax.log(_ccdf(x, n, p)) # TODO
+    return jnp.log(_ccdf(x, n, p)) # TODO
 
 
 class ProbSuccessBinomial(Parameterization):
