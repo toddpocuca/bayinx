@@ -1,7 +1,7 @@
 # Coming From Stan to Bayinx
 
 I have been an avid Stan user for a few years now and got inspired to write my own probabilistic programming language, Bayinx.
-If you are experienced than Stan then this will be a useful tutorial for understanding Bayinx.
+If you are experienced with Stan then this will be a useful tutorial for understanding Bayinx.
 
 ## Defining Models In Stan and Bayinx
 
