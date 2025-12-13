@@ -46,11 +46,11 @@ class LowRankAffineLayer(FlowLayer):
     """
     A low-rank affine flow.
 
-    # Attributes
-    - `params`: A dictionary containing the shift and low-rank representation of the scale parameters.
-    - `constraints`: A dictionary of constraining transformations.
-    - `static`: Whether the flow layer is frozen (parameters are not subject to further optimization).
-    - `rank`: Rank of the scale transformation.
+    Attributes:
+        params: A dictionary containing the shift and low-rank representation of the scale parameters.
+        constraints: A dictionary of constraining transformations.
+        static: Whether the flow layer is frozen (parameters are not subject to further optimization).
+        rank: Rank of the scale transformation.
     """
 
     rank: int
@@ -110,8 +110,8 @@ class LowRankAffineLayer(FlowLayer):
 
         diag: Array = params["diag_scale"]
 
-        # Compute log-Jacobian adjustment
-        log_jac: Scalar = jnp.log(diag).sum()
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Scalar = -jnp.log(diag).sum()
 
         assert log_jac.shape == ()
 
@@ -132,8 +132,8 @@ class LowRankAffineLayer(FlowLayer):
         diag: Array = params["diag_scale"]
         U, V = params["offdiag_scale"]
 
-        # Compute log-Jacobian adjustment
-        log_jac: Scalar = jnp.log(diag).sum()
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Scalar = -jnp.log(diag).sum()
 
         # Compute forward transformation
         _, draw = scan(
@@ -153,12 +153,40 @@ class LowRankAffineLayer(FlowLayer):
         return f(draws)
 
 class LowRankAffine(FlowSpec):
+    """
+    A specification for the low-rank affine flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{D z} + ((\\mathbf{U V}^\\top) \\odot \\mathbf{M})\\mathbf{z} + \\mathbf{c}$
+
+        Where $\\mathbf{z} \\in \\mathbb{R}^D$, $\\mathbf{D} \\in \\mathbb{R}^{D, D}$ is a non-negative diagonal matrix,
+        $\\mathbf{U}, \\mathbf{V} \\in \\mathbb{R}^{D, R}$ are low-rank factor matrices, $\\mathbf{M} \\in \\mathbb{R}^{D, D}$
+        is an implicit strictly lower-triangular mask, and $\\mathbf{c} \\in \\mathbb{R}^D$ is the shift vector.
+
+    Attributes:
+        rank (int): The rank $R$ of the low-rank factor matrices $\\mathbf{U}$ and $\\mathbf{V}$.
+    """
     rank: int
 
     def __init__(self, rank: int):
+        """
+        Initializes the specification for a low-rank affine flow.
+
+        Parameters:
+            rank: The rank R (number of columns in U and V) of the low-rank off-diagonal component.
+        """
         self.rank = rank
 
     def construct(self, dim: int) -> LowRankAffineLayer:
+        """
+        Constructs a low-rank affine flow layer.
+
+        Parameters:
+            dim: The dimension of the parameter space.
+
+        Returns:
+            A LowRankAffineLayer of dimension `dim` and rank `self.rank`.
+        """
         if (self.rank > (dim - 1)/2):
             raise ValueError(f"Rank {self.rank} is large, consider using a full affine flow instead.")
 

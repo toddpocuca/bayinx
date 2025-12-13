@@ -69,8 +69,8 @@ class DiagAffineLayer(FlowLayer):
         # Extract parameters
         scale: Float[Array, " dim"] = params["scale"]
 
-        # Compute log-Jacobian adjustment
-        log_jac: Array = jnp.log(scale).sum()
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Array = -jnp.log(scale).sum()
 
         assert log_jac.shape == ()
 
@@ -81,7 +81,7 @@ class DiagAffineLayer(FlowLayer):
         f = jax.vmap(self.__adjust, 0)
         return f(draws)
 
-    def __forward_and_adjust(self, draw: Float[Array, " dim"]) -> Tuple[Float[Array, " dim"], Scalar]:
+    def __forward_and_adjust(self, draw: Float[Array, " dim"], stl: bool = True) -> Tuple[Float[Array, " dim"], Scalar]:
         params = self.transform_params()
 
         assert len(draw.shape) == 1
@@ -95,8 +95,8 @@ class DiagAffineLayer(FlowLayer):
 
         assert len(draw.shape) == 1
 
-        # Compute log-Jacobian adjustment
-        log_jac: Scalar = jnp.log(scale).sum()
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Array = -jnp.log(scale).sum()
 
         assert log_jac.shape == ()
 
@@ -111,10 +111,33 @@ class DiagAffineLayer(FlowLayer):
 class DiagAffine(FlowSpec):
     """
     A specification for the diagonal affine flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{d} \\odot \\mathbf{z} + \\mathbf{c}$
+
+        Where $\\mathbf{z} \\in \\mathbb{R}^D$, $\\mathbf{d} \\in \\mathbb{R}^{D}$ is non-negative, and $\\mathbf{c} \\in \\mathbb{R}^D$.
+
+    Attributes:
+        key: The PRNG key used to generate the diagonal affine flow layer.
     """
     key: PRNGKeyArray
     def __init__(self, key: PRNGKeyArray = jr.key(0)):
+        """
+        Initializes the specification for a diagonal affine flow.
+
+        Parameters:
+            key: A PRNG key used to generate the diagonal affine flow.
+        """
         self.key = key
 
     def construct(self, dim: int) -> DiagAffineLayer:
+        """
+        Constructs a diagonal affine flow layer.
+
+        Parameters:
+            dim: The dimension of the parameter space.
+
+        Returns:
+            A DiagonalAffineLayer of dimension `dim`.
+        """
         return DiagAffineLayer(dim, self.key)

@@ -1,3 +1,4 @@
+import itertools
 from typing import Any, Generic, Iterator, Self
 
 import equinox as eqx
@@ -58,10 +59,17 @@ class Node(eqx.Module, Generic[T]):
         return type(self)(new_obj, new_filter_spec)
 
     def __iter__(self) -> Iterator["Node"]:
-        for obj_i, spec_i in zip(self.obj, self._filter_spec):
+        # Handle cases where _filter_spec is a scalar (e.g., bool) or 0-d array
+        try:
+            iter(self._filter_spec)
+            specs = self._filter_spec
+        except TypeError:
+            # If spec is not iterable, broadcast it for every element in obj
+            specs = itertools.repeat(self._filter_spec)
+
+        for obj_i, spec_i in zip(self.obj, specs):
             # Create a new Node for the current element
             yield Node(obj_i, spec_i)
-
     ## Arithmetic ----
     def __add__(self, other: Any) -> "Node":
         # Extract internal objects and their filter specifications

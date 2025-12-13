@@ -2,10 +2,10 @@ from typing import Callable, Optional, Self, Tuple
 
 import equinox as eqx
 import jax.flatten_util as jfu
+import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.tree_util as jtu
-from jax.lax import scan
 from jaxtyping import Array, PRNGKeyArray, Scalar
 
 from bayinx.core.flow import FlowLayer
@@ -88,8 +88,7 @@ class NormalizingFlow(Variational[M]):
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
-        raise RuntimeError("Evaluating the variational density for a normalizing flow requires an analytic inverse to exist, which many useful flows do not have. Therefore, do not use this method.")
-        return jnp.full(draws.shape[0], jnp.nan)
+        return jnp.full(draws.shape[0], 0.0) # dont use this method
 
     @eqx.filter_jit
     def __eval(self, draws: Array) -> Tuple[Array, Array]:
@@ -112,12 +111,12 @@ class NormalizingFlow(Variational[M]):
 
         for map in self.flows:
             # Apply transformation
-            draws, ljas = map.forward_and_adjust(draws)
+            draws, log_jacs = map.forward_and_adjust(draws)
             assert len(draws.shape) == 2
-            assert len(ljas.shape) == 1
+            assert len(log_jacs.shape) == 1
 
             # Adjust variational density
-            variational_evals = variational_evals - ljas
+            variational_evals = variational_evals + log_jacs
 
         # Evaluate posterior at final variational draws
         posterior_evals = self.eval_model(draws)
@@ -152,7 +151,7 @@ class NormalizingFlow(Variational[M]):
 
                 return None, batched_elbo_evals
 
-            elbo_evals = scan(
+            elbo_evals = lax.scan(
                 batched_elbo,
                 init=None,
                 xs=keys,
@@ -188,12 +187,13 @@ class NormalizingFlow(Variational[M]):
 
                 return None, batched_elbo_evals
 
-            elbo_evals = scan(
+            # Compute ELBO evals
+            elbo_evals = lax.scan(
                 batched_elbo,
                 init=None,
                 xs=keys,
                 length=n // batch_size
-            )[1]
+            )[1].flatten()
 
             # Compute average of ELBO estimates
             return jnp.mean(elbo_evals)
@@ -224,16 +224,17 @@ class NormalizingFlow(Variational[M]):
                 batched_post_evals, batched_vari_evals = self.__eval(draws)
 
                 # Compute ELBO estimate
-                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
+                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals # STL estimator
 
                 return None, batched_elbo_evals
 
-            elbo_evals = scan(
+            # Compute ELBO evals
+            elbo_evals = lax.scan(
                 batched_elbo,
                 init=None,
                 xs=keys,
                 length=n // batch_size
-            )[1]
+            )[1].flatten()
 
             # Compute average of ELBO estimates
             return jnp.mean(elbo_evals)

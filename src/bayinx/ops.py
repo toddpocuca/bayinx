@@ -4,6 +4,8 @@ import jax.tree as jt
 from bayinx.core.node import Node
 from bayinx.core.utils import _extract_obj
 
+# Public
+__all__ = ["exp", "log", "sin", "cos", "tanh", "sigmoid"]
 
 def exp(node: Node) -> Node:
     """
@@ -20,7 +22,6 @@ def exp(node: Node) -> Node:
 def log(node: Node) -> Node:
     """
     Apply the natural logarithm transformation (jnp.log) to a node.
-    Handles input value restrictions (must be positive).
     """
     obj, filter_spec = _extract_obj(node)
 
@@ -69,8 +70,7 @@ def tanh(node: Node) -> Node:
 
 def sigmoid(node: Node) -> Node:
     """
-    Apply the sigmoid (logistic) transformation to a node.
-    Sigmoid formula: 1 / (1 + exp(-x))
+    Apply the sigmoid transformation to a node.
     """
     obj, filter_spec = _extract_obj(node)
 

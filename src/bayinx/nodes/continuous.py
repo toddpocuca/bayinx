@@ -33,10 +33,10 @@ class Continuous(Stochastic[T]):
     A container for continuous stochastic nodes of a probabilistic model.
 
 
-    # Attributes
-    - `obj`: An internal realization of the node.
-    - `_filter_spec`: An internal filter specification for `obj`.
-    - `_constraint`: A constraining transformation.
+    Attributes:
+        obj: An internal realization of the node.
+        _filter_spec: An internal filter specification for `obj`.
+        _constraint: A constraining transformation.
     """
 
     _constraint: Constraint

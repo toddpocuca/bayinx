@@ -11,6 +11,10 @@ from .pars import RateExponential, ScaleExponential
 class Exponential(Distribution):
     """
     An Exponential distribution.
+
+    Parameters:
+        rate: Parameterizes an Exponential distribution by its rate.
+        scale: Parameterizes an Exponential distribution by its scale.
     """
 
     par: Parameterization

@@ -121,7 +121,7 @@ class Variational(eqx.Module, Generic[M]):
 
         # Initialize optimizer
         optim: GradientTransformation = opx.chain(
-            opx.scale(-1.0), opx.adam(schedule, nesterov = True) # replace learning_rate with scheduler
+            opx.scale(-1.0), opx.adamax(schedule)
         )
         opt_state: OptState = optim.init(dyn)
 
@@ -149,7 +149,7 @@ class Variational(eqx.Module, Generic[M]):
 
             # Transform update through optimizer
             update, opt_state = optim.update( # type: ignore
-                update, opt_state, eqx.filter(dyn, dyn.filter_spec) # type: ignore
+                update, opt_state, dyn # type: ignore
             )
 
             # Update variational distribution

@@ -33,7 +33,7 @@ class LinearModel(byx.Model):
         return target
 
 # Simulate sample
-n_obs = 100
+n_obs = 500
 n_predictors = 5
 X: Array = jr.normal(jr.key(0), (n_obs, n_predictors - 1))
 X = jnp.column_stack((jnp.ones((n_obs,)), X))
@@ -52,7 +52,7 @@ def test_inference():
 
     # Configure and fit
     posterior.configure(flowspecs = [DiagAffine()])
-    posterior.fit(max_iters = int(1e5), learning_rate = 1e-2)
+    posterior.fit(max_iters = int(1e5))
 
     # Check fit
     assert jnp.linalg.norm(posterior.sample('beta', int(1e6)).mean(0) - beta) < 0.1

@@ -1,0 +1,3 @@
+# Posterior
+
+::: bayinx.posterior

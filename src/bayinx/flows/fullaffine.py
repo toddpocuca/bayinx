@@ -74,8 +74,8 @@ class FullAffineLayer(FlowLayer):
         # Extract parameters
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
-        # Compute log-Jacobian adjustments
-        log_jac: Array = jnp.log(jnp.diag(scale)).sum()
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Scalar = -jnp.log(jnp.diag(scale)).sum()
 
         assert log_jac.shape == ()
 
@@ -100,8 +100,8 @@ class FullAffineLayer(FlowLayer):
 
         assert len(draw.shape) == 1
 
-        # Compute log_jac
-        log_jac: Scalar = jnp.log(jnp.diag(scale)).sum()
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Scalar = -jnp.log(jnp.diag(scale)).sum()
 
         assert log_jac.shape == ()
 
@@ -114,10 +114,36 @@ class FullAffineLayer(FlowLayer):
 
 
 class FullAffine(FlowSpec):
+    """
+    A specification for the full affine flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{L z} + \\mathbf{c}$
+
+        Where $\\mathbf{z} \\in \\mathbb{R}^D$, $\\mathbf{L} \\in \\mathbb{R}^{D, D}$ is lower triangular with a non-negative diagonal, and $\\mathbf{c} \\in \\mathbb{R}^D$.
+
+    Attributes:
+        key: The PRNG key used to generate the full affine flow layer.
+    """
     key: PRNGKeyArray
 
     def __init__(self, key: PRNGKeyArray = jr.key(0)):
+        """
+        Initializes the specification for a full affine flow.
+
+        Parameters:
+            key: A PRNG key used to generate the full affine flow.
+        """
         self.key = key
 
     def construct(self, dim: int) -> FullAffineLayer:
+        """
+        Constructs a full affine flow layer.
+
+        Parameters:
+            dim: The dimension of the parameter space.
+
+        Returns:
+            A FullAffineLayer of dimension `dim`.
+        """
         return FullAffineLayer(dim, self.key)

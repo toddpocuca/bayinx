@@ -11,6 +11,10 @@ from .pars import ProbFailureBernoulli, ProbSuccessBernoulli
 class Bernoulli(Distribution):
     """
     A Bernoulli distribution.
+
+    Parameters:
+        p: Parameterizes a Binomial distribution by its probability of success.
+        q: Parameterizes a Binomial distribution by its probability of failure.
     """
 
     par: Parameterization

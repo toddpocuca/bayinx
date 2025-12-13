@@ -13,9 +13,9 @@ class Observed(Node[T]):
     A container for observed nodes of a probabilistic model.
 
 
-    # Attributes
-    - `obj`: An internal realization of the node.
-    - `_filter_spec`: An internal filter specification for `obj`.
+    Attributes:
+        obj: An internal realization of the node.
+        _filter_spec: An internal filter specification for `obj`.
     """
 
     def __init__(

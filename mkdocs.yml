@@ -1,0 +1,82 @@
+# 1. BASIC SITE INFORMATION
+site_name: Bayinx # Change this to your package name
+site_description: Bayesian Inference with JAX
+site_author: Todd Pocuca
+repo_url: https://github.com/toddpocuca/bayinx # Link to your GitHub repository
+repo_name: bayinx
+
+# 2. THEME SETUP (Material for MkDocs)
+theme:
+  name: material
+  features:
+    - navigation.instant # Faster page loading
+    - navigation.sections # Sections are included in the navigation on the left
+    - toc.integrate # Table of contents integrated on the left sidebar
+    - search.suggest # Suggest spelling corrections
+    - content.code.copy # Copy button for code blocks
+    - header.autohide # Header disappears as you scroll down
+  palette:
+    # Light mode / Dark mode setup
+    - scheme: default # Light mode default
+      primary: blue # Primary color for light mode (e.g., header, links)
+      accent: orange # Accent color for light mode (e.g., hover effects)
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate # Dark mode
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+# 3. MARKDOWN EXTENSIONS (Technical Features)
+markdown_extensions:
+  # MkDocs + Material extensions
+  - admonition # For 'Note', 'Warning', etc. boxes
+  - pymdownx.details # Allows collapsible details sections
+  - pymdownx.superfences # Required for better code block rendering and nesting
+  - pymdownx.highlight:
+      anchor_linenums: true
+  # MathJax for LaTeX equations
+  - pymdownx.arithmatex:
+      generic: true
+  # Add clickable permalinks to headers
+  - toc:
+      permalink: true
+
+# 4. PLUGINS (Functionality: API generation)
+plugins:
+  - meta
+  # Core plugin for automatic API documentation
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: false
+            show_signature_annotations: true
+            show_bases: false
+
+# 5. NAVIGATION STRUCTURE
+# This defines the order and hierarchy of your documentation pages.
+# Create the corresponding .md files in your 'docs' directory.
+nav:
+  - Getting Started: index.md
+  - Tutorials:
+      - Coming From Stan: tutorials/stan.md
+      - Basic Usage: tutorials/basic.md
+      - Advanced Topics: tutorials/advanced.md
+  - API Reference: # The top-level menu item
+      - Distributions: api/dists.md
+      - Nodes: api/nodes.md
+      - Operations: api/ops.md
+      - Flows: api/flows.md
+      - Posterior: api/posterior.md
+
+# 6. ASSETS
+extra_javascript:
+  # Required for MathJax rendering when using pymdownx.arithmatex
+  - javascript/config.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

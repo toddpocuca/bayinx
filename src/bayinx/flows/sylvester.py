@@ -156,7 +156,7 @@ class SylvesterLayer(FlowLayer):
         # diag_term_i = 1 + h'_i * (R2_ii * R1_ii)
         diag_term = 1.0 + diag_h_prime * d_r2 * d_r1
 
-        log_jac = jnp.sum(jnp.log(diag_term))
+        log_jac = -jnp.sum(jnp.log(diag_term))
 
         assert log_jac.shape == ()
 
@@ -196,7 +196,7 @@ class SylvesterLayer(FlowLayer):
 
         # Log-det of triangular matrix
         diag_term = 1.0 + diag_h_prime * d_r2 * d_r1
-        log_jac = jnp.sum(jnp.log(jnp.abs(diag_term)))
+        log_jac = -jnp.sum(jnp.log(jnp.abs(diag_term)))
 
         assert len(draw_new.shape) == 1
         assert log_jac.shape == ()
@@ -212,14 +212,39 @@ class SylvesterLayer(FlowLayer):
 class Sylvester(FlowSpec):
     """
     A specification for the Sylvester flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{z} + \\mathbf{Q} \\mathbf{R}_1 h(\\mathbf{R}_2 \\mathbf{Q}^\top \\mathbf{z} + \\mathbf{b})$
+
+    Attributes:
+        rank: The rank of the Sylvester flow (number of hidden units).
+        key: The PRNG key used to generate a Sylvester flow layer.
     """
     rank: int
+    key: PRNGKeyArray
 
-    def __init__(self, rank: int):
+    def __init__(self, rank: int, key: PRNGKeyArray = jr.key(0)):
+        """
+        Initializes the specification for a Sylvester flow.
+
+        Parameters:
+            rank: The rank of the transformation (number of hidden units).
+            key: A PRNG key used to generate the flow layer.
+        """
         self.rank = rank
+        self.key = key
 
     def construct(self, dim: int) -> SylvesterLayer:
+        """
+        Constructs a Sylvester flow layer.
+
+        Parameters:
+            dim: The dimension of the parameter space.
+
+        Returns:
+            A SylvesterLayer of dimension `dim` and rank `self.rank`.
+        """
         if self.rank > dim:
             raise ValueError(f"Rank {self.rank} cannot be greater than dimension {dim}.")
 
-        return SylvesterLayer(dim, self.rank)
+        return SylvesterLayer(dim, self.rank, self.key)

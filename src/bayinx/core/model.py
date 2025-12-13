@@ -96,7 +96,10 @@ class Model(eqx.Module):
         }
 
         # Grab node types
-        node_types: dict[str, Type[Node]] = {k: get_origin(v) for k, v in get_type_hints(cls).items()}
+        node_types: dict[str, Type[Node]] = {
+            k: get_origin(v) or v
+            for k, v in get_type_hints(cls).items()
+        }
 
 
         # Auto-initialize parameters based on field metadata and type annotations

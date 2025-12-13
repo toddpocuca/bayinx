@@ -10,7 +10,13 @@ from .pars import MeanPrecisionNormal, MeanScaleNormal, MeanVarNormal
 
 class Normal(Distribution):
     """
-    A normal distribution.
+    A Normal distribution.
+
+    Parameters:
+        mean: Parameterizes a Normal distribution by its mean.
+        scale: Parameterizes a Normal distribution by its scale (standard-deviation).
+        var: Parameterizes a Normal distribution by its variance.
+        prec: Parameterizes a Normal distribution by its precision.
     """
 
     par: Parameterization

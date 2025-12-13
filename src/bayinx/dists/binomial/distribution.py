@@ -11,6 +11,11 @@ from .pars import ProbFailureBinomial, ProbSuccessBinomial
 class Binomial(Distribution):
     """
     A Binomial distribution.
+
+    Parameters:
+        n: Parameterizes a Binomial distribution by the total number of trials.
+        p: Parameterizes a Binomial distribution by its probability of success.
+        q: Parameterizes a Binomial distribution by its probability of failure.
     """
 
     par: Parameterization

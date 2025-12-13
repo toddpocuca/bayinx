@@ -34,7 +34,7 @@ def test_inference():
         x = x
     )
     posterior.configure([DiagAffine()])
-    posterior.fit(learning_rate = 1e-4)
+    posterior.fit()
 
     # Get posterior
     p_draws = posterior.sample('p', int(1e6))

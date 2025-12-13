@@ -11,9 +11,9 @@ class Stochastic(Node[T]):
 
     Subclasses can be constructed with defined filter specifications (implement the `filter_spec` property).
 
-    # Attributes
-    - `obj`: An internal realization of the node.
-    - `_filter_spec`: An internal filter specification for `obj`.
+    Attributes:
+        obj: An internal realization of the node.
+        _filter_spec: An internal filter specification for `obj`.
     """
 
     @abstractmethod
