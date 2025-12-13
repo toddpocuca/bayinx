@@ -15,7 +15,6 @@ This installs the bare-bones version of Bayinx, however if you need additional f
 ```bash
 # Ensure you are in your project environment
 uv add 'bayinx[cuda]' # Installs Bayinx with CUDA support
-uv add 'bayinx[postprocess]' # Installs Bayinx along with ArviZ
 ```
 
 ## Defining Models In Bayinx
