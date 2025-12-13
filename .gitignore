@@ -13,6 +13,5 @@ wheels/
 
 # Other
 .ruff_cache
-
-# My stuff
 uv.lock
+site/
