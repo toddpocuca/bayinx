@@ -1,9 +1,13 @@
 # 1. BASIC SITE INFORMATION
-site_name: Bayinx # Change this to your package name
+site_name: Bayinx
 site_description: Bayesian Inference with JAX
 site_author: Todd Pocuca
 repo_url: https://github.com/toddpocuca/bayinx # Link to your GitHub repository
 repo_name: bayinx
+
+# --- ADD THESE TWO LINES ---
+site_url: https://toddpocuca.github.io/bayinx/ # Crucial for project-level GH Pages
+use_directory_urls: true # Best practice and often required for GH Pages paths
 
 # 2. THEME SETUP (Material for MkDocs)
 theme:
@@ -66,8 +70,6 @@ nav:
   - Getting Started: index.md
   - Tutorials:
       - Coming From Stan: tutorials/stan.md
-      - Basic Usage: tutorials/basic.md
-      - Advanced Topics: tutorials/advanced.md
   - API Reference: # The top-level menu item
       - Distributions: api/dists.md
       - Nodes: api/nodes.md
