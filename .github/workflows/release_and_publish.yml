@@ -22,7 +22,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-          cache-key-dependency-path: pyproject.toml
+          cache-dependency-glob: |
+            **/pyproject.toml
 
       - name: Set up Python using uv
         run: uv python install 3.13
