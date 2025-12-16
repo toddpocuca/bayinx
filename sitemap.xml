@@ -2,30 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://toddpocuca.github.io/bayinx/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
     </url>
     <url>
          <loc>https://toddpocuca.github.io/bayinx/api/dists/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
     </url>
     <url>
          <loc>https://toddpocuca.github.io/bayinx/api/flows/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
     </url>
     <url>
          <loc>https://toddpocuca.github.io/bayinx/api/nodes/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
     </url>
     <url>
          <loc>https://toddpocuca.github.io/bayinx/api/ops/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
     </url>
     <url>
          <loc>https://toddpocuca.github.io/bayinx/api/posterior/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
+    </url>
+    <url>
+         <loc>https://toddpocuca.github.io/bayinx/examples/intro/leaf_discs/</loc>
+         <lastmod>2025-12-16</lastmod>
     </url>
     <url>
          <loc>https://toddpocuca.github.io/bayinx/tutorials/stan/</loc>
-         <lastmod>2025-12-13</lastmod>
+         <lastmod>2025-12-16</lastmod>
     </url>
 </urlset>

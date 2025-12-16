@@ -18,7 +18,7 @@
         <link rel="prev" href="../..">
       
       
-        <link rel="next" href="../../api/dists/">
+        <link rel="next" href="../../examples/intro/leaf_discs/">
       
       
         
@@ -501,7 +501,7 @@
   <span class="md-ellipsis">
     
   
-    API Reference
+    Examples
   
 
     
@@ -514,6 +514,150 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introductory
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Introductory
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/intro/leaf_discs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelling Floating Leaf Discs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -718,31 +862,34 @@ If you are experienced with Stan then this will be a useful tutorial for underst
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">sigma</span> <span class="o">~</span><span class="w"> </span><span class="nb">exponential</span><span class="p">(</span><span class="mf">10</span><span class="p">);</span>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="c1">// Defining likelihood</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">sigma</span> <span class="o">~</span><span class="w"> </span><span class="nb">exponential</span><span class="p">(</span><span class="mf">10</span><span class="p">);</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">sigma</span> <span class="o">~</span><span class="w"> </span><span class="nb">normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">);</span>
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="p">}</span>
 </code></pre></div>
 <p>We would then either use <code>cmdstan</code> or our favourite library (<code>CmdStanR</code>, <code>CmdStanPy</code>, etc) to pass in our data and fit the model with Stan.</p>
 <h3 id="bayinx-implementation">Bayinx Implementation<a class="headerlink" href="#bayinx-implementation" title="Permanent link">&para;</a></h3>
 <p>In Bayinx, we create a new class that inherits from <code>bayinx.Model</code>, and use attribute annotations &amp; the <code>define</code> function to construct the nodes for our model.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Exponential</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Continuous</span><span class="p">,</span> <span class="n">Observed</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">define</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNormalModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">mu</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">())</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="c1"># Defining priors</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">&lt;&lt;</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">scale</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="c1"># Defining likelihood</span>
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Exponential</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Continuous</span><span class="p">,</span> <span class="n">Observed</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">define</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNormalModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">mu</span><span class="p">:</span> <span class="n">Continuous</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]]</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">())</span> <span class="c1"># You can add type-hints if you like</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">Continuous</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]]</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Array</span><span class="p">]]</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="c1"># Defining priors</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">&lt;&lt;</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">scale</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
 <a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        <span class="k">return</span> <span class="n">target</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        <span class="c1"># Defining likelihood</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>        <span class="k">return</span> <span class="n">target</span>
 </code></pre></div>
 <p>The <code>data</code> and <code>parameters</code> blocks are essentially merged into one "block"; defining an object as data or parameter is done by defining a new attribute.</p>
 <p>The <code>model</code> block in Stan is equivalent to the <code>model</code> method of our new class, which takes in <code>self</code> and the accumulator for the log-probability evaluations <code>target</code>, and returns it.
@@ -921,7 +1068,7 @@ These arguments are the shapes for the nodes (so we can perform shape-checks on 
 </code></pre></div>
 That's pretty good for a small network trained with only 100 000 iterations.</p>
 <h3 id="parallelization-out-of-the-box">Parallelization Out of the Box<a class="headerlink" href="#parallelization-out-of-the-box" title="Permanent link">&para;</a></h3>
-<p>One of my issues with Stan is that there is some rewriting involved in trying to get multi-threading to work, and some work optimizing the grainsize (although a maximal grainsize <code>n_elements // n_threads</code> seems to work best in my experience). Thankfully, XLA automatically scales the number of threads used with the size of the problem via <a href="https://github.com/openxla/xla/blob/ba2ef9892875a41eb9f30efb2582d8728dc6b9d8/xla/service/cpu/parallel_task_assignment.cc#L81">cost modelling</a>, and both pre-allocates the memory used for an entire program as well as aggressively optimizing memory usage to avoid unnecessary copies (like <a href="https://discourse.mc-stan.org/t/reduce-sum-results-in-much-slower-run-times-even-for-large-datasets/26827/3">duplicating arguments shared amongst threads</a>). Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading.</p>
+<p>One of my issues with Stan is that there is some rewriting involved in trying to get multi-threading to work, and some work optimizing the grainsize (although a maximal grainsize <code>n_elements // n_threads</code> seems to work best in my experience). Thankfully, XLA automatically scales the number of threads used with the size of the problem via <a href="https://github.com/openxla/xla/blob/ba2ef9892875a41eb9f30efb2582d8728dc6b9d8/xla/service/cpu/parallel_task_assignment.cc#L81">cost modelling</a>, and both pre-allocates the memory used for an entire program as well as aggressively optimizes memory usage to avoid unnecessary copies (like <a href="https://discourse.mc-stan.org/t/reduce-sum-results-in-much-slower-run-times-even-for-large-datasets/26827/3">duplicating arguments shared amongst threads</a>). Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading.</p>
 
 
 
