@@ -25,7 +25,7 @@ class DiagAffineLayer(FlowLayer):
 
     def __init__(self, dim: int, key: PRNGKeyArray):
         """
-        Initializes a full affine flow.
+        Initializes a diagonal affine flow.
 
         # Parameters
         - `dim`: The dimension of the parameter space.

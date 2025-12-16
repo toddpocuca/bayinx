@@ -51,9 +51,14 @@ cuda = [
     "jax[cuda]>=0.8.0",
 ]
 dev = [
+    "cairocffi>=1.7.1",
+    "lets-plot>=4.8.1",
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.7.0",
     "mkdocstrings[python]>=1.0.0",
+    "plotnine>=0.15.2",
+    "polars>=1.36.1",
+    "pyarrow>=22.0.0",
     "pymdown-extensions>=10.18",
     "pytest>=8.3.5",
     "pytest-benchmark>=5.1.0",

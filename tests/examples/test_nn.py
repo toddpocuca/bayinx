@@ -71,7 +71,7 @@ def test_inference():
 
     # Configure and fit
     posterior.configure(flowspecs = [DiagAffine()])
-    posterior.fit(max_iters = int(1e4), grad_draws = 4, batch_size = 4)
+    posterior.fit(max_iters = int(1.5e5), grad_draws = 4, batch_size = 4)
 
     # Test for good fit
     assert posterior.sample('sigma', 1000).mean() < 0.1

@@ -1,5 +1,6 @@
 import jax.numpy as jnp
 import jax.tree as jt
+from jaxtyping import ArrayLike, PyTree
 
 from bayinx.core.node import Node
 from bayinx.core.utils import _extract_obj
@@ -16,22 +17,22 @@ def exp(node: Node) -> Node:
     # Apply exponential
     new_obj = jt.map(lambda x: jnp.exp(x), obj)
 
-    return type(node)(new_obj, filter_spec)
+    return Node(new_obj, filter_spec)
 
 
-def log(node: Node) -> Node:
+def log(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
     """
-    Apply the natural logarithm transformation (jnp.log) to a node.
+    Apply the natural logarithm transformation (jnp.log) to an object.
     """
     obj, filter_spec = _extract_obj(node)
 
     # Apply logarithm
     new_obj = jt.map(lambda x: jnp.log(x), obj)
 
-    return type(node)(new_obj, filter_spec)
+    return Node(new_obj, filter_spec)
 
 
-def sin(node: Node) -> Node:
+def sin(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
     """
     Apply the sine transformation (jnp.sin) to a node.
     """
@@ -40,10 +41,10 @@ def sin(node: Node) -> Node:
     # Apply sine
     new_obj = jt.map(lambda x: jnp.sin(x), obj)
 
-    return type(node)(new_obj, filter_spec)
+    return Node(new_obj, filter_spec)
 
 
-def cos(node: Node) -> Node:
+def cos(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
     """
     Apply the cosine transformation (jnp.cos) to a node.
     """
@@ -52,10 +53,10 @@ def cos(node: Node) -> Node:
     # Apply cosine
     new_obj = jt.map(lambda x: jnp.cos(x), obj)
 
-    return type(node)(new_obj, filter_spec)
+    return Node(new_obj, filter_spec)
 
 
-def tanh(node: Node) -> Node:
+def tanh(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
     """
     Apply the hyperbolic tangent transformation (jnp.tanh) to a node.
     """
@@ -65,10 +66,10 @@ def tanh(node: Node) -> Node:
     # Apply tanh
     new_obj = jt.map(lambda x: jnp.tanh(x), obj)
 
-    return type(node)(new_obj, filter_spec)
+    return Node(new_obj, filter_spec)
 
 
-def sigmoid(node: Node) -> Node:
+def sigmoid(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
     """
     Apply the sigmoid transformation to a node.
     """
@@ -77,4 +78,4 @@ def sigmoid(node: Node) -> Node:
     # Apply sigmoid
     new_obj = jt.map(lambda x: 1.0 / (1.0 + jnp.exp(-x)), obj)
 
-    return type(node)(new_obj, filter_spec)
+    return Node(new_obj, filter_spec)

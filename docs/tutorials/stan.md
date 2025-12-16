@@ -33,7 +33,7 @@ model {
     sigma ~ exponential(10);
 
     // Defining likelihood
-    sigma ~ exponential(10);
+    sigma ~ normal(mu, sigma);
 }
 ```
 
@@ -43,15 +43,18 @@ We would then either use `cmdstan` or our favourite library (`CmdStanR`, `CmdSta
 In Bayinx, we create a new class that inherits from `bayinx.Model`, and use attribute annotations & the `define` function to construct the nodes for our model.
 
 ```py
+from typing import List
+from jaxtyping import Array
+
 from bayinx.dists import Normal, Exponential
 from bayinx.nodes import Continuous, Observed
 from bayinx import Model, define
 
 class SimpleNormalModel(Model):
-    mu: Continuous = define(shape=())
-    sigma: Continuous = define(shape=(), lower=0)
+    mu: Continuous[List[Array]] = define(shape=()) # You can add type-hints if you like
+    sigma: Continuous[List[Array]] = define(shape=(), lower=0)
 
-    x: Observed = define(shape='n_obs')
+    x: Observed[List[Array]] = define(shape='n_obs')
 
     def model(self, target):
         # Defining priors
@@ -267,4 +270,4 @@ That's pretty good for a small network trained with only 100 000 iterations.
 
 ### Parallelization Out of the Box
 
-One of my issues with Stan is that there is some rewriting involved in trying to get multi-threading to work, and some work optimizing the grainsize (although a maximal grainsize `n_elements // n_threads` seems to work best in my experience). Thankfully, XLA automatically scales the number of threads used with the size of the problem via [cost modelling](https://github.com/openxla/xla/blob/ba2ef9892875a41eb9f30efb2582d8728dc6b9d8/xla/service/cpu/parallel_task_assignment.cc#L81), and both pre-allocates the memory used for an entire program as well as aggressively optimizing memory usage to avoid unnecessary copies (like [duplicating arguments shared amongst threads](https://discourse.mc-stan.org/t/reduce-sum-results-in-much-slower-run-times-even-for-large-datasets/26827/3)). Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading.
+One of my issues with Stan is that there is some rewriting involved in trying to get multi-threading to work, and some work optimizing the grainsize (although a maximal grainsize `n_elements // n_threads` seems to work best in my experience). Thankfully, XLA automatically scales the number of threads used with the size of the problem via [cost modelling](https://github.com/openxla/xla/blob/ba2ef9892875a41eb9f30efb2582d8728dc6b9d8/xla/service/cpu/parallel_task_assignment.cc#L81), and both pre-allocates the memory used for an entire program as well as aggressively optimizes memory usage to avoid unnecessary copies (like [duplicating arguments shared amongst threads](https://discourse.mc-stan.org/t/reduce-sum-results-in-much-slower-run-times-even-for-large-datasets/26827/3)). Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading.

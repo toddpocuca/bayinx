@@ -114,9 +114,10 @@ class Variational(eqx.Module, Generic[M]):
         dyn, static = eqx.partition(self, self.filter_spec)
 
         # Construct scheduler
-        schedule = opx.cosine_decay_schedule(
+        schedule: Callable = opx.cosine_decay_schedule(
             learning_rate,
-            max_iters
+            max_iters,
+            jnp.finfo(jnp.array(0.0)).eps.item()
         )
 
         # Initialize optimizer

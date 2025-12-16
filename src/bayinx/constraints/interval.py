@@ -68,7 +68,7 @@ class Interval(Constraint):
         def check_leaf(leaf: Any, filter: bool):
             if filter:
                 # Check constraint
-                return jnp.all(self.lb <= leaf & leaf <= self.ub)
+                return jnp.all((self.lb <= leaf) & (leaf <= self.ub))
             else:
                 return True
 

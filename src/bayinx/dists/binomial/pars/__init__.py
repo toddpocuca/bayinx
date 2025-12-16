@@ -1,2 +1,3 @@
+from .logit_prob_success import LogitProbSuccessBinomial as LogitProbSuccessBinomial
 from .prob_failure import ProbFailureBinomial as ProbFailureBinomial
 from .prob_success import ProbSuccessBinomial as ProbSuccessBinomial

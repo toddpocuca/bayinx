@@ -41,7 +41,7 @@ class SimpleNormalModel(byx.Model):
         return target
 
 # Simulate sample
-n_obs = 30
+n_obs = 6
 x: Array = jr.normal(jr.key(0), (n_obs, )) * 5 + 10
 
 def test_inference():

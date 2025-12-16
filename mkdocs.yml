@@ -70,6 +70,9 @@ nav:
   - Getting Started: index.md
   - Tutorials:
       - Coming From Stan: tutorials/stan.md
+  - Examples:
+      - Introductory:
+          - Modelling Floating Leaf Discs: examples/intro/leaf_discs/index.md
   - API Reference: # The top-level menu item
       - Distributions: api/dists.md
       - Nodes: api/nodes.md

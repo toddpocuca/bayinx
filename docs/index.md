@@ -42,11 +42,11 @@ class SimpleNormalModel(Model):
         return target
 ```
 
-> If you're coming from Stan this will look largely familiar, the data and parameters blocks have been combined into the attribute definitions, while the model block is defined in the `model` method, and distribution statements are written using `<<` instead of `~`.
+> If you're coming from Stan this structure hopefully looks familiar, the data and parameters blocks have been combined into the attribute definitions, while the model block is defined in the `model` method, and distribution statements are written using `<<` instead of `~`.
 
 
 ## Fitting Models With Bayinx
-Bayinx uses Variational Inference with Normalizing Flows (NF) to approximate the posterior distribution, where the NF architecture can be customized to your preference. We'll simulate some data for demonstration:
+Bayinx uses Variational Inference with Normalizing Flows (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference. We'll simulate some data for demonstration:
 
 ```py
 import jax.random as jr
