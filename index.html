@@ -614,6 +614,34 @@
   
   
     <li class="md-nav__item">
+      <a href="api/model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="api/dists/" class="md-nav__link">
         
   
@@ -775,7 +803,8 @@
 
 
 <h1 id="getting-started-with-bayinx">Getting Started with Bayinx<a class="headerlink" href="#getting-started-with-bayinx" title="Permanent link">&para;</a></h1>
-<p>Welcome to Bayinx (Bayesian inference with JAX). This guide will help you install the package and run your first model.</p>
+<p>Welcome to Bayinx (Bayesian inference with JAX), a probabilistic programming language embedded in Python.
+This guide will help you install the package and run your first model.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>Bayinx requires JAX and a few extra libraries in the JAX ecosystem (Equinox, Diffrax, etc). The easiest way to get started is by installing from PyPi using your favourite python package manager. For example, with <code>uv</code> you can install Bayinx like so:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Ensure you are in your project environment</span>
@@ -834,13 +863,13 @@
 </code></pre></div>
 <p>Once fitted, you can sample from the approximated posterior distribution to get Monte Carlo estimates for your parameters:</p>
 <p><div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Sample the posterior distribution for &#39;mean&#39;</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">mean_draws</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e6</span><span class="p">))</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">mean_draws</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">5e6</span><span class="p">))</span>
 <a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
 <a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytic Posterior Mean for &#39;mean&#39;: </span><span class="si">{</span><span class="n">x_data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior Mean Estimate for &#39;mean&#39;: </span><span class="si">{</span><span class="n">mean_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Analytic Posterior Mean for &#39;mean&#39;: 10.5465
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Posterior Mean Estimate for &#39;mean&#39;: 10.5455
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Posterior Mean Estimate for &#39;mean&#39;: 10.5454
 </code></pre></div></p>
 
 
