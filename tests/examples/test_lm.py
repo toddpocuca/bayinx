@@ -52,7 +52,7 @@ def test_inference():
 
     # Configure and fit
     posterior.configure(flowspecs = [DiagAffine()])
-    posterior.fit(max_iters = int(1e5))
+    posterior.fit()
 
     # Check fit
-    assert jnp.linalg.norm(posterior.sample('beta', int(1e6)).mean(0) - beta) < 0.1
+    assert jnp.linalg.norm(posterior.sample('beta', int(1e7)).mean(0) - beta) < 0.1

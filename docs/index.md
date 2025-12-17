@@ -1,6 +1,7 @@
 # Getting Started with Bayinx
 
-Welcome to Bayinx (Bayesian inference with JAX). This guide will help you install the package and run your first model.
+Welcome to Bayinx (Bayesian inference with JAX), a probabilistic programming language embedded in Python.
+This guide will help you install the package and run your first model.
 
 ## Installation
 
@@ -79,12 +80,12 @@ Once fitted, you can sample from the approximated posterior distribution to get 
 
 ```py
 # Sample the posterior distribution for 'mean'
-mean_draws = posterior.sample('mean', int(1e6))
+mean_draws = posterior.sample('mean', int(5e6))
 
 print(f"Analytic Posterior Mean for 'mean': {x_data.mean():.4f}")
 print(f"Posterior Mean Estimate for 'mean': {mean_draws.mean():.4f}")
 ```
 ```
 Analytic Posterior Mean for 'mean': 10.5465
-Posterior Mean Estimate for 'mean': 10.5455
+Posterior Mean Estimate for 'mean': 10.5454
 ```

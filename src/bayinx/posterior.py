@@ -52,7 +52,7 @@ class Posterior(Generic[M]):
         self.config = {
             "learning_rate": 0.1 / self.vari.dim**0.5,
             "tolerance": 1e-4,
-            "grad_draws": 1,
+            "grad_draws": 4,
             "batch_size": 1
         }
 
@@ -111,7 +111,7 @@ class Posterior(Generic[M]):
 
     def fit(
         self,
-        max_iters: int = 50_000,
+        max_iters: int = 100_000,
         learning_rate: Optional[float] = None,
         tolerance: Optional[float] = None,
         grad_draws: Optional[int] = None,

@@ -41,14 +41,14 @@ class SimpleNormalModel(byx.Model):
         return target
 
 # Simulate sample
-n_obs = 6
+n_obs = 100
 x: Array = jr.normal(jr.key(0), (n_obs, )) * 5 + 10
 
 def test_inference():
     # Define posterior
     posterior = byx.Posterior(SimpleNormalModel, n_obs = n_obs, x = x)
     posterior.configure([DiagAffine()])
-    posterior.fit(max_iters = int(1e5), grad_draws = 4, batch_size = 4)
+    posterior.fit()
 
     # Get posterior
     mu_draws = posterior.sample('mu', int(1e7))

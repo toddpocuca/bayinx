@@ -88,7 +88,8 @@ class NormalizingFlow(Variational[M]):
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
-        return jnp.full(draws.shape[0], 0.0) # dont use this method
+        raise RuntimeError("Computing the variational density efficiently requires access to an analytic reverse flow, which many useful flows do not have.")
+        return jnp.full(draws.shape[0], jnp.nan) # dont use this method
 
     @eqx.filter_jit
     def __eval(self, draws: Array) -> Tuple[Array, Array]:
@@ -224,7 +225,7 @@ class NormalizingFlow(Variational[M]):
                 batched_post_evals, batched_vari_evals = self.__eval(draws)
 
                 # Compute ELBO estimate
-                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals # STL estimator
+                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
                 return None, batched_elbo_evals
 

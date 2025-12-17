@@ -8,7 +8,7 @@ import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import optax as opx
-from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
+from jaxtyping import Array, Bool, PRNGKeyArray, PyTree, Scalar
 from optax import GradientTransformation, OptState
 
 from bayinx.core.model import Model
@@ -126,13 +126,14 @@ class Variational(eqx.Module, Generic[M]):
         )
         opt_state: OptState = optim.init(dyn)
 
-        def condition(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]):
+        # Helper functions for optimization loop
+        def condition(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Bool[Array, ""]:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 
             return i < max_iters
 
-        def body(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]):
+        def body(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Tuple[Self, OptState, Scalar, PRNGKeyArray]:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 

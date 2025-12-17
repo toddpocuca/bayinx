@@ -37,7 +37,7 @@ def test_inference():
     posterior.fit()
 
     # Get posterior
-    p_draws = posterior.sample('p', int(1e6))
+    p_draws = posterior.sample('p', int(1e7))
 
     # Confirm approximation is accurate
     # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = p

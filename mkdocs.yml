@@ -74,6 +74,7 @@ nav:
       - Introductory:
           - Modelling Floating Leaf Discs: examples/intro/leaf_discs/index.md
   - API Reference: # The top-level menu item
+      - Model: api/model.md
       - Distributions: api/dists.md
       - Nodes: api/nodes.md
       - Operations: api/ops.md
