@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://toddpocuca.github.io/bayinx/api/dists/">
       
       
-        <link rel="prev" href="../model/">
+        <link rel="prev" href="../bayinx/">
       
       
         <link rel="next" href="../nodes/">
@@ -538,14 +538,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../model/" class="md-nav__link">
+      <a href="../bayinx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Model
+    Bayinx
   
 
     
@@ -660,6 +660,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#bayinx.dists.Cauchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cauchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#bayinx.dists.Exponential" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -686,6 +697,17 @@
     <span class="md-ellipsis">
       
         Poisson
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bayinx.dists.StudentsT" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StudentsT
       
     </span>
   </a>
@@ -917,7 +939,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Parameterizes a Binomial distribution by its probability of success.</p>
+                <p>Parameterizes a Bernoulli distribution by its probability of success.</p>
               </div>
             </td>
             <td>
@@ -933,7 +955,39 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Parameterizes a Binomial distribution by its probability of failure.</p>
+                <p>Parameterizes a Bernoulli distribution by its probability of failure.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>logit_p</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Bernoulli distribution by its logit probability of success.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>logit_q</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Bernoulli distribution by its logit probability of failure.</p>
               </div>
             </td>
             <td>
@@ -952,12 +1006,7 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/bayinx/dists/bernoulli/distribution.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -974,29 +1023,50 @@
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
 <span class="normal"><a href="#__codelineno-0-31">31</a></span>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">Bernoulli</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    A Bernoulli distribution.</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        p: Parameterizes a Binomial distribution by its probability of success.</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        q: Parameterizes a Binomial distribution by its probability of failure.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#__codelineno-0-46">46</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">class</span><span class="w"> </span><span class="nc">Bernoulli</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    A Bernoulli distribution.</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="p">):</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbSuccessBernoulli</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">elif</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbFailureBernoulli</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected p: </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2"> or q: </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        p: Parameterizes a Bernoulli distribution by its probability of success.</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        q: Parameterizes a Bernoulli distribution by its probability of failure.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        logit_p: Parameterizes a Bernoulli distribution by its logit probability of success.</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        logit_q: Parameterizes a Bernoulli distribution by its logit probability of failure.</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>        <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="p">):</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbSuccessBernoulli</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="k">elif</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbFailureBernoulli</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="k">elif</span> <span class="n">logit_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogitProbSuccessBernoulli</span><span class="p">(</span><span class="n">logit_p</span><span class="p">)</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="k">elif</span> <span class="n">logit_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogitProbFailureBernoulli</span><span class="p">(</span><span class="n">logit_q</span><span class="p">)</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected at least one of p: </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">, q: </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">, logit_p: </span><span class="si">{</span><span class="n">logit_p</span><span class="si">}</span><span class="s2">, logit_q: </span><span class="si">{</span><span class="n">logit_q</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1114,6 +1184,22 @@
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>logit_q</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Binomial distribution by the logit probability of failure.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -1126,12 +1212,7 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/bayinx/dists/binomial/distribution.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
-<span class="normal"><a href="#__codelineno-0-12">12</a></span>
-<span class="normal"><a href="#__codelineno-0-13">13</a></span>
-<span class="normal"><a href="#__codelineno-0-14">14</a></span>
-<span class="normal"><a href="#__codelineno-0-15">15</a></span>
-<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
 <span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
@@ -1154,35 +1235,186 @@
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">Binomial</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#__codelineno-0-48">48</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">class</span><span class="w"> </span><span class="nc">Binomial</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    A Binomial distribution.</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        n: Parameterizes a Binomial distribution by the total number of trials.</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        p: Parameterizes a Binomial distribution by its probability of success.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        q: Parameterizes a Binomial distribution by its probability of failure.</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        logit_p: Parameterizes a Binomial distribution by the logit probability of success.</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        logit_q: Parameterizes a Binomial distribution by the logit probability of failure.</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>        <span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>        <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="p">):</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbSuccessBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41"></a>        <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbFailureBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43"></a>        <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">logit_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogitProbSuccessBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">logit_p</span><span class="p">)</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45"></a>        <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">logit_q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogitProbFailureBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">logit_q</span><span class="p">)</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected n: </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> and at least one of p: </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">, q: </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="bayinx.dists.Cauchy" class="doc doc-heading">
+            <code>Cauchy</code>
+
+
+<a href="#bayinx.dists.Cauchy" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A Cauchy distribution.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>loc</code>
+            </td>
+            <td>
+                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Cauchy distribution by its location.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale</code>
+            </td>
+            <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Cauchy distribution by its scale.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/bayinx/dists/cauchy/distribution.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">Cauchy</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    A Binomial distribution.</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    A Cauchy distribution.</span>
 <a id="__codelineno-0-14" name="__codelineno-0-14"></a>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        n: Parameterizes a Binomial distribution by the total number of trials.</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        p: Parameterizes a Binomial distribution by its probability of success.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">        q: Parameterizes a Binomial distribution by its probability of failure.</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        logit_p: Parameterizes a Binomial distribution by the logit probability of success.</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        loc: Parameterizes a Cauchy distribution by its location.</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        scale: Parameterizes a Cauchy distribution by its scale.</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">n</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="p">):</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbSuccessBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>        <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbFailureBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="k">elif</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">logit_p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogitProbSuccessBinomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">logit_p</span><span class="p">)</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected n: </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> and at least one of p: </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">, q: </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]],</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="p">):</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocationScaleCauchy</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected rate: </span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1653,6 +1885,158 @@
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogRatePoisson</span><span class="p">(</span><span class="n">log_rate</span><span class="p">)</span>
 <a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">else</span><span class="p">:</span>
 <a id="__codelineno-0-33" name="__codelineno-0-33"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected rate: </span><span class="si">{</span><span class="n">rate</span><span class="si">}</span><span class="s2"> or log_rate: </span><span class="si">{</span><span class="n">log_rate</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="bayinx.dists.StudentsT" class="doc doc-heading">
+            <code>StudentsT</code>
+
+
+<a href="#bayinx.dists.StudentsT" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A Student's T distribution.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>df</code>
+            </td>
+            <td>
+                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Student's T distribution by its degrees of freedom.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>loc</code>
+            </td>
+            <td>
+                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Student's T distribution by its location.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale</code>
+            </td>
+            <td>
+                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Student's T distribution by its scale.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/bayinx/dists/studentst/distribution.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentsT</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    A Student&#39;s T distribution.</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        df: Parameterizes a Student&#39;s T distribution by its degrees of freedom.</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        loc: Parameterizes a Student&#39;s T distribution by its location.</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        scale: Parameterizes a Student&#39;s T distribution by its scale.</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">df</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]],</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]],</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="p">):</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocScaleStudentT</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
