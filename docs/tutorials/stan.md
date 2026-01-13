@@ -63,8 +63,6 @@ class SimpleNormalModel(Model):
 
         # Defining likelihood
         self.x << Normal(self.mu, self.sigma)
-
-        return target
 ```
 
 The `data` and `parameters` blocks are essentially merged into one "block"; defining an object as data or parameter is done by defining a new attribute.
@@ -111,8 +109,6 @@ class SimpleNormalModel(Model):
         # Defining likelihood
         self.x << Normal(self.mu, self.sigma)
 
-        return target
-
 post = Posterior(
     SimpleNormalModel,
     x = jnp.array([-2.0, -1.0, 0.0, 1.0, 2.0]) # This can hold any shape!
@@ -138,8 +134,6 @@ class SimpleNormalModel(Model):
 
         # Defining likelihood
         self.x << Normal(self.mu, self.sigma)
-
-        return target
 
 post = Posterior(
     SimpleNormalModel,
@@ -176,8 +170,6 @@ class MyModel(Model):
         # Defining likelihood
         for x, mu, sigma in zip(self.x, self.mu, self.sigma):
             x << Normal(mu, sigma)
-
-        return target
 
 post = Posterior(
     MyModel,
@@ -234,8 +226,6 @@ class NeuralNetworkModel(Model):
 
         # Accumulate likelihood
         self.y << Normal(mu, self.sigma)
-
-        return target
 
 # Approximate a sine function
 n_obs = 1000

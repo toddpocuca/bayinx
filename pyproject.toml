@@ -10,6 +10,7 @@ dependencies = [
     "equinox>=0.13.2",
     "jaxtyping>=0.2.36",
     "optax>=0.2.4",
+    "tqdm>=4.67.1",
 ]
 authors = [{ name = "Todd Pocuca" }]
 maintainers = [{ name = "Todd Pocuca" }]
@@ -24,33 +25,12 @@ packages = ["src/bayinx"]
 [tool.pytest.ini_options]
 addopts = "-q --benchmark-min-rounds=30 --benchmark-columns=rounds,mean,median,stddev --benchmark-group-by=func"
 
-[tool.bumpversion]
-current_version = "0.5.8"
-parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
-serialize = ["{major}.{minor}.{patch}"]
-search = "{current_version}"
-replace = "{new_version}"
-regex = false
-ignore_missing_version = false
-ignore_missing_files = false
-tag = true
-sign_tags = false
-tag_name = "v{new_version}"
-tag_message = "Bump version: {current_version} → {new_version}"
-allow_dirty = false
-commit = true
-message = "Bump version: {current_version} → {new_version}"
-moveable_tags = []
-commit_args = ""
-setup_hooks = []
-pre_commit_hooks = []
-post_commit_hooks = []
-
 [dependency-groups]
 cuda = [
     "jax[cuda]>=0.8.0",
 ]
 dev = [
+    "asv>=0.6.5",
     "cairocffi>=1.7.1",
     "lets-plot>=4.8.1",
     "mkdocs>=1.6.1",

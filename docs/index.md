@@ -1,18 +1,19 @@
 # Getting Started with Bayinx
 
 Welcome to Bayinx (Bayesian inference with JAX), a probabilistic programming language embedded in Python.
+If you're unfamiliar with Bayesian inference, take a look at # TODO.
 This guide will help you install the package and run your first model.
 
 ## Installation
 
-Bayinx requires JAX and a few extra libraries in the JAX ecosystem (Equinox, Diffrax, etc). The easiest way to get started is by installing from PyPi using your favourite python package manager. For example, with `uv` you can install Bayinx like so:
+Bayinx requires JAX and a few extra libraries in the JAX ecosystem. The easiest way to get started is by installing from PyPi using your favourite python package manager. For example with `uv`:
 
 ```bash
 # Ensure you are in your project environment
 uv add bayinx
 ```
 
-This installs the bare-bones version of Bayinx, however if you need additional functionality like GPU support or support for post-processing of fitted models, there are a couple of dependency groups:
+This installs the bare-bones version of Bayinx, however if you need additional functionality like GPU support, there are a couple of dependency groups:
 ```bash
 # Ensure you are in your project environment
 uv add 'bayinx[cuda]' # Installs Bayinx with CUDA support
@@ -22,7 +23,7 @@ uv add 'bayinx[cuda]' # Installs Bayinx with CUDA support
 
 You can now get started!
 
-Models are defined by constructing a class that inherits from the `Model` base class. For example, we can define a simple model that describes fitting a Normal distribution to a collection of observations:
+Models are defined by constructing a class that inherits from the `Model` base class. For example, we can define a simple model that describes a collection of observations derived from a Normal distribution:
 
 ```py
 from bayinx.dists import Normal, Exponential
@@ -31,7 +32,7 @@ from bayinx import Model, define
 from jaxtyping import Array
 
 class SimpleNormalModel(Model):
-    mean: Continuous[Array] = define(shape = ())
+    mean: Continuous = define(shape = ())
     std: Continuous[Array] = define(shape = (), lower = 0)
 
     x: Observed[Array] = define(shape = 'n_obs')
@@ -43,8 +44,7 @@ class SimpleNormalModel(Model):
         return target
 ```
 
-> If you're coming from Stan this structure hopefully looks familiar, the data and parameters blocks have been combined into the attribute definitions, while the model block is defined in the `model` method, and distribution statements are written using `<<` instead of `~`.
-
+Parameters are attributes annotated with the `Continuous` class which is a thin wrapper around an internal type (where `Continuous[Array]` can be used for type hinting), while any data is annotated with `Observed`. You can then define additional metadata for a node with the `define` function, for example by assigning shapes `define(shape = ...)` and bounds `define(lower = ..., upper = ...)`.
 
 ## Fitting Models With Bayinx
 Bayinx uses Variational Inference with Normalizing Flows (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference. We'll simulate some data for demonstration:
@@ -87,5 +87,5 @@ print(f"Posterior Mean Estimate for 'mean': {mean_draws.mean():.4f}")
 ```
 ```
 Analytic Posterior Mean for 'mean': 10.5465
-Posterior Mean Estimate for 'mean': 10.5454
+Posterior Mean Estimate for 'mean': 10.5463
 ```

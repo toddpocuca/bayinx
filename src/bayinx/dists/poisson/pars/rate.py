@@ -6,6 +6,7 @@ import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -99,7 +100,13 @@ class RatePoisson(Parameterization):
             self.rate = Observed(jnp.asarray(rate))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.rate.obj)
+        # Extract parameter
+        rate = byo.obj(self.rate)
+
+        return _logprob(x, rate)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.poisson(key, self.rate.obj, shape)
+        # Extract parameter
+        rate = byo.obj(self.rate)
+
+        return jr.poisson(key, rate, shape)

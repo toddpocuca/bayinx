@@ -11,7 +11,7 @@ from bayinx.core.flow import FlowSpec
 from bayinx.core.node import Node
 from bayinx.core.variational import M
 from bayinx.vi.normalizing_flow import NormalizingFlow
-from bayinx.vi.standard import Standard
+from bayinx.vi.stdstudentst import StandardStudentsT
 
 # Public
 __all__ = ["Posterior"]
@@ -39,7 +39,7 @@ class Posterior(Generic[M]):
         model = model_def(**kwargs)
 
         # Construct standard normal base distribution
-        base = Standard(model)
+        base = StandardStudentsT(model)
 
         # Construct default normalizing flow
         self.vari = NormalizingFlow(
@@ -53,7 +53,7 @@ class Posterior(Generic[M]):
             "learning_rate": 0.1 / self.vari.dim**0.5,
             "tolerance": 1e-4,
             "grad_draws": 4,
-            "batch_size": 1
+            "max_batch_size": 4
         }
 
 
@@ -63,7 +63,7 @@ class Posterior(Generic[M]):
         learning_rate: Optional[float] = None,
         tolerance: Optional[float] = None,
         grad_draws: Optional[int] = None,
-        batch_size: Optional[int] = None
+        max_batch_size: Optional[int] = None
     ):
         """
         Configure the variational approximation.
@@ -73,7 +73,7 @@ class Posterior(Generic[M]):
             learning_rate: The initial learning rate for the optimizer.
             tolerance: The tolerance for the ELBO used for early stopping.
             grad_draws: The number of draws used to compute the ELBO gradient.
-            batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.
+            max_batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.
         """
         # Append new NF architecture
         if flowspecs is not None:
@@ -82,21 +82,12 @@ class Posterior(Generic[M]):
                 flowspec.construct(self.vari.dim) for flowspec in flowspecs
             ]
 
-            if isinstance(self.vari, Standard):
-                # Construct new normalizing flow
-                self.vari = NormalizingFlow(
-                    base = self.vari,
-                    flows = flows,
-                    _static = self.vari._static,
-                    _unflatten = self.vari._unflatten
-                )
-            elif isinstance(self.vari, NormalizingFlow):
-                # Freeze current flows
-                for flow in self.vari.flows:
-                    object.__setattr__(flow, 'static', True) # kind of illegal but I need to avoid copies
+            # Freeze current flows
+            for flow in self.vari.flows:
+                object.__setattr__(flow, 'static', True) # kind of illegal but I need to avoid copies
 
-                # Append new flows
-                self.vari.flows.extend(flows)
+            # Append new flows
+            self.vari.flows.extend(flows)
 
         # Include other settings
         if learning_rate is not None:
@@ -105,8 +96,8 @@ class Posterior(Generic[M]):
             self.config["tolerance"] = tolerance
         if grad_draws is not None:
             self.config["grad_draws"] = grad_draws
-        if batch_size is not None:
-            self.config["batch_size"] = batch_size
+        if max_batch_size is not None:
+            self.config["max_batch_size"] = max_batch_size
 
 
     def fit(
@@ -115,8 +106,10 @@ class Posterior(Generic[M]):
         learning_rate: Optional[float] = None,
         tolerance: Optional[float] = None,
         grad_draws: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        max_batch_size: Optional[int] = None,
         key: PRNGKeyArray = jr.key(0),
+        verbose: bool = True,
+        print_rate: int = 5000
     ):
         """
         Optimize the variational approximation.
@@ -126,7 +119,9 @@ class Posterior(Generic[M]):
             learning_rate: The initial learning rate for the optimizer.
             tolerance: The tolerance for the ELBO used for early stopping.
             grad_draws: The number of draws used to compute the ELBO gradient.
-            batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.
+            max_batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.
+            verbose: Whether to print a progress bar.
+            print_rate: The number of iterations between updates for the progress bar.
         """
         # Include settings
         if learning_rate is not None:
@@ -135,28 +130,27 @@ class Posterior(Generic[M]):
             self.config["tolerance"] = tolerance
         if grad_draws is not None:
             self.config["grad_draws"] = grad_draws
-        if batch_size is not None:
-            self.config["batch_size"] = batch_size
+        if max_batch_size is not None:
+            self.config["max_batch_size"] = max_batch_size
 
-        if isinstance(self.vari, Standard):
-            # Construct default sequence of optimization
-            print("TODO")
-        else:
-            # Optimize variational approximation with user-specified flows
-            self.vari = self.vari.fit(
-                max_iters,
-                self.config["learning_rate"],
-                self.config["tolerance"],
-                self.config["grad_draws"],
-                self.config["batch_size"],
-                key
-            )
+        # Optimize variational approximation with user-specified flows
+        self.vari = self.vari.fit(
+            max_iters,
+            self.config["learning_rate"],
+            self.config["tolerance"],
+            self.config["grad_draws"],
+            self.config["max_batch_size"],
+            key,
+            verbose,
+            print_rate
+        )
 
     def sample(
         self,
         node: str,
         n_draws: int,
-        batch_size: Optional[int] = None,
+        max_batch_size: Optional[int] = None,
+        sir: bool = True,
         key: PRNGKeyArray = jr.key(0)
     ) -> Array:
         """
@@ -165,14 +159,15 @@ class Posterior(Generic[M]):
         Parameters:
             node: The name of the node.
             n_draws: The number of draws to sample from the posterior.
-            batch_size: The maximum number of draws ever in memory.
+            max_batch_size: The maximum number of draws ever in memory.
+            sir: Whether to use sampling-importance-resampling.
             key: The PRNG key used to generate samples.
         """
-        if batch_size is None:
-            batch_size = n_draws
+        if max_batch_size is None:
+            max_batch_size = n_draws
 
         # Split keys
-        keys = jr.split(key, n_draws // batch_size)
+        keys = jr.split(key, n_draws // max_batch_size)
 
         # Reconstruct model and grab node
         @partial(jax.vmap, in_axes = 0)
@@ -184,7 +179,7 @@ class Posterior(Generic[M]):
         # Sample in batches
         def batched_sample(carry: None, key: PRNGKeyArray):
             # Sample draws
-            draws = self.vari.sample(batch_size, key)
+            draws = self.vari.sample(max_batch_size, sir = sir, key = key)
 
             return None, reconstruct_and_subset(draws)
 
@@ -193,7 +188,7 @@ class Posterior(Generic[M]):
             batched_sample,
             init=None,
             xs=keys,
-            length=n_draws // batch_size
+            length=n_draws // max_batch_size
         )[1].squeeze()
 
         return posterior_draws
@@ -203,7 +198,8 @@ class Posterior(Generic[M]):
         self,
         func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
         n_draws: int,
-        batch_size: Optional[int] = None,
+        max_batch_size: Optional[int] = None,
+        sir: bool = True,
         key: PRNGKeyArray = jr.key(0)
     ) -> Array:
         """
@@ -212,14 +208,15 @@ class Posterior(Generic[M]):
         Parameters:
             func: A function that maps the model and a PRNG key to a predictive.
             n_draws: The number of draws to sample from the posterior.
-            batch_size: The maximum number of draws ever in memory.
+            max_batch_size: The maximum number of draws ever in memory.
+            sir: Whether to use sampling-importance-resampling.
             key: The PRNG key used to generate samples.
         """
-        if batch_size is None:
-            batch_size = n_draws
+        if max_batch_size is None:
+            max_batch_size = n_draws
 
         # Split keys
-        keys = jr.split(key, n_draws // batch_size)
+        keys = jr.split(key, n_draws // max_batch_size)
 
         # Reconstruct a model and generate a sample of the posterior predictive
         @partial(jax.vmap, in_axes = (0, 0))
@@ -238,10 +235,10 @@ class Posterior(Generic[M]):
         # Compute posterior predictive in batches
         def batched_sample(carry: None, key: PRNGKeyArray) -> Tuple[None, Array]:
             # Sample draws
-            draws = self.vari.sample(batch_size, key)
+            draws = self.vari.sample(max_batch_size, sir = sir, key = key)
 
             # Generate additional keys for each draw
-            keys = jr.split(key, batch_size)
+            keys = jr.split(key, max_batch_size)
 
             return None, reconstruct_and_predict(draws, keys)
 
@@ -250,7 +247,7 @@ class Posterior(Generic[M]):
             batched_sample,
             init=None,
             xs=keys,
-            length=n_draws // batch_size
+            length=n_draws // max_batch_size
         )[1].squeeze()
 
         return predictive_draws

@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -26,7 +27,7 @@ def _logprob(
     # Cast to Array
     x, q = jnp.asarray(x), jnp.asarray(q)
 
-    return x * jnp.log1p(q) + (1.0 - x) * jnp.log1p(q)
+    return x * jnp.log1p(q) + (1.0 - x) * jnp.log(q)
 
 
 def _cdf(
@@ -104,7 +105,13 @@ class ProbFailureBernoulli(Parameterization):
             self.q = Observed(jnp.asarray(q))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.q.obj)
+        # Extract probability of failure
+        q = byo.obj(self.q)
+
+        return _logprob(x, q)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.bernoulli(key, self.q.obj, shape)
+        # Extract probability of success
+        p = 1.0 - byo.obj(self.q)
+
+        return jr.bernoulli(key, p, shape)

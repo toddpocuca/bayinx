@@ -1,10 +1,11 @@
-from typing import Callable, Optional, Self, Tuple
+from typing import Callable, Optional, Self
 
 import equinox as eqx
 import jax.flatten_util as jfu
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
+import jax.scipy.special as jssp
 import jax.tree_util as jtu
 from jaxtyping import Array, PRNGKeyArray, Scalar
 
@@ -14,21 +15,23 @@ from bayinx.core.variational import M, Variational
 
 class NormalizingFlow(Variational[M]):
     """
-    An ordered collection of diffeomorphisms that map a base distribution to a
-    normalized approximation of a posterior distribution.
+    An ordered collection of diffeomorphisms that map a base distribution to a variational approximation.
 
-    # Attributes
-    - `dim`: The dimension of the support.
-    - `base`: A base variational distribution.
-    - `flows`: An ordered collection of continuously parameterized diffeomorphisms.
+    Attributes:
+        dim: The dimension of the support.
+        base: A base variational distribution.
+        flows: An ordered collection of continuously parameterized diffeomorphisms.
+        static_base: Whether the base distribution is learnable.
     """
     flows: list[FlowLayer]
     base: Variational[M]
+    static_base: bool
 
     def __init__(
         self,
         base: Variational[M],
         flows: list[FlowLayer],
+        static_base: bool = False,
         model: Optional[M] = None,
         _static: Optional[M] = None,
         _unflatten: Optional[Callable[[Array], M]] = None
@@ -56,6 +59,7 @@ class NormalizingFlow(Variational[M]):
         self.dim = base.dim
         self.base = base
         self.flows = flows
+        self.static_base = static_base
 
     @property
     def filter_spec(self) -> Self:
@@ -69,22 +73,59 @@ class NormalizingFlow(Variational[M]):
             replace=[flow.filter_spec for flow in self.flows],
         )
 
+        # Specify parameters for the base distribution if dynamic
+        if self.static_base is False:
+            filter_spec: Self = eqx.tree_at(
+                lambda vari: vari.base,
+                filter_spec,
+                replace=self.base.filter_spec,
+            )
+
         return filter_spec
 
     @eqx.filter_jit
-    def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
+    def sample(
+        self,
+        n: int,
+        sir: bool = True,
+        key: PRNGKeyArray = jr.PRNGKey(0)
+    ) -> Array:
         # Sample from the base distribution
-        draws: Array = self.base.sample(n, key)
+        draws: Array = self.base.sample(n, sir = False, key = key)
+
+        # Apply sampling-importance-resampling if requested
+        if sir:
+            # Generate new keys
+            key, _ = jr.split(key)
+
+            # Evaluate base density
+            variational_evals: Array = self.base.eval(draws)
+
+            # Apply forward transformations
+            for map in self.flows:
+                # Apply transformation
+                draws, log_jacs = map.forward_and_adjust(draws)
+
+                # Adjust variational density
+                variational_evals = variational_evals + log_jacs
+
+            # Evaluate posterior at variational draws
+            posterior_evals = self.eval_model(draws)
+
+            # Compute sampling weights
+            log_weights = posterior_evals - variational_evals
+            weights = jnp.exp(log_weights - jssp.logsumexp(log_weights))
+
+            # Re-sample draws
+            draws = jr.choice(key, draws, shape = (n, ), p = weights, axis = 0)
+        else:
+            # Apply forward transformations
+            for map in self.flows:
+                draws = map.forward(draws)
 
         assert len(draws.shape) == 2
-
-        # Apply forward transformations
-        for map in self.flows:
-            draws = map.forward(draws)
-
-        assert len(draws.shape) == 2
-
         return draws
+
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
@@ -92,7 +133,7 @@ class NormalizingFlow(Variational[M]):
         return jnp.full(draws.shape[0], jnp.nan) # dont use this method
 
     @eqx.filter_jit
-    def __eval(self, draws: Array) -> Tuple[Array, Array]:
+    def __eval(self, draws: Array) -> tuple[Array, Array]:
         """
         Evaluate the posterior and variational densities together at the
         transformed `draws` to avoid extra compute.
@@ -106,26 +147,15 @@ class NormalizingFlow(Variational[M]):
         # Evaluate base density
         variational_evals: Array = self.base.eval(draws)
 
-        # Shape checks
-        assert len(variational_evals.shape) == 1
-        assert len(draws.shape) == 2
-
         for map in self.flows:
             # Apply transformation
             draws, log_jacs = map.forward_and_adjust(draws)
-            assert len(draws.shape) == 2
-            assert len(log_jacs.shape) == 1
 
             # Adjust variational density
             variational_evals = variational_evals + log_jacs
 
         # Evaluate posterior at final variational draws
         posterior_evals = self.eval_model(draws)
-
-        # Shape checks
-        assert len(posterior_evals.shape) == 1
-        assert len(variational_evals.shape) == 1
-        assert posterior_evals.shape == variational_evals.shape
 
         return posterior_evals, variational_evals
 
@@ -140,9 +170,9 @@ class NormalizingFlow(Variational[M]):
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
-            def batched_elbo(carry: None, key: PRNGKeyArray) -> Tuple[None, Array]:
-                # Draw from variational distribution
-                draws: Array = self.base.sample(batch_size, key)
+            def batched_elbo(carry: None, batch_key: PRNGKeyArray) -> tuple[None, Array]:
+                # Draw from (base) variational distribution
+                draws: Array = self.base.sample(batch_size, sir = False, key = batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_post_evals, batched_vari_evals = self.__eval(draws)
@@ -176,14 +206,14 @@ class NormalizingFlow(Variational[M]):
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
-            def batched_elbo(carry: None, key: PRNGKeyArray) -> Tuple[None, Array]:
+            def batched_elbo(carry: None, batch_key: PRNGKeyArray) -> tuple[None, Array]:
                 # Draw from variational distribution
-                draws: Array = self.base.sample(batch_size, key)
+                draws: Array = self.base.sample(batch_size, sir = False, key = batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_post_evals, batched_vari_evals = self.__eval(draws)
 
-                # Compute ELBO estimate
+                # Compute batched ELBO evals
                 batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
                 return None, batched_elbo_evals
@@ -207,7 +237,7 @@ class NormalizingFlow(Variational[M]):
         return elbo_grad(dyn, n, key)
 
     @eqx.filter_jit
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, Self]:
+    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> tuple[Scalar, Self]:
         dyn, static = eqx.partition(self, self.filter_spec)
 
         def elbo(dyn: Self, n: int, key: PRNGKeyArray) -> Scalar:
@@ -217,9 +247,9 @@ class NormalizingFlow(Variational[M]):
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
-            def batched_elbo(carry: None, key: PRNGKeyArray) -> Tuple[None, Array]:
+            def batched_elbo(carry: None, batch_key: PRNGKeyArray) -> tuple[None, Array]:
                 # Draw from variational distribution
-                draws: Array = self.base.sample(batch_size, key)
+                draws: Array = self.base.sample(batch_size, sir = False, key = batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_post_evals, batched_vari_evals = self.__eval(draws)
@@ -242,7 +272,7 @@ class NormalizingFlow(Variational[M]):
 
         # Map to its value & gradient
         elbo_and_grad: Callable[
-            [Self, int, PRNGKeyArray], Tuple[Scalar, Self]
+            [Self, int, PRNGKeyArray], tuple[Scalar, Self]
         ] = eqx.filter_value_and_grad(elbo)
 
         return elbo_and_grad(dyn, n, key)

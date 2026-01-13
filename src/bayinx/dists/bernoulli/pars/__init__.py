@@ -1,2 +1,4 @@
+from .logit_prob_failure import LogitProbFailureBernoulli as LogitProbFailureBernoulli
+from .logit_prob_success import LogitProbSuccessBernoulli as LogitProbSuccessBernoulli
 from .prob_failure import ProbFailureBernoulli as ProbFailureBernoulli
 from .prob_success import ProbSuccessBernoulli as ProbSuccessBernoulli

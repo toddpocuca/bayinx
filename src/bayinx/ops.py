@@ -79,3 +79,9 @@ def sigmoid(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[Ar
     new_obj = jt.map(lambda x: 1.0 / (1.0 + jnp.exp(-x)), obj)
 
     return Node(new_obj, filter_spec)
+
+def obj[T](node: Node[T]) -> T:
+    """
+    Extract internal object from a node.
+    """
+    return node.obj

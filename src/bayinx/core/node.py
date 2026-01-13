@@ -70,6 +70,7 @@ class Node(eqx.Module, Generic[T]):
         for obj_i, spec_i in zip(self.obj, specs):
             # Create a new Node for the current element
             yield Node(obj_i, spec_i)
+
     ## Arithmetic ----
     def __add__(self, other: Any) -> "Node":
         # Extract internal objects and their filter specifications
@@ -87,6 +88,9 @@ class Node(eqx.Module, Generic[T]):
         )
 
         return Node(new_obj, new_filter_spec)
+
+    def __radd__(self, other: Any) -> "Node":
+        return self.__add__(other)
 
     def __sub__(self, other: Any) -> "Node":
         # Extract internal objects and their filter specifications
@@ -121,6 +125,9 @@ class Node(eqx.Module, Generic[T]):
         )
 
         return Node(new_obj, new_filter_spec)
+
+    def __rmul__(self, other: Any) -> "Node":
+        return self.__mul__(other)
 
     def __matmul__(self, other: Any) -> "Node":
         # Extract internal objects and their filter specifications

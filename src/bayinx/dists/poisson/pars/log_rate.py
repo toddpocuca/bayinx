@@ -6,6 +6,7 @@ import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -18,7 +19,7 @@ def _prob(
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
-    return lax.exp(_logprob(x, log_rate))
+    return jnp.exp(_logprob(x, log_rate))
 
 
 def _logprob(
@@ -28,7 +29,7 @@ def _logprob(
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
-    return x * log_rate - lax.exp(log_rate) - jsp.gammaln(x + 1)
+    return x * log_rate - jnp.exp(log_rate) - jsp.gammaln(x + 1)
 
 
 def _cdf(
@@ -38,7 +39,7 @@ def _cdf(
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
-    result = jsp.gammaincc(x + 1.0, lax.exp(log_rate))
+    result = jsp.gammaincc(x + 1.0, jnp.exp(log_rate))
     result = lax.select(x < 0.0, 0.0, result)
 
     return result
@@ -61,7 +62,7 @@ def _ccdf(
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
-    result = jsp.gammainc(x + 1.0, lax.exp(log_rate))
+    result = jsp.gammainc(x + 1.0, jnp.exp(log_rate))
     result = lax.select(x < 0.0, 1.0, result)
 
     return result
@@ -99,9 +100,16 @@ class LogRatePoisson(Parameterization):
             self.log_rate = Observed(jnp.asarray(log_rate))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.log_rate.obj)
+        # Extract parameter
+        log_rate = byo.obj(self.log_rate)
+
+        return _logprob(x, log_rate)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        # The jax.random.poisson function requires the rate parameter lambda.
-        rate = lax.exp(self.log_rate.obj)
+        # Extract parameter
+        log_rate = byo.obj(self.log_rate)
+
+        # Transform to rate
+        rate = jnp.exp(log_rate)
+
         return jr.poisson(key, rate, shape)

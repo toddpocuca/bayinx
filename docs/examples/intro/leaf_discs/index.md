@@ -10,11 +10,11 @@ b2 =   [0,  0,  0,  0,  0,  0,  1,  1,  1,  2,  2,  2,  2,  3,  3,  6,  9,  9, 1
 b3 =   [0,  0,  0,  0,  0,  0,  0,  2,  3,  3,  3,  4,  6,  6,  7,  8,  9,  9, 10, 10, 10]
 ```
 
-Now my TA just wanted me to make the simple plot below:
+The goal of the assignment was just to create the following kind of plot:
 
 ![simple_plot](images/simple_plot.png)
 
-But at this point I was already interested in statisics and knew enough Stan to conceptualize and fit a Bayesian model.
+However I felt this throws away a lot of information! At this point I was interested in Bayesian inference, so I iterated
 
 ### My First Attempt
 At first I thought to treat all observations as independent and fit a simple Binomial generalized linear model:
@@ -172,8 +172,6 @@ class BinomialCompletePooling(byx.Model):
 
         # Likelihood
         self.counts << byd.Binomial(10, logit_p = self.alpha + self.beta * self.time)
-
-        return target
 ```
 
 Then we can fit our model and recreate the same plot from before:
@@ -299,8 +297,6 @@ class BinomialPartialPooling(byx.Model):
 
         # Likelihood
         self.counts << byd.Binomial(10, logit_p = self.alpha + self.beta * self.time)
-
-        return target
 ```
 
 ```py
@@ -313,7 +309,7 @@ post = byx.Posterior(
     time = data.get_column('time').to_jax()
 )
 post.configure([byx.flows.FullAffine()])
-post.fit(max_iters = int(1e6))
+post.fit(max_iters = int(1e5), grad_draws = 4, batch_size = 4)
 
 # Compute posterior predictives
 time = jnp.linspace(0, 20, 200)
@@ -340,6 +336,15 @@ def new_beaker(model: BinomialPartialPooling, key):
 pred_new = post.predictive(
     new_beaker,
     int(1e4)
+)
+
+# Format observed data for plotting
+plot_data = data.unpivot(
+    index = 'time',
+    variable_name = 'beaker_id',
+    value_name = 'count'
+).with_columns(
+    pl.col('beaker_id')
 )
 
 # Format posterior predictive for expected count in existing beakers

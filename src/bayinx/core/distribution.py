@@ -7,6 +7,7 @@ import jax.tree as jt
 from jaxtyping import ArrayLike, PRNGKeyArray, Scalar
 
 from bayinx.core.node import Node
+from bayinx.core.utils import _extract_obj
 
 
 class Parameterization(Protocol):
@@ -25,14 +26,12 @@ class Distribution(Protocol):
     """
     par: Parameterization
 
-    def logprob(self, node: Node) -> Scalar:
-        obj, par = (
-            node.obj,
-            self.par,
-        )
+    def logprob(self, node: Node | ArrayLike) -> Scalar:
+        obj, filter_spec = _extract_obj(node)
+        par = self.par
 
         # Filter out irrelevant values
-        obj, _ = eqx.partition(obj, node._filter_spec)
+        obj, _ = eqx.partition(obj, filter_spec)
 
         # Compute log probabilities across leaves
         eval_obj = jt.map(lambda x: par.logprob(x).sum(), obj)

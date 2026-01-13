@@ -6,6 +6,7 @@ import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -110,7 +111,18 @@ class ProbFailureBinomial(Parameterization):
             self.q = Observed(jnp.asarray(q))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.n.obj, self.q.obj)
+        # Extract parameters
+        n = byo.obj(self.n)
+        q = byo.obj(self.q)
+
+        return _logprob(x, n, q)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.binomial(key, self.n.obj, self.q.obj, shape)
+        # Extract parameters
+        n = byo.obj(self.n)
+        q = byo.obj(self.q)
+
+        # Transform to probability of success
+        p = 1.0 - q
+
+        return jr.binomial(key, n, p, shape)

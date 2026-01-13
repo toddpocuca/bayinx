@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -104,7 +105,13 @@ class ProbSuccessBernoulli(Parameterization):
             self.p = Observed(jnp.asarray(p))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.p.obj)
+        # Extract probability of success
+        p = byo.obj(self.p)
+
+        return _logprob(x, p)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.bernoulli(key, self.p.obj, shape)
+        # Extract probability of success
+        p = byo.obj(self.p)
+
+        return jr.bernoulli(key, p, shape)

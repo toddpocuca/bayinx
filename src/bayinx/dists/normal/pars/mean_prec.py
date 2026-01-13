@@ -5,6 +5,7 @@ import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -106,7 +107,15 @@ class MeanPrecisionNormal(Parameterization):
             self.prec = Observed(jnp.asarray(prec))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.mean.obj, self.prec.obj)
+        # Extract parameters
+        mean = byo.obj(self.mean)
+        prec = byo.obj(self.prec)
+
+        return _logprob(x, mean, prec)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.normal(key, shape) / jnp.sqrt(self.prec.obj) + self.mean.obj
+        # Extract parameters
+        mean = byo.obj(self.mean)
+        prec = byo.obj(self.prec)
+
+        return jr.normal(key, shape) / jnp.sqrt(prec) + mean

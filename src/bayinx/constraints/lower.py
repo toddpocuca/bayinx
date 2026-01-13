@@ -14,6 +14,20 @@ class Lower(Constraint):
 
     # Attributes
     - `lb`: The lower bound.
+
+    Definition:
+        The constraint is defined as:
+
+            $$
+            y = \\exp(x) + \\text{lb}
+            $$
+
+        Which has a log-Jacobian adjustment of:
+
+            $$
+            \\log |\\frac{dy}{dx}| = \\log |\\exp(x)| = \\log \\exp(x) = x
+            $$
+
     """
 
     lb: Scalar
@@ -24,7 +38,7 @@ class Lower(Constraint):
     def constrain(self, obj: T, filter_spec: T) -> Tuple[T, Scalar]:
         """
         Applies the exponential transformation to the leaves of a `PyTree` and
-        computes the log-Jacobian adjustment of the transformation.
+        computes the log-Jacobian adjustment of the transformation.\\
 
         # Parameters
         - `x`: The unconstrained `PyTree`.
@@ -41,11 +55,11 @@ class Lower(Constraint):
             nonlocal log_jac  # Reference outer variable
 
             if filter:
-                # Apply transformation
-                constrained = jnp.exp(leaf) + self.lb
-
                 # Accumulate Jacobian adjustment
                 log_jac = log_jac + jnp.sum(leaf)
+
+                # Apply transformation
+                constrained = jnp.exp(leaf) + self.lb
 
                 return constrained
             else:

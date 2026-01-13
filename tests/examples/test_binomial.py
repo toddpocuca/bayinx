@@ -18,8 +18,6 @@ class SimpleBinomialModel(byx.Model, init=False):
     def model(self, target):
         self.x << Binomial(self.n, self.p)
 
-        return target
-
 # Simulate sample
 n_obs = 100
 n = 1
@@ -37,8 +35,8 @@ def test_inference():
     posterior.fit()
 
     # Get posterior
-    p_draws = posterior.sample('p', int(1e7))
+    p_draws = posterior.sample('p', int(1e6))
 
     # Confirm approximation is accurate
-    # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = p
+    # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = mean(x)
     assert abs(p_draws.mean() - x.mean()) < 0.01

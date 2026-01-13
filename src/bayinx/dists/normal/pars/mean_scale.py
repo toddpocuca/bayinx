@@ -1,5 +1,3 @@
-
-
 from typing import Tuple
 
 import jax.numpy as jnp
@@ -7,12 +5,12 @@ import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
 
 PI = 3.141592653589793
-
 
 def _prob(
     x: Real[ArrayLike, "..."],
@@ -109,7 +107,15 @@ class MeanScaleNormal(Parameterization):
             self.scale = Observed(jnp.asarray(scale))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.mean.obj, self.scale.obj)
+        # Extract parameters
+        mean = byo.obj(self.mean)
+        scale = byo.obj(self.scale)
+
+        return _logprob(x, mean, scale)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.normal(key, shape) * self.scale.obj + self.mean.obj
+        # Extract parameters
+        mean = byo.obj(self.mean)
+        scale = byo.obj(self.scale)
+
+        return jr.normal(key, shape) * scale + mean

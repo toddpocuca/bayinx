@@ -53,6 +53,7 @@ class NeuralNetworkModel(byx.Model):
 
         return target
 
+
 # Simulate sample
 n_obs = 1000
 x: Array = jr.uniform(jr.key(0), (n_obs, ), minval = -4.0, maxval = 4.0)
@@ -71,13 +72,13 @@ def test_inference():
 
     # Configure and fit
     posterior.configure(flowspecs = [DiagAffine()])
-    posterior.fit(max_iters = int(1.5e5), grad_draws = 4, batch_size = 4)
+    posterior.fit(max_iters = int(2e5))
 
     # Test for good fit
     assert posterior.sample('sigma', 1000).mean() < 0.1
 
     # Test on new data
-    x_new = jnp.array([0.0, 1.0, 2.0, 3.0])
+    x_new = jnp.linspace(-4, 4, 8 + 1)
     y_new = f(x_new)
     predictions = posterior.predictive(
         lambda model, key: model.nn(x_new),

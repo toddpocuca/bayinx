@@ -5,6 +5,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -105,7 +106,13 @@ class ScaleExponential(Parameterization):
 
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.scale.obj)
+        # Extract parameter
+        scale = byo.obj(self.scale)
+
+        return _logprob(x, scale)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.exponential(key, shape) * self.scale.obj
+        # Extract parameter
+        scale = byo.obj(self.scale)
+
+        return jr.exponential(key, shape) * scale

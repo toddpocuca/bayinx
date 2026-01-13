@@ -5,6 +5,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -98,13 +99,19 @@ class RateExponential(Parameterization):
         # Initialize rate parameter (ratebda)
         if isinstance(rate, Node):
             if isinstance(rate.obj, ArrayLike):
-                self.rate = rate # type: ignore
+                self.rate: Node[Real[Array, "..."]] = rate # type: ignore
         else:
             self.rate = Observed(jnp.asarray(rate))
 
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.rate.obj)
+        # Extract parameter
+        rate = byo.obj(self.rate)
+
+        return _logprob(x, rate)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.exponential(key, shape) / self.rate.obj
+        # Extract parameter
+        rate = byo.obj(self.rate)
+
+        return jr.exponential(key, shape) / rate

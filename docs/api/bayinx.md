@@ -1,6 +1,6 @@
-# Model
+# Bayinx
 
-::: bayinx.core.model
+::: bayinx
     options:
       show_root_heading: true
       members:
