@@ -30,7 +30,6 @@ cuda = [
     "jax[cuda]>=0.8.0",
 ]
 dev = [
-    "asv>=0.6.5",
     "cairocffi>=1.7.1",
     "lets-plot>=4.8.1",
     "mkdocs>=1.6.1",
