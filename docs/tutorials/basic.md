@@ -7,8 +7,10 @@ If you are new to probabilistic programming or want to quickly get up to speed w
 Suppose we would like to specify a simple linear model, in model notation this would be:
 
 $$
+\begin{aligned}
     y_i &\sim \text{Normal}(\mu_i, \sigma) \\
     \mu_i &= \mathbf{x}_i^\top \mathbf{\beta}
+\end{aligned}
 $$
 where $y_i \in \mathbb{R}$ denotes our response variable, $\mathbf{x}_i^\top \in \mathbb{R}^p$ denotes our predictors structured as a vector, and $\mathbf{\beta} \in \mathbb{R}^p$ denotes the true parameters we wish to estimate.
 
