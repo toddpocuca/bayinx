@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://toddpocuca.github.io/bayinx/api/bayinx/">
       
       
-        <link rel="prev" href="../../examples/intro/leaf_discs/">
+        <link rel="prev" href="../../examples/advanced/deepbayes/">
       
       
         <link rel="next" href="../dists/">
@@ -326,6 +326,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basic Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -449,6 +477,91 @@
     
   
     Modelling Floating Leaf Discs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/advanced/deepbayes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Bayesian Neural Networks
   
 
     
@@ -1246,7 +1359,7 @@
 <a id="__codelineno-0-171" name="__codelineno-0-171"></a>                <span class="n">node</span> <span class="o">=</span> <span class="n">Observed</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 <a id="__codelineno-0-172" name="__codelineno-0-172"></a>
 <a id="__codelineno-0-173" name="__codelineno-0-173"></a>                <span class="c1"># Check constraints (if available)</span>
-<a id="__codelineno-0-174" name="__codelineno-0-174"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">node_defn</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">obj</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">_filter_spec</span><span class="p">):</span>
+<a id="__codelineno-0-174" name="__codelineno-0-174"></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">node_defn</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">_filter_spec</span><span class="p">):</span>
 <a id="__codelineno-0-175" name="__codelineno-0-175"></a>                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Observed values for &#39;</span><span class="si">{</span><span class="n">node_defn</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; do not satisfy constraint &#39;</span><span class="si">{</span><span class="n">node_defn</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-176" name="__codelineno-0-176"></a>
 <a id="__codelineno-0-177" name="__codelineno-0-177"></a>                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_defn</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Observed</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
