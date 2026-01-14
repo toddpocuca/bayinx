@@ -1,3 +1,4 @@
+import jax.nn as jnn
 import jax.numpy as jnp
 import jax.tree as jt
 from jaxtyping import ArrayLike, PyTree
@@ -8,7 +9,7 @@ from bayinx.core.utils import _extract_obj
 # Public
 __all__ = ["exp", "log", "sin", "cos", "tanh", "sigmoid"]
 
-def exp(node: Node) -> Node:
+def exp[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     """
     Apply the exponential transformation (jnp.exp) to a node.
     """
@@ -20,7 +21,7 @@ def exp(node: Node) -> Node:
     return Node(new_obj, filter_spec)
 
 
-def log(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
+def log[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     """
     Apply the natural logarithm transformation (jnp.log) to an object.
     """
@@ -32,7 +33,7 @@ def log(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayL
     return Node(new_obj, filter_spec)
 
 
-def sin(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
+def sin[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     """
     Apply the sine transformation (jnp.sin) to a node.
     """
@@ -44,7 +45,7 @@ def sin(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayL
     return Node(new_obj, filter_spec)
 
 
-def cos(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
+def cos[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     """
     Apply the cosine transformation (jnp.cos) to a node.
     """
@@ -56,7 +57,7 @@ def cos(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayL
     return Node(new_obj, filter_spec)
 
 
-def tanh(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
+def tanh[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     """
     Apply the hyperbolic tangent transformation (jnp.tanh) to a node.
     """
@@ -69,18 +70,18 @@ def tanh(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[Array
     return Node(new_obj, filter_spec)
 
 
-def sigmoid(node: Node[PyTree[ArrayLike]] | PyTree[ArrayLike]) -> Node[PyTree[ArrayLike]]:
+def sigmoid[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     """
     Apply the sigmoid transformation to a node.
     """
     obj, filter_spec = _extract_obj(node)
 
     # Apply sigmoid
-    new_obj = jt.map(lambda x: 1.0 / (1.0 + jnp.exp(-x)), obj)
+    new_obj = jt.map(jnn.sigmoid, obj)
 
     return Node(new_obj, filter_spec)
 
-def obj[T](node: Node[T]) -> T:
+def obj[T: PyTree](node: Node[T]) -> T:
     """
     Extract internal object from a node.
     """

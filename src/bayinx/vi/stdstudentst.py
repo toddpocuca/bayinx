@@ -9,11 +9,12 @@ import jax.scipy.special as jssp
 import jax.tree_util as jtu
 from jaxtyping import Array, Float, PRNGKeyArray, Scalar
 
-from bayinx.core.variational import M, Variational
+from bayinx.core.model import Model
+from bayinx.core.variational import Variational
 from bayinx.dists.studentst.pars.loc_scale_df import _logprob
 
 
-class StandardStudentsT(Variational[M]):
+class StandardStudentsT[M: Model](Variational[M]):
     """
     A standard Student's T approximation of a posterior distribution with learnable degrees of freedom.
     """

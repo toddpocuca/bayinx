@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from functools import partial
-from typing import Callable, Generic, Self, Tuple, TypeVar
+from typing import Callable, Self, Tuple
 
 import equinox as eqx
 import jax
@@ -14,9 +14,8 @@ from optax import GradientTransformation, OptState
 from bayinx.core.model import Model
 from bayinx.core.progress import close_progress, update_progress
 
-M = TypeVar("M", bound=Model)
 
-class Variational(eqx.Module, Generic[M]):
+class Variational[M: Model](eqx.Module):
     """
     An abstract base class used to define variational inference methods.
 

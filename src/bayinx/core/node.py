@@ -1,5 +1,5 @@
 import itertools
-from typing import Any, Generic, Iterator, Self
+from typing import Any, Generic, Iterable, Iterator, Self
 
 import equinox as eqx
 import jax.tree as jt
@@ -60,11 +60,10 @@ class Node(eqx.Module, Generic[T]):
 
     def __iter__(self) -> Iterator["Node"]:
         # Handle cases where _filter_spec is a scalar (e.g., bool) or 0-d array
-        try:
-            iter(self._filter_spec)
+        if isinstance(self._filter_spec, Iterable):
             specs = self._filter_spec
-        except TypeError:
-            # If spec is not iterable, broadcast it for every element in obj
+        else:
+            # Broadcast the scalar spec (bool, int, or 0-d array)
             specs = itertools.repeat(self._filter_spec)
 
         for obj_i, spec_i in zip(self.obj, specs):
@@ -145,6 +144,9 @@ class Node(eqx.Module, Generic[T]):
         )
 
         return Node(new_obj, new_filter_spec)
+
+    def __rmatmul__(self, other: Any) -> "Node":
+        return self.__matmul__(other)
 
     def __truediv__(self, other: Any) -> "Node":
         # Extract internal objects and their filter specifications

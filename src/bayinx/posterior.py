@@ -1,6 +1,6 @@
 
 from functools import partial
-from typing import Any, Callable, Dict, Generic, List, Optional, Tuple, Type
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type
 
 import jax
 import jax.random as jr
@@ -8,15 +8,15 @@ from jax.lax import scan
 from jaxtyping import Array, PRNGKeyArray
 
 from bayinx.core.flow import FlowSpec
+from bayinx.core.model import Model
 from bayinx.core.node import Node
-from bayinx.core.variational import M
 from bayinx.vi.normalizing_flow import NormalizingFlow
 from bayinx.vi.stdstudentst import StandardStudentsT
 
 # Public
 __all__ = ["Posterior"]
 
-class Posterior(Generic[M]):
+class Posterior[M: Model]():
     """
     The posterior distribution for a model.
 

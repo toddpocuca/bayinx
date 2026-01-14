@@ -70,10 +70,13 @@ nav:
   - Getting Started: index.md
   - Tutorials:
       - Coming From Stan: tutorials/stan.md
+      - Basic Usage: tutorials/basic.md
   - Examples:
       - Introductory:
           - Modelling Floating Leaf Discs: examples/intro/leaf_discs/index.md
-  - API Reference: # The top-level menu item
+      - Advanced:
+          - Deep Bayesian Neural Networks: examples/advanced/deepbayes/index.md
+  - API Reference:
       - Bayinx: api/bayinx.md
       - Distributions: api/dists.md
       - Nodes: api/nodes.md

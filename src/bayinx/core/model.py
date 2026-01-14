@@ -171,7 +171,7 @@ class Model(eqx.Module):
                 node = Observed(obj)
 
                 # Check constraints (if available)
-                if not node_defn.metadata['constraint'].check(node.obj, node._filter_spec):
+                if not node_defn.metadata['constraint'].check(obj, node._filter_spec):
                     raise ValueError(f"Observed values for '{node_defn.name}' do not satisfy constraint '{node_defn.metadata['constraint']}'.")
 
                 setattr(self, node_defn.name, Observed(obj))

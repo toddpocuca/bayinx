@@ -8,11 +8,12 @@ import jax.tree_util as jtu
 from jax.flatten_util import ravel_pytree
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
-from bayinx.core.variational import M, Variational
+from bayinx.core.model import Model
+from bayinx.core.variational import Variational
 from bayinx.dists.normal.pars.mean_scale import _logprob
 
 
-class StandardNormal(Variational[M]):
+class StandardNormal[M: Model](Variational[M]):
     """
     A standard normal approximation of a posterior distribution.
 

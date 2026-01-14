@@ -10,10 +10,11 @@ import jax.tree_util as jtu
 from jaxtyping import Array, PRNGKeyArray, Scalar
 
 from bayinx.core.flow import FlowLayer
-from bayinx.core.variational import M, Variational
+from bayinx.core.model import Model
+from bayinx.core.variational import Variational
 
 
-class NormalizingFlow(Variational[M]):
+class NormalizingFlow[M: Model](Variational[M]):
     """
     An ordered collection of diffeomorphisms that map a base distribution to a variational approximation.
 
