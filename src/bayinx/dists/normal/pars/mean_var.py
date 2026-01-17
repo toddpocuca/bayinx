@@ -96,14 +96,14 @@ class MeanVarNormal(Parameterization):
         # Initialize mean parameter
         if isinstance(mean, Node):
             if isinstance(mean.obj, ArrayLike):
-                self.mean: Node[ArrayLike] = mean # type: ignore
+                self.mean: Node[ArrayLike] = mean
         else:
             self.mean = Observed(jnp.asarray(mean))
 
         # Initialize scale parameter
         if isinstance(var, Node):
             if isinstance(var.obj, ArrayLike):
-                self.var: Node[ArrayLike] = var # type: ignore
+                self.var: Node[ArrayLike] = var
         else:
             self.var = Observed(jnp.asarray(var))
 

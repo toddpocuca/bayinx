@@ -1,8 +1,7 @@
 # Getting Started with Bayinx
 
 Welcome to Bayinx (Bayesian inference with JAX), a probabilistic programming language embedded in Python.
-If you're unfamiliar with Bayesian inference, take a look at # TODO.
-This guide will help you install the package and run your first model.
+This guide will help you install the package and quickly overview how Bayinx works, but if you would like a more thorough tutorial check out [Basic Usage](https://toddpocuca.github.io/bayinx/tutorials/basic/) for those of you unfamiliar to probabilistic programming or [Coming From Stan](https://toddpocuca.github.io/bayinx/tutorials/stan/) for Stan users.
 
 ## Installation
 
@@ -80,12 +79,15 @@ Once fitted, you can sample from the approximated posterior distribution to get 
 
 ```py
 # Sample the posterior distribution for 'mean'
-mean_draws = posterior.sample('mean', int(5e6))
+mean_draws = posterior.sample('mean', int(1e6), sir = False)
+mean_sirdraws = posterior.sample('mean', int(1e6), sir = True)
 
 print(f"Analytic Posterior Mean for 'mean': {x_data.mean():.4f}")
-print(f"Posterior Mean Estimate for 'mean': {mean_draws.mean():.4f}")
+print(f"Posterior Mean Estimate for 'mean' without SIR: {mean_draws.mean():.4f}")
+print(f"Posterior Mean Estimate for 'mean' with SIR: {mean_sirdraws.mean():.4f}")
 ```
 ```
 Analytic Posterior Mean for 'mean': 10.5465
-Posterior Mean Estimate for 'mean': 10.5463
+Posterior Mean Estimate for 'mean' without SIR: 10.5467
+Posterior Mean Estimate for 'mean' with SIR: 10.5466
 ```

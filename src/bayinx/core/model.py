@@ -187,7 +187,7 @@ class Model(eqx.Module):
         # Generate empty specification
         filter_spec: Self = jt.map(lambda _: False, self)
 
-        for f in fields(self): # type: ignore
+        for f in fields(self):
             # Extract attribute
             node: Node = getattr(self, f.name)
 
@@ -209,7 +209,7 @@ class Model(eqx.Module):
         # Generate empty specification
         filter_spec: Self = jt.map(lambda _: False, self)
 
-        for f in fields(self): # type: ignore
+        for f in fields(self):
             # Extract node
             node: Node = getattr(self, f.name)
 
@@ -234,7 +234,7 @@ class Model(eqx.Module):
         model: Self = self
         total: Scalar = jnp.array(0.0)
 
-        for f in fields(self): # type: ignore
+        for f in fields(self):
             # Extract attribute
             node = getattr(self, f.name)
 

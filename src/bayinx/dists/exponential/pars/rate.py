@@ -99,7 +99,7 @@ class RateExponential(Parameterization):
         # Initialize rate parameter (ratebda)
         if isinstance(rate, Node):
             if isinstance(rate.obj, ArrayLike):
-                self.rate: Node[Real[Array, "..."]] = rate # type: ignore
+                self.rate: Node[Real[Array, "..."]] = rate
         else:
             self.rate = Observed(jnp.asarray(rate))
 

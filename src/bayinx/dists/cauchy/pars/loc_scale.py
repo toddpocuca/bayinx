@@ -87,14 +87,14 @@ class LocationScaleCauchy(Parameterization):
         # Initialize location parameter
         if isinstance(loc, Node):
             if isinstance(loc.obj, ArrayLike):
-                self.loc: Node[Real[Array, "..."]] = loc # type: ignore
+                self.loc: Node[Real[Array, "..."]] = loc
         else:
             self.loc = Observed(jnp.asarray(loc))
 
         # Initialize scale parameter
         if isinstance(scale, Node):
             if isinstance(scale.obj, ArrayLike):
-                self.scale: Node[Real[Array, "..."]] = scale # type: ignore
+                self.scale: Node[Real[Array, "..."]] = scale
         else:
             self.scale = Observed(jnp.asarray(scale))
 

@@ -8,7 +8,7 @@ import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import optax as opx
-from jaxtyping import Array, Bool, PRNGKeyArray, PyTree, Scalar
+from jaxtyping import Array, Bool, PRNGKeyArray, Scalar
 from optax import GradientTransformation, OptState
 
 from bayinx.core.model import Model
@@ -38,7 +38,7 @@ class Variational[M: Model](eqx.Module):
         pass
 
     @abstractmethod
-    def sample(self, n: int, sir: bool = True, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
+    def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
         """
         Sample from the variational distribution.
         """
@@ -66,7 +66,7 @@ class Variational[M: Model](eqx.Module):
         pass
 
     @abstractmethod
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, PyTree]:
+    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, M]:
         """
         Evaluate the ELBO and its gradient.
         """
@@ -107,7 +107,7 @@ class Variational[M: Model](eqx.Module):
         max_batch_size: int,
         key: PRNGKeyArray = jr.key(0),
         verbose: bool = True,
-        print_rate: int = 100
+        print_rate: int = 5000
     ) -> Self:
         """
         Optimize the variational distribution.

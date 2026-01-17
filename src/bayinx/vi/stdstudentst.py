@@ -5,7 +5,6 @@ import jax.flatten_util as jfu
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
-import jax.scipy.special as jssp
 import jax.tree_util as jtu
 from jaxtyping import Array, Float, PRNGKeyArray, Scalar
 
@@ -47,7 +46,7 @@ class StandardStudentsT[M: Model](Variational[M]):
         self.log_df = jnp.full(self.dim, jnp.log(initial_df))
 
     @eqx.filter_jit
-    def sample(self, n: int, sir: bool = True, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
+    def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
         # Split key
         k1, k2, k3 = jr.split(key, 3)
 
@@ -61,21 +60,6 @@ class StandardStudentsT[M: Model](Variational[M]):
 
         # Compute variational draws
         draws = normal_draws * 1.0 / jnp.sqrt(gamma_draws)
-
-        # Apply sampling-importance-resampling if requested
-        if sir:
-            # Evaluate variational density
-            variational_evals = self.eval(draws)
-
-            # Evaluate posterior density
-            posterior_evals = self.eval_model(draws)
-
-            # Compute importance weights
-            log_weights = posterior_evals - variational_evals
-            weights = jnp.exp(log_weights - jssp.logsumexp(log_weights))
-
-            # Re-sample draws
-            draws = jr.choice(k3, draws, shape = (n, ), p = weights, axis = 0)
 
         assert len(draws.shape) == 2
         return draws

@@ -3,7 +3,6 @@ from typing import Self, Tuple
 import equinox as eqx
 import jax.numpy as jnp
 import jax.random as jr
-import jax.scipy.special as jssp
 import jax.tree_util as jtu
 from jax.flatten_util import ravel_pytree
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
@@ -39,24 +38,9 @@ class StandardNormal[M: Model](Variational[M]):
 
 
     @eqx.filter_jit
-    def sample(self, n: int, sir: bool = True, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
+    def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
         # Sample variational draws
         draws: Array = jr.normal(key=key, shape=(n, self.dim))
-
-        # Apply sampling-importance-resampling if requested
-        if sir:
-            # Evaluate variational density
-            variational_evals = self.eval(draws)
-
-            # Evaluate posterior density
-            posterior_evals = self.eval_model(draws)
-
-            # Compute importance weights
-            log_weights = posterior_evals - variational_evals
-            weights = jnp.exp(log_weights - jssp.logsumexp(log_weights))
-
-            # Re-sample draws
-            draws = jr.choice(key, draws, shape = (n, ), p = weights, axis = 0)
 
         assert len(draws.shape) == 2
         return draws

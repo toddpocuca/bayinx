@@ -261,3 +261,7 @@ That's pretty good for a small network trained with only 100 000 iterations.
 ### Parallelization Out of the Box
 
 One of my issues with Stan is that there is some rewriting involved in trying to get multi-threading to work, and some work optimizing the grainsize (although a maximal grainsize `n_elements // n_threads` seems to work best in my experience). Thankfully, XLA automatically scales the number of threads used with the size of the problem via [cost modelling](https://github.com/openxla/xla/blob/ba2ef9892875a41eb9f30efb2582d8728dc6b9d8/xla/service/cpu/parallel_task_assignment.cc#L81), and both pre-allocates the memory used for an entire program as well as aggressively optimizes memory usage to avoid unnecessary copies (like [duplicating arguments shared amongst threads](https://discourse.mc-stan.org/t/reduce-sum-results-in-much-slower-run-times-even-for-large-datasets/26827/3)). Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading.
+
+Fortunately and unfortunately, this also means you are left to the whims of the XLA compiler to parallelize your program correctly.
+Simply speaking, there are two levels of work where this may occur:
+- Evaluating the posterior density (and its gradient): for most models evaluating the posterior involves many independent operation, so generally this is

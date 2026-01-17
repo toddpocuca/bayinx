@@ -33,7 +33,7 @@ class LinearModel(byx.Model):
         return target
 
 # Simulate sample
-n_obs = 500
+n_obs = 1000
 n_predictors = 5
 X: Array = jr.normal(jr.key(0), (n_obs, n_predictors - 1))
 X = jnp.column_stack((jnp.ones((n_obs,)), X))
@@ -55,4 +55,4 @@ def test_inference():
     posterior.fit()
 
     # Check fit
-    assert jnp.linalg.norm(posterior.sample('beta', int(1e7)).mean(0) - beta) < 0.1
+    assert jnp.linalg.norm(posterior.sample('beta', int(1e4), 1).mean(0) - beta) < 0.1

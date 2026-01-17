@@ -1,12 +1,14 @@
-
 from functools import partial
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type
 
 import jax
+import jax.numpy as jnp
 import jax.random as jr
+import jax.scipy.special as jssp
 from jax.lax import scan
 from jaxtyping import Array, PRNGKeyArray
 
+import bayinx.ops as byo
 from bayinx.core.flow import FlowSpec
 from bayinx.core.model import Model
 from bayinx.core.node import Node
@@ -145,11 +147,159 @@ class Posterior[M: Model]():
             print_rate
         )
 
+    def __reg_sample(
+        self,
+        func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
+        n_draws: int,
+        batch_size: int,
+        key: PRNGKeyArray
+    ) -> Array:
+        vari = self.vari
+
+        # Split keys
+        per_batch_keys = jr.split(key, n_draws // batch_size)
+
+        @partial(jax.vmap, in_axes = (0, 0))
+        def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> Array:
+            model = vari.reconstruct_model(draw).constrain()[0]
+
+            # Evaluate callable
+            obj = func(model, key)
+
+            # Coerce from Node if needed
+            if isinstance(obj, Node):
+                obj = byo.obj(obj)
+
+                if isinstance(obj, Array):
+                    return obj
+                else:
+                    raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
+            elif isinstance(obj, Array):
+                return obj
+            else:
+                raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
+
+        # Sample in batches
+        def batched_sample(carry: None, per_batch_key: PRNGKeyArray) -> Tuple[None, Array]:
+            # Sample draws
+            draws = vari.sample(batch_size, key = per_batch_key)
+
+            # Generate keys for each draw
+            keys = jr.split(per_batch_key, batch_size)
+
+            return None, reconstruct_and_query(draws, keys)
+
+        # Generate samples of the posterior/posterior predictive
+        post_draws: Array = scan(
+            batched_sample,
+            init=None,
+            xs=per_batch_keys,
+            length=n_draws // batch_size
+        )[1]
+
+        # Reshape draws to remove batch axis
+        post_draws = post_draws.reshape(-1, *post_draws.shape[2:])
+
+        return post_draws
+
+
+    def __sir_sample(
+        self,
+        func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
+        n_draws: int,
+        batch_size: int,
+        key: PRNGKeyArray
+    ) -> Array:
+        vari = self.vari
+
+        # Split keys
+        per_batch_keys = jr.split(key, n_draws // batch_size)
+
+        @partial(jax.vmap, in_axes = (0, 0))
+        def reconstruct_and_query(draw: Array, within_batch_key: PRNGKeyArray) -> Array:
+            """
+            Reconstruct model and evaluate query (either extract a node for 'sample' or compute a posterior predictive for 'predictive').
+            """
+            # Reconstruct model from variational draw
+            model = self.vari.reconstruct_model(draw).constrain()[0]
+
+            # Evaluate callable
+            obj = func(model, within_batch_key)
+
+            # Coerce from Node if needed
+            if isinstance(obj, Node):
+                obj = byo.obj(obj)
+
+                if isinstance(obj, Array):
+                    return obj
+                else:
+                    raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
+            elif isinstance(obj, Array):
+                return obj
+            else:
+                raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
+
+        # Sample in batches
+        def batched_sample(carry: None, per_batch_key: PRNGKeyArray) -> tuple[None, tuple[Array, Array]]:
+            # Sample draws from the base distribution
+            base_draws = vari.base.sample(batch_size, key = per_batch_key)
+
+            # Evaluate base density
+            vari_evals = vari.base.eval(base_draws)
+
+            # Apply forward transformations
+            draws = base_draws
+            for map in vari.flows:
+                # Apply transformation
+                draws, log_jacs = map.forward_and_adjust(draws)
+
+                # Adjust variational density
+                vari_evals = vari_evals + log_jacs
+
+            # Evaluate posterior at variational draws
+            post_evals = vari.eval_model(draws)
+
+            # Compute unnormalized importance weight
+            log_uweight = post_evals - vari_evals
+
+            # Generate within-batch keys
+            within_batch_keys = jr.split(per_batch_key, batch_size)
+
+            return None, (reconstruct_and_query(draws, within_batch_keys), log_uweight)
+
+
+        # Get posterior samples with importance weights
+        posterior_draws, log_uweights = scan(
+            batched_sample,
+            init=None,
+            xs=per_batch_keys,
+            length=n_draws // batch_size
+        )[1]
+
+        # Reshape to remove batch axis
+        posterior_draws = posterior_draws.reshape(-1, *posterior_draws.shape[2:])
+        log_uweights = log_uweights.reshape(-1, *log_uweights.shape[2:])
+
+        # Normalize and exponentiate to get importance weights
+        weights = jnp.exp(log_uweights - jssp.logsumexp(log_uweights))
+
+        # Re-sample draws
+        posterior_draws = jr.choice(
+            key,
+            posterior_draws,
+            shape = (n_draws, ),
+            p = weights,
+            axis = 0
+        )
+
+        return posterior_draws
+
+
     def sample(
         self,
         node: str,
         n_draws: int,
-        max_batch_size: Optional[int] = None,
+        max_batch_size: Optional[int] = 1,
         sir: bool = True,
         key: PRNGKeyArray = jr.key(0)
     ) -> Array:
@@ -163,35 +313,21 @@ class Posterior[M: Model]():
             sir: Whether to use sampling-importance-resampling.
             key: The PRNG key used to generate samples.
         """
-        if max_batch_size is None:
-            max_batch_size = n_draws
+        if max_batch_size is None or max_batch_size > n_draws:
+            batch_size = n_draws
+        else:
+            batch_size = max_batch_size
 
-        # Split keys
-        keys = jr.split(key, n_draws // max_batch_size)
+        # Construct callable to extract node
+        def func(model, key):
+            return byo.obj(getattr(model, node))
 
-        # Reconstruct model and grab node
-        @partial(jax.vmap, in_axes = 0)
-        def reconstruct_and_subset(draw: Array):
-            model = self.vari.reconstruct_model(draw).constrain()[0]
-
-            return getattr(model, node).obj
-
-        # Sample in batches
-        def batched_sample(carry: None, key: PRNGKeyArray):
-            # Sample draws
-            draws = self.vari.sample(max_batch_size, sir = sir, key = key)
-
-            return None, reconstruct_and_subset(draws)
-
-        # Get posterior samples
-        posterior_draws = scan(
-            batched_sample,
-            init=None,
-            xs=keys,
-            length=n_draws // max_batch_size
-        )[1].squeeze()
-
-        return posterior_draws
+        if sir:
+            # Do sampling-importance-resampling
+            return self.__sir_sample(func, n_draws, batch_size, key)
+        else:
+            # Do regular sampling
+            return self.__reg_sample(func, n_draws, batch_size, key)
 
 
     def predictive(

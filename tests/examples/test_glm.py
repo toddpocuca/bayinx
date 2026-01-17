@@ -11,7 +11,7 @@ from jaxtyping import Array, Scalar
 import bayinx as byx
 from bayinx import define
 from bayinx.dists import Poisson
-from bayinx.flows import LowRankAffine
+from bayinx.flows import FullAffine
 from bayinx.nodes import Continuous, Observed
 
 
@@ -29,11 +29,11 @@ class PoissonModel(byx.Model):
         return target
 
 # Simulate sample
-n_obs = 100
-n_predictors = 5
+n_obs = 2000
+n_predictors = 10
 X: Array = jr.normal(jr.key(0), (n_obs, n_predictors - 1))
 X = jnp.column_stack((jnp.ones((n_obs,)), X))
-beta = jnp.array(range(n_predictors))
+beta = jnp.array(range(n_predictors)) + 1
 
 y = jr.poisson(jr.key(0), jnp.exp(X @ beta), (n_obs, ))
 
@@ -47,7 +47,7 @@ def test_inference():
     )
 
     # Configure and fit
-    posterior.configure(flowspecs = [LowRankAffine(2)])
+    posterior.configure(flowspecs = [FullAffine()])
     posterior.fit()
 
     # Check fit
