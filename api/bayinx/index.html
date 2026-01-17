@@ -1375,7 +1375,7 @@
 <a id="__codelineno-0-187" name="__codelineno-0-187"></a>        <span class="c1"># Generate empty specification</span>
 <a id="__codelineno-0-188" name="__codelineno-0-188"></a>        <span class="n">filter_spec</span><span class="p">:</span> <span class="n">Self</span> <span class="o">=</span> <span class="n">jt</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 <a id="__codelineno-0-189" name="__codelineno-0-189"></a>
-<a id="__codelineno-0-190" name="__codelineno-0-190"></a>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># type: ignore</span>
+<a id="__codelineno-0-190" name="__codelineno-0-190"></a>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-191" name="__codelineno-0-191"></a>            <span class="c1"># Extract attribute</span>
 <a id="__codelineno-0-192" name="__codelineno-0-192"></a>            <span class="n">node</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <a id="__codelineno-0-193" name="__codelineno-0-193"></a>
@@ -1397,7 +1397,7 @@
 <a id="__codelineno-0-209" name="__codelineno-0-209"></a>        <span class="c1"># Generate empty specification</span>
 <a id="__codelineno-0-210" name="__codelineno-0-210"></a>        <span class="n">filter_spec</span><span class="p">:</span> <span class="n">Self</span> <span class="o">=</span> <span class="n">jt</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 <a id="__codelineno-0-211" name="__codelineno-0-211"></a>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># type: ignore</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-213" name="__codelineno-0-213"></a>            <span class="c1"># Extract node</span>
 <a id="__codelineno-0-214" name="__codelineno-0-214"></a>            <span class="n">node</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <a id="__codelineno-0-215" name="__codelineno-0-215"></a>
@@ -1422,7 +1422,7 @@
 <a id="__codelineno-0-234" name="__codelineno-0-234"></a>        <span class="n">model</span><span class="p">:</span> <span class="n">Self</span> <span class="o">=</span> <span class="bp">self</span>
 <a id="__codelineno-0-235" name="__codelineno-0-235"></a>        <span class="n">total</span><span class="p">:</span> <span class="n">Scalar</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 <a id="__codelineno-0-236" name="__codelineno-0-236"></a>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># type: ignore</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a>        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-238" name="__codelineno-0-238"></a>            <span class="c1"># Extract attribute</span>
 <a id="__codelineno-0-239" name="__codelineno-0-239"></a>            <span class="n">node</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <a id="__codelineno-0-240" name="__codelineno-0-240"></a>
@@ -1558,7 +1558,7 @@
 <a id="__codelineno-0-234" name="__codelineno-0-234"></a>    <span class="n">model</span><span class="p">:</span> <span class="n">Self</span> <span class="o">=</span> <span class="bp">self</span>
 <a id="__codelineno-0-235" name="__codelineno-0-235"></a>    <span class="n">total</span><span class="p">:</span> <span class="n">Scalar</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 <a id="__codelineno-0-236" name="__codelineno-0-236"></a>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># type: ignore</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a>    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-238" name="__codelineno-0-238"></a>        <span class="c1"># Extract attribute</span>
 <a id="__codelineno-0-239" name="__codelineno-0-239"></a>        <span class="n">node</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <a id="__codelineno-0-240" name="__codelineno-0-240"></a>
@@ -1627,7 +1627,7 @@
 <a id="__codelineno-0-209" name="__codelineno-0-209"></a>    <span class="c1"># Generate empty specification</span>
 <a id="__codelineno-0-210" name="__codelineno-0-210"></a>    <span class="n">filter_spec</span><span class="p">:</span> <span class="n">Self</span> <span class="o">=</span> <span class="n">jt</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 <a id="__codelineno-0-211" name="__codelineno-0-211"></a>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># type: ignore</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <a id="__codelineno-0-213" name="__codelineno-0-213"></a>        <span class="c1"># Extract node</span>
 <a id="__codelineno-0-214" name="__codelineno-0-214"></a>        <span class="n">node</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <a id="__codelineno-0-215" name="__codelineno-0-215"></a>
