@@ -39,8 +39,6 @@ class SimpleNormalModel(Model):
     def model(self, target):
         # Accumulate likelihood
         self.x << Normal(self.mean, self.std)
-
-        return target
 ```
 
 Parameters are attributes annotated with the `Continuous` class which is a thin wrapper around an internal type (where `Continuous[Array]` can be used for type hinting), while any data is annotated with `Observed`. You can then define additional metadata for a node with the `define` function, for example by assigning shapes `define(shape = ...)` and bounds `define(lower = ..., upper = ...)`.
