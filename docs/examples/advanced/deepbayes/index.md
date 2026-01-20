@@ -1,1 +1,1 @@
-# Deep Bayesian Neural Networks
+# Bayesian Neural Networks

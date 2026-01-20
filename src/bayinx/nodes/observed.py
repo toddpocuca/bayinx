@@ -5,10 +5,9 @@ import jax.tree as jt
 from jaxtyping import PyTree
 
 from bayinx.core.node import Node
-from bayinx.core.types import T
 
 
-class Observed(Node[T]):
+class Observed[T: PyTree](Node[T]):
     """
     A container for observed nodes of a probabilistic model.
 

@@ -37,7 +37,7 @@ def _logprob(
 #def _logccdf(x: Real[ArrayLike, "..."], df: Real[ArrayLike, "..."], loc: Real[ArrayLike, "..."], scale: Real[ArrayLike, "..."]) -> Real[Array, "..."]:
 #    pass
 
-class LocScaleStudentT(Parameterization):
+class LocScaleStudentsT(Parameterization):
     """
     A location-scale parameterization of the Student's T distribution.
     """
@@ -51,10 +51,12 @@ class LocScaleStudentT(Parameterization):
         loc: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
         scale: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
     ):
-        # TODO: testing out this
         for name, val in [("df", df), ("loc", loc), ("scale", scale)]:
             if isinstance(val, Node):
-                if isinstance(val.obj, ArrayLike):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
+
                     setattr(self, name, val)
             else:
                 setattr(self, name, Observed(jnp.asarray(val)))

@@ -1,7 +1,8 @@
+import equinox as eqx
 import jax.nn as jnn
 import jax.numpy as jnp
 import jax.tree as jt
-from jaxtyping import ArrayLike, PyTree
+from jaxtyping import Array, ArrayLike, PyTree
 
 from bayinx.core.node import Node
 from bayinx.core.utils import _extract_obj
@@ -86,3 +87,24 @@ def obj[T: PyTree](node: Node[T]) -> T:
     Extract internal object from a node.
     """
     return node.obj
+
+def asarray(node: Node[ArrayLike]) -> Node[Array]:
+    """
+    Cast a 'Node[ArrayLike]' object to 'Node[Array]'.
+
+    Equivalent to 'jax.numpy.asarray' but with nodes.
+    """
+    # Extract inner object
+    node_obj = obj(node)
+
+    # Coerce to array
+    node_obj = jnp.asarray(node_obj)
+
+    # Slot in array
+    node = eqx.tree_at(
+        lambda node: node.obj,
+        node,
+        node_obj
+    )
+
+    return node

@@ -1,15 +1,14 @@
 import itertools
-from typing import Any, Generic, Iterable, Iterator, Self
+from typing import Any, Iterable, Iterator, Self
 
 import equinox as eqx
 import jax.tree as jt
 from jaxtyping import PyTree
 
-from bayinx.core.types import T
 from bayinx.core.utils import _extract_obj, _merge_filter_specs
 
 
-class Node(eqx.Module, Generic[T]):
+class Node[T: PyTree](eqx.Module):
     """
     A thin wrapper for nodes of a probabilistic model.
 

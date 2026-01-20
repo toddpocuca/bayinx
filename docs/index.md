@@ -77,15 +77,12 @@ Once fitted, you can sample from the approximated posterior distribution to get 
 
 ```py
 # Sample the posterior distribution for 'mean'
-mean_draws = posterior.sample('mean', int(1e6), sir = False)
-mean_sirdraws = posterior.sample('mean', int(1e6), sir = True)
+mean_draws = posterior.sample('mean', int(1e7), max_batch_size = 100_000)
 
 print(f"Analytic Posterior Mean for 'mean': {x_data.mean():.4f}")
-print(f"Posterior Mean Estimate for 'mean' without SIR: {mean_draws.mean():.4f}")
-print(f"Posterior Mean Estimate for 'mean' with SIR: {mean_sirdraws.mean():.4f}")
+print(f"Posterior Mean Estimate for 'mean': {mean_draws.mean():.4f}")
 ```
 ```
 Analytic Posterior Mean for 'mean': 10.5465
-Posterior Mean Estimate for 'mean' without SIR: 10.5467
-Posterior Mean Estimate for 'mean' with SIR: 10.5466
+Posterior Mean Estimate for 'mean': 10.5466
 ```

@@ -1,11 +1,12 @@
 from abc import abstractmethod
 from typing import Optional
 
+from jaxtyping import PyTree
+
 from bayinx.core.node import Node
-from bayinx.core.types import T
 
 
-class Stochastic(Node[T]):
+class Stochastic[T: PyTree](Node[T]):
     """
     A container for stochastic (unobserved) nodes of a probabilistic model.
 

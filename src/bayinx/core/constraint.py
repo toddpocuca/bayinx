@@ -1,11 +1,8 @@
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Tuple
+from typing import Tuple
 
 import equinox as eqx
 from jaxtyping import PyTree, Scalar
-
-if TYPE_CHECKING:
-    from bayinx.core.types import T
 
 
 class Constraint(eqx.Module):
@@ -14,7 +11,7 @@ class Constraint(eqx.Module):
     """
 
     @abstractmethod
-    def constrain(self, obj: "T", filter_spec: PyTree) -> Tuple["T", Scalar]:
+    def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the constraining transformation to the leaves of a `PyTree` and
         computes the log-Jacobian adjustment of the transformation.
@@ -32,7 +29,7 @@ class Constraint(eqx.Module):
         pass
 
     @abstractmethod
-    def check(self, obj: "T", filter_spec: PyTree) -> bool:
+    def check[T: PyTree](self, obj: T, filter_spec: PyTree) -> bool:
         """
         Checks if the constraint is held for all leaves of a `PyTree`.
 

@@ -8,7 +8,6 @@ from jaxtyping import Array, PyTree
 
 from bayinx.constraints import Identity
 from bayinx.core.constraint import Constraint
-from bayinx.core.types import T
 from bayinx.nodes.stochastic import Stochastic
 
 
@@ -28,7 +27,7 @@ def is_float_like(element: Any) -> bool:
         return isinstance(element, float)
 
 
-class Continuous(Stochastic[T]):
+class Continuous[T: PyTree](Stochastic[T]):
     """
     A container for continuous stochastic nodes of a probabilistic model.
 

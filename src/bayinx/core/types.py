@@ -1,13 +1,14 @@
-from typing import Generic, Protocol, TypeVar, runtime_checkable
+from typing import Protocol, runtime_checkable
 
-from jaxtyping import PyTree
+from jaxtyping import Array, ArrayLike, PyTree
 
 from bayinx.core.constraint import Constraint
+from bayinx.core.node import Node
 
-T = TypeVar("T", bound=PyTree)
+ArrayObject = ArrayLike | Node[Array] | Node[ArrayLike]
 
 @runtime_checkable
-class HasConstraint(Protocol, Generic[T]):
+class HasConstraint[T: PyTree](Protocol):
     """
     Protocol for probabilistic nodes that have constraints.
     """

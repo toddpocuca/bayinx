@@ -55,4 +55,4 @@ def test_inference():
     posterior.fit()
 
     # Check fit
-    assert jnp.linalg.norm(posterior.sample('beta', int(1e4), 1).mean(0) - beta) < 0.1
+    assert jnp.linalg.norm(posterior.sample('beta', int(1e5)).mean(0) - beta) < 0.1

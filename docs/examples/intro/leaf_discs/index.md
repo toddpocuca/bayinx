@@ -179,8 +179,10 @@ Then we can fit our model and recreate the same plot from before:
 ```py
 import plotnine as gg
 import jax.numpy as jnp
-import bayinx.ops as byo
 import numpy as np
+
+import bayinx.flows as byf
+import bayinx.ops as byo
 
 # Construct and fit posterior approximation
 post = byx.Posterior(
@@ -190,7 +192,7 @@ post = byx.Posterior(
     counts = data.select(pl.exclude('time')).to_jax().T,
     time = data.get_column('time').to_jax()
 )
-post.configure([byx.flows.FullAffine()])
+post.configure([byf.FullAffine()])
 post.fit()
 
 # Compute posterior predictives
@@ -308,8 +310,8 @@ post = byx.Posterior(
     counts = data.select(pl.exclude('time')).to_jax().T,
     time = data.get_column('time').to_jax()
 )
-post.configure([byx.flows.FullAffine()])
-post.fit(max_iters = int(1e5), grad_draws = 4, batch_size = 4)
+post.configure([byf.FullAffine()] + [byf.Sylvester(6)] * 6)
+post.fit(learning_rate = 1e-2)
 
 # Compute posterior predictives
 time = jnp.linspace(0, 20, 200)
@@ -317,7 +319,9 @@ time = jnp.linspace(0, 20, 200)
 # Posterior predictive of the expected count for each beaker
 pred_means = post.predictive(
     lambda model, key: byo.sigmoid(model.alpha + model.beta * time) * 10,
-    int(1e4)
+    int(1e4),
+    max_batch_size = int(1e3),
+    sir = True
 )
 
 # Posterior predictive of the count for a new beaker
@@ -335,7 +339,9 @@ def new_beaker(model: BinomialPartialPooling, key):
     return counts
 pred_new = post.predictive(
     new_beaker,
-    int(1e4)
+    int(1e5),
+    max_batch_size = int(1e3),
+    sir = True
 )
 
 # Format observed data for plotting

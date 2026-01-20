@@ -5,7 +5,6 @@ import jax.tree as jt
 from jaxtyping import PyTree, Scalar, ScalarLike
 
 from bayinx.core.constraint import Constraint
-from bayinx.core.types import T
 
 
 class Lower(Constraint):
@@ -35,7 +34,7 @@ class Lower(Constraint):
     def __init__(self, lb: ScalarLike):
         self.lb = jnp.asarray(lb)
 
-    def constrain(self, obj: T, filter_spec: T) -> Tuple[T, Scalar]:
+    def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the exponential transformation to the leaves of a `PyTree` and
         computes the log-Jacobian adjustment of the transformation.\\
@@ -70,7 +69,7 @@ class Lower(Constraint):
 
         return obj, log_jac
 
-    def check(self, obj: T, filter_spec: PyTree) -> bool:
+    def check[T: PyTree](self, obj: T, filter_spec: PyTree) -> bool:
         """
         Checks if all relevant leaves of `obj` are greater than or equal to `lb`.
         """

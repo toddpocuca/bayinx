@@ -3,18 +3,19 @@ from typing import Tuple
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
-from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 
 def _prob(
-    x: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
@@ -22,9 +23,9 @@ def _prob(
 
 
 def _logprob(
-    x: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
@@ -32,9 +33,9 @@ def _logprob(
 
 
 def _cdf(
-    x: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
@@ -44,9 +45,9 @@ def _cdf(
     return result
 
 def _logcdf(
-    x: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
@@ -57,9 +58,9 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
@@ -70,9 +71,9 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, scale = jnp.asarray(x), jnp.asarray(scale)
 
@@ -90,19 +91,22 @@ class ScaleExponential(Parameterization):
     - `scale`: The scale parameter.
     """
 
-    scale: Node[Real[Array, "..."]]
+    scale: Node[Array]
 
 
     def __init__(
         self,
-        scale: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
+        scale: ArrayObject,
     ):
-        # Initialize scale parameter
-        if isinstance(scale, Node):
-            if isinstance(scale.obj, ArrayLike):
-                self.scale = scale # type: ignore
-        else:
-            self.scale = Observed(jnp.asarray(scale))
+        for name, val in [("scale", scale)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
+
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
 
     def logprob(self, x: ArrayLike) -> Scalar:

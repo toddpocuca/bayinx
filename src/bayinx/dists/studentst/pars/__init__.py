@@ -1,1 +1,1 @@
-from .loc_scale_df import LocScaleStudentT as LocScaleStudentT
+from .loc_scale_df import LocScaleStudentsT as LocScaleStudentsT

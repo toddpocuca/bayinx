@@ -178,45 +178,27 @@ class NormalizingFlow[M: Model](Variational[M]):
         def elbo(dyn: Self, n: int, key: PRNGKeyArray) -> Scalar:
             self = eqx.combine(dyn, static)
 
-            if batch_size < n:
-                # Split key
-                keys = jr.split(key, n // batch_size)
+            # Split key
+            keys = jr.split(key, n // batch_size)
 
-                # Split ELBO calculation into batches
-                def batched_elbo(carry: None, batch_key: PRNGKeyArray) -> tuple[None, Array]:
-                    # Draw from variational distribution
-                    draws: Array = self.base.sample(batch_size, key = batch_key)
-
-                    # Evaluate posterior and variational densities
-                    batched_post_evals, batched_vari_evals = self._eval(draws)
-
-                    # Compute batched ELBO evals
-                    batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
-
-                    return None, batched_elbo_evals
-
-                # Compute ELBO evals
-                elbo_evals = lax.scan(
-                    batched_elbo,
-                    init=None,
-                    xs=keys,
-                    length=n // batch_size
-                )[1].flatten()
-
-                # Average ELBO estimates
-                elbo_est = jnp.mean(elbo_evals)
-            else:
+            # Split ELBO calculation into batches
+            def batched_elbo(batch_key: PRNGKeyArray) -> Array:
                 # Draw from variational distribution
-                base_draws: Array = self.base.sample(batch_size, key = key)
+                draws: Array = self.base.sample(batch_size, key = batch_key)
 
                 # Evaluate posterior and variational densities
-                post_evals, vari_evals = self._eval(base_draws)
+                batched_post_evals, batched_vari_evals = self._eval(draws)
 
-                # Compute (noisy) ELBO evals
-                elbo_evals: Array = post_evals - vari_evals
+                # Compute batched ELBO evals
+                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
-                # Average ELBO estimates
-                elbo_est = jnp.mean(elbo_evals)
+                return batched_elbo_evals
+
+            # Compute ELBO evals
+            elbo_evals = lax.map(batched_elbo, keys)
+
+            # Average ELBO estimates
+            elbo_est = jnp.mean(elbo_evals)
 
             return elbo_est
 

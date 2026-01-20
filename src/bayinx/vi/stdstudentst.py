@@ -66,6 +66,7 @@ class StandardStudentsT[M: Model](Variational[M]):
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
+
         return _logprob(draws, self.df, 0.0, 1.0).sum(axis=1)
 
     @property
@@ -81,15 +82,6 @@ class StandardStudentsT[M: Model](Variational[M]):
         )
 
         return filter_spec
-
-    @eqx.filter_jit
-    def eval(self, draws: Array) -> Array:
-        return _logprob(
-            draws,
-            self.df,
-            0.0,
-            1.0,
-        ).sum(axis=1)
 
     @eqx.filter_jit
     def elbo(self, n: int, batch_size: int, key: PRNGKeyArray) -> Scalar:

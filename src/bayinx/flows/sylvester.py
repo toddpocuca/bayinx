@@ -124,7 +124,7 @@ class SylvesterLayer(FlowLayer):
         scale: Float[Array, " rank"] = params["scale"]
 
         # Compute forward transform
-        draw = draw + Q @ R1 @ (scale * _h(R2 @ Q.T @ (draw - shift) / scale))
+        draw = draw + Q @ R1 @ (scale * _h(( R2 @ Q.T @ draw - shift) / scale))
 
         return draw
 
@@ -145,7 +145,7 @@ class SylvesterLayer(FlowLayer):
         scale: Float[Array, " rank"] = params["scale"]
 
         # Compute inner derivative term
-        dh_term = _dh(R2 @ Q.T @ (draw - shift) / scale)
+        dh_term = _dh(( R2 @ Q.T @ draw - shift) / scale)
 
         # Extract diagonals
         R1_diag = jnp.diag(R1)
@@ -176,7 +176,7 @@ class SylvesterLayer(FlowLayer):
         scale: Float[Array, " rank"] = params["scale"]
 
         # Compute shared inner term
-        shared_term = R2 @ Q.T @ (draw - shift) / scale
+        shared_term = ( R2 @ Q.T @ draw - shift) / scale
 
         # Compute derivative term
         dh_term = _dh(shared_term)
