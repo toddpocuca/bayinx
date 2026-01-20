@@ -31,5 +31,5 @@ class Observed[T: PyTree](Node[T]):
                 replace=jt.map(eqx.is_array_like, obj),
             )
 
-        self.obj = obj
-        self._filter_spec = filter_spec
+        self._byx__obj = obj
+        self._byx__filter_spec = filter_spec

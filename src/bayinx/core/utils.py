@@ -68,8 +68,8 @@ def _extract_obj[T: PyTree](x: T) -> tuple[T, PyTree]:
     from bayinx.core.node import Node
 
     if isinstance(x, Node):
-        obj = x.obj
-        filter_spec = x._filter_spec
+        obj = x._byx__obj
+        filter_spec = x._byx__filter_spec
     else:
         obj: Any = x
         filter_spec = True # implicit filter specification

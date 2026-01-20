@@ -100,7 +100,7 @@ class LogitProbSuccessBernoulli(Parameterization):
     ):
         # Initialize probability of success
         if isinstance(logit_p, Node):
-            if isinstance(logit_p.obj, ArrayLike):
+            if isinstance(byo.obj(logit_p), ArrayLike):
                 self.logit_p = logit_p # type: ignore
         else:
             self.logit_p = Observed(jnp.asarray(logit_p))

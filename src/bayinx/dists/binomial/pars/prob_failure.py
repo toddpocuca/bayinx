@@ -98,14 +98,14 @@ class ProbFailureBinomial(Parameterization):
     ):
         # Initialize number of trials
         if isinstance(n, Node):
-            if isinstance(n.obj, ArrayLike):
+            if isinstance(byo.obj(n), ArrayLike):
                 self.n = n # type: ignore
         else:
             self.n = Observed(jnp.asarray(n))
 
         # Initialize probability of success
         if isinstance(q, Node):
-            if isinstance(q.obj, ArrayLike):
+            if isinstance(byo.obj(q), ArrayLike):
                 self.q = q # type: ignore
         else:
             self.q = Observed(jnp.asarray(q))

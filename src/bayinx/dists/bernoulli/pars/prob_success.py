@@ -99,7 +99,7 @@ class ProbSuccessBernoulli(Parameterization):
     ):
         # Initialize probability of success
         if isinstance(p, Node):
-            if isinstance(p.obj, ArrayLike):
+            if isinstance(byo.obj(p), ArrayLike):
                 self.p = p # type: ignore
         else:
             self.p = Observed(jnp.asarray(p))

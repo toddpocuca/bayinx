@@ -94,7 +94,7 @@ class RatePoisson(Parameterization):
     ):
         # Initialize rate parameter
         if isinstance(rate, Node):
-            if isinstance(rate.obj, ArrayLike):
+            if isinstance(rate._byx__obj, ArrayLike):
                 self.rate = rate # type: ignore
         else:
             self.rate = Observed(jnp.asarray(rate))

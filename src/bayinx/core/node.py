@@ -18,12 +18,12 @@ class Node[T: PyTree](eqx.Module):
     - `_filter_spec`: An internal filter specification for `obj`.
     """
 
-    obj: T
-    _filter_spec: PyTree
+    _byx__obj: T
+    _byx__filter_spec: PyTree
 
     def __init__(self, obj, filter_spec):
-        self.obj = obj
-        self._filter_spec = filter_spec
+        self._byx__obj = obj
+        self._byx__filter_spec = filter_spec
 
     @property
     def filter_spec(self) -> Self:
@@ -35,9 +35,9 @@ class Node[T: PyTree](eqx.Module):
 
         # Filter based on inner filter specification for 'obj'
         node_filter_spec = eqx.tree_at(
-            lambda node: node.obj,
+            lambda node: node._byx__obj,
             node_filter_spec,
-            replace=self._filter_spec,
+            replace=self._byx__filter_spec,
         )
 
         return node_filter_spec
@@ -57,7 +57,6 @@ class Node[T: PyTree](eqx.Module):
             try:
                 attr = getattr(obj, name)
             except AttributeError:
-                # Raise an error that mentions both levels of lookup
                 raise AttributeError(
                     f"'{type(self).__name__}' object and its internal "
                     f"'{type(obj).__name__}' have no attribute '{name}'"
@@ -67,8 +66,8 @@ class Node[T: PyTree](eqx.Module):
             if callable(attr):
                 def node_wrapper(*args, **kwargs):
                     # Unwrap any Node arguments
-                    unwrapped_args = [arg.obj if isinstance(arg, Node) else arg for arg in args]
-                    unwrapped_kwargs = {k: (v.obj if isinstance(v, Node) else v) for k, v in kwargs.items()}
+                    unwrapped_args = [byo.obj(arg) if isinstance(arg, Node) else arg for arg in args]
+                    unwrapped_kwargs = {k: (byo.obj(v) if isinstance(v, Node) else v) for k, v in kwargs.items()}
 
                     result = attr(*unwrapped_args, **unwrapped_kwargs)
 
@@ -266,7 +265,7 @@ class Node[T: PyTree](eqx.Module):
         kwargs = {k: _extract_obj(v)[0] for k, v in kwargs.items()}
 
         # Call the internal object's __call__ method
-        new_obj = self.obj(*args, **kwargs)
+        new_obj = self._byx__obj(*args, **kwargs)
 
         # Return the result wrapped in a new Node
         return Node(new_obj, True)

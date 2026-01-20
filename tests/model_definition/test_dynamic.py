@@ -24,7 +24,7 @@ def test_simple():
 
     # Construct model
     model = SimpleDynamic(y = y)
-    assert all(model.y.obj == jnp.array([-1.0, 0.0, 1.0]))
+    assert all(model.y._byx__obj == jnp.array([-1.0, 0.0, 1.0]))
 
 
 class ShapedDynamic(Model, init=False):
@@ -41,8 +41,8 @@ def test_shaped():
     #bad_y: Array = jnp.tile(jnp.array([-1.0, 1.0]), (10, 1))
 
     model = ShapedDynamic(k = 3, n = 10, y = y)
-    assert model.mus.obj.shape == (3,)
-    assert model.y.obj.shape == (10,3)
+    assert model.mus._byx__obj.shape == (3,)
+    assert model.y._byx__obj.shape == (10,3)
 
 class PackedShapeDynamic(Model, init=False):
     x: Continuous[Array] = define(shape = 'shape')
@@ -55,5 +55,5 @@ class PackedShapeDynamic(Model, init=False):
 
 def test_packedshape():
     model = PackedShapeDynamic(shape = (3,2,1), m = 5, n = 4)
-    assert model.x.obj.shape == (3,2,1)
-    assert model.y.obj.shape == (5,4,3,2,1)
+    assert model.x._byx__obj.shape == (3,2,1)
+    assert model.y._byx__obj.shape == (5,4,3,2,1)

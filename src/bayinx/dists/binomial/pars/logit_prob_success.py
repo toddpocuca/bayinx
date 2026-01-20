@@ -98,14 +98,14 @@ class LogitProbSuccessBinomial(Parameterization):
     ):
         # Initialize number of trials
         if isinstance(n, Node):
-            if isinstance(n.obj, ArrayLike):
+            if isinstance(byo.obj(n), ArrayLike):
                 self.n = n # type: ignore
         else:
             self.n = Observed(jnp.asarray(n))
 
         # Initialize logit of probability of success
         if isinstance(logit_p, Node):
-            if isinstance(logit_p.obj, ArrayLike):
+            if isinstance(byo.obj(logit_p), ArrayLike):
                 self.logit_p = logit_p # type: ignore
         else:
             self.logit_p = Observed(jnp.asarray(logit_p))

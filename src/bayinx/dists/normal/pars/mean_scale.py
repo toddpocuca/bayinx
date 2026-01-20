@@ -94,14 +94,14 @@ class MeanScaleNormal(Parameterization):
     ):
         # Initialize mean parameter
         if isinstance(mean, Node):
-            if isinstance(mean.obj, ArrayLike):
+            if isinstance(mean._byx__obj, ArrayLike):
                 self.mean = mean # type: ignore
         else:
             self.mean = Observed(jnp.asarray(mean))
 
         # Initialize scale parameter
         if isinstance(scale, Node):
-            if isinstance(scale.obj, ArrayLike):
+            if isinstance(scale._byx__obj, ArrayLike):
                 self.scale = scale # type: ignore
         else:
             self.scale = Observed(jnp.asarray(scale))

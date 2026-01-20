@@ -38,7 +38,7 @@ class Continuous[T: PyTree](Stochastic[T]):
         _constraint: A constraining transformation.
     """
 
-    _constraint: Constraint
+    _byx__constraint: Constraint
 
 
     def __init__(
@@ -58,6 +58,6 @@ class Continuous[T: PyTree](Stochastic[T]):
                 replace=jt.map(is_float_like, obj),
             )
 
-        self.obj = obj
-        self._filter_spec = filter_spec
-        self._constraint = constraint
+        self._byx__obj = obj
+        self._byx__filter_spec = filter_spec
+        self._byx__constraint = constraint

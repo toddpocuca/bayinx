@@ -94,14 +94,14 @@ class MeanPrecisionNormal(Parameterization):
     ):
         # Initialize mean parameter
         if isinstance(mean, Node):
-            if isinstance(mean.obj, ArrayLike):
+            if isinstance(mean._byx__obj, ArrayLike):
                 self.mean = mean # type: ignore
         else:
             self.mean = Observed(jnp.asarray(mean))
 
         # Initialize precision parameter
         if isinstance(prec, Node):
-            if isinstance(prec.obj, ArrayLike):
+            if isinstance(prec._byx__obj, ArrayLike):
                 self.prec = prec # type: ignore
         else:
             self.prec = Observed(jnp.asarray(prec))

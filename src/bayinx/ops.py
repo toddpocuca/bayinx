@@ -86,7 +86,7 @@ def obj[T: PyTree](node: Node[T]) -> T:
     """
     Extract internal object from a node.
     """
-    return node.obj
+    return node._byx__obj
 
 def asarray(node: Node[ArrayLike]) -> Node[Array]:
     """

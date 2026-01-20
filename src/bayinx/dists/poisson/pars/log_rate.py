@@ -94,7 +94,7 @@ class LogRatePoisson(Parameterization):
     ):
         # Initialize log_rate parameter
         if isinstance(log_rate, Node):
-            if isinstance(log_rate.obj, ArrayLike):
+            if isinstance(log_rate._byx__obj, ArrayLike):
                 self.log_rate = log_rate # type: ignore
         else:
             self.log_rate = Observed(jnp.asarray(log_rate))
