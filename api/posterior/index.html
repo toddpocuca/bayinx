@@ -1397,36 +1397,7 @@
 <span class="normal"><a href="#__codelineno-0-357">357</a></span>
 <span class="normal"><a href="#__codelineno-0-358">358</a></span>
 <span class="normal"><a href="#__codelineno-0-359">359</a></span>
-<span class="normal"><a href="#__codelineno-0-360">360</a></span>
-<span class="normal"><a href="#__codelineno-0-361">361</a></span>
-<span class="normal"><a href="#__codelineno-0-362">362</a></span>
-<span class="normal"><a href="#__codelineno-0-363">363</a></span>
-<span class="normal"><a href="#__codelineno-0-364">364</a></span>
-<span class="normal"><a href="#__codelineno-0-365">365</a></span>
-<span class="normal"><a href="#__codelineno-0-366">366</a></span>
-<span class="normal"><a href="#__codelineno-0-367">367</a></span>
-<span class="normal"><a href="#__codelineno-0-368">368</a></span>
-<span class="normal"><a href="#__codelineno-0-369">369</a></span>
-<span class="normal"><a href="#__codelineno-0-370">370</a></span>
-<span class="normal"><a href="#__codelineno-0-371">371</a></span>
-<span class="normal"><a href="#__codelineno-0-372">372</a></span>
-<span class="normal"><a href="#__codelineno-0-373">373</a></span>
-<span class="normal"><a href="#__codelineno-0-374">374</a></span>
-<span class="normal"><a href="#__codelineno-0-375">375</a></span>
-<span class="normal"><a href="#__codelineno-0-376">376</a></span>
-<span class="normal"><a href="#__codelineno-0-377">377</a></span>
-<span class="normal"><a href="#__codelineno-0-378">378</a></span>
-<span class="normal"><a href="#__codelineno-0-379">379</a></span>
-<span class="normal"><a href="#__codelineno-0-380">380</a></span>
-<span class="normal"><a href="#__codelineno-0-381">381</a></span>
-<span class="normal"><a href="#__codelineno-0-382">382</a></span>
-<span class="normal"><a href="#__codelineno-0-383">383</a></span>
-<span class="normal"><a href="#__codelineno-0-384">384</a></span>
-<span class="normal"><a href="#__codelineno-0-385">385</a></span>
-<span class="normal"><a href="#__codelineno-0-386">386</a></span>
-<span class="normal"><a href="#__codelineno-0-387">387</a></span>
-<span class="normal"><a href="#__codelineno-0-388">388</a></span>
-<span class="normal"><a href="#__codelineno-0-389">389</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">class</span><span class="w"> </span><span class="nc">Posterior</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Model</span><span class="p">]():</span>
+<span class="normal"><a href="#__codelineno-0-360">360</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">class</span><span class="w"> </span><span class="nc">Posterior</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Model</span><span class="p">]():</span>
 <a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    The posterior distribution for a model.</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a>
@@ -1588,213 +1559,184 @@
 <a id="__codelineno-0-180" name="__codelineno-0-180"></a>                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Return type of &#39;sample&#39; &amp; &#39;predictive&#39; must be &#39;Node[Array]&#39; or &#39;Array&#39;.&quot;</span><span class="p">)</span>
 <a id="__codelineno-0-181" name="__codelineno-0-181"></a>
 <a id="__codelineno-0-182" name="__codelineno-0-182"></a>        <span class="c1"># Sample in batches</span>
-<a id="__codelineno-0-183" name="__codelineno-0-183"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">batched_sample</span><span class="p">(</span><span class="n">carry</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">per_batch_key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Array</span><span class="p">]:</span>
+<a id="__codelineno-0-183" name="__codelineno-0-183"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">batched_sample</span><span class="p">(</span><span class="n">per_batch_key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <a id="__codelineno-0-184" name="__codelineno-0-184"></a>            <span class="c1"># Sample draws</span>
 <a id="__codelineno-0-185" name="__codelineno-0-185"></a>            <span class="n">draws</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">per_batch_key</span><span class="p">)</span>
 <a id="__codelineno-0-186" name="__codelineno-0-186"></a>
 <a id="__codelineno-0-187" name="__codelineno-0-187"></a>            <span class="c1"># Generate keys for each draw</span>
-<a id="__codelineno-0-188" name="__codelineno-0-188"></a>            <span class="n">keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">per_batch_key</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+<a id="__codelineno-0-188" name="__codelineno-0-188"></a>            <span class="n">within_batch_keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">per_batch_key</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
 <a id="__codelineno-0-189" name="__codelineno-0-189"></a>
-<a id="__codelineno-0-190" name="__codelineno-0-190"></a>            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reconstruct_and_query</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+<a id="__codelineno-0-190" name="__codelineno-0-190"></a>            <span class="k">return</span> <span class="n">reconstruct_and_query</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">within_batch_keys</span><span class="p">)</span>
 <a id="__codelineno-0-191" name="__codelineno-0-191"></a>
 <a id="__codelineno-0-192" name="__codelineno-0-192"></a>        <span class="c1"># Generate samples of the posterior/posterior predictive</span>
-<a id="__codelineno-0-193" name="__codelineno-0-193"></a>        <span class="n">post_draws</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span>
+<a id="__codelineno-0-193" name="__codelineno-0-193"></a>        <span class="n">post_draws</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
 <a id="__codelineno-0-194" name="__codelineno-0-194"></a>            <span class="n">batched_sample</span><span class="p">,</span>
-<a id="__codelineno-0-195" name="__codelineno-0-195"></a>            <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-196" name="__codelineno-0-196"></a>            <span class="n">xs</span><span class="o">=</span><span class="n">per_batch_keys</span><span class="p">,</span>
-<a id="__codelineno-0-197" name="__codelineno-0-197"></a>            <span class="n">length</span><span class="o">=</span><span class="n">n_draws</span> <span class="o">//</span> <span class="n">batch_size</span>
-<a id="__codelineno-0-198" name="__codelineno-0-198"></a>        <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-<a id="__codelineno-0-199" name="__codelineno-0-199"></a>
-<a id="__codelineno-0-200" name="__codelineno-0-200"></a>        <span class="c1"># Reshape draws to remove batch axis</span>
-<a id="__codelineno-0-201" name="__codelineno-0-201"></a>        <span class="n">post_draws</span> <span class="o">=</span> <span class="n">post_draws</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">post_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+<a id="__codelineno-0-195" name="__codelineno-0-195"></a>            <span class="n">per_batch_keys</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196"></a>        <span class="p">)</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197"></a>
+<a id="__codelineno-0-198" name="__codelineno-0-198"></a>        <span class="c1"># Reshape to remove batch axis</span>
+<a id="__codelineno-0-199" name="__codelineno-0-199"></a>        <span class="n">post_draws</span> <span class="o">=</span> <span class="n">post_draws</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">post_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+<a id="__codelineno-0-200" name="__codelineno-0-200"></a>
+<a id="__codelineno-0-201" name="__codelineno-0-201"></a>        <span class="k">return</span> <span class="n">post_draws</span>
 <a id="__codelineno-0-202" name="__codelineno-0-202"></a>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>        <span class="k">return</span> <span class="n">post_draws</span>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">__sir_sample</span><span class="p">(</span>
-<a id="__codelineno-0-207" name="__codelineno-0-207"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-208" name="__codelineno-0-208"></a>        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
-<a id="__codelineno-0-209" name="__codelineno-0-209"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a>        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a>        <span class="n">vari</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a>        <span class="c1"># Split keys</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a>        <span class="n">per_batch_keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">n_draws</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a>        <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span> <span class="n">in_axes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_and_query</span><span class="p">(</span><span class="n">draw</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">within_batch_key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">            Reconstruct model and evaluate query (either extract a node for &#39;sample&#39; or compute a posterior predictive for &#39;predictive&#39;).</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">            &quot;&quot;&quot;</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a>            <span class="c1"># Reconstruct model from variational draw</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a>            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">reconstruct_model</span><span class="p">(</span><span class="n">draw</span><span class="p">)</span><span class="o">.</span><span class="n">constrain</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a>            <span class="c1"># Evaluate callable</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a>            <span class="n">obj</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">within_batch_key</span><span class="p">)</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a>            <span class="c1"># Coerce from Node if needed</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a>            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a>                <span class="n">obj</span> <span class="o">=</span> <span class="n">byo</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a>                    <span class="k">return</span> <span class="n">obj</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a>                <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Return type of &#39;sample&#39; &amp; &#39;predictive&#39; must be &#39;Node[Array]&#39; or &#39;Array&#39;.&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a>                <span class="k">return</span> <span class="n">obj</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a>            <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Return type of &#39;sample&#39; &amp; &#39;predictive&#39; must be &#39;Node[Array]&#39; or &#39;Array&#39;.&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a>        <span class="c1"># Sample in batches</span>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">batched_sample</span><span class="p">(</span><span class="n">carry</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">per_batch_key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="n">Array</span><span class="p">]]:</span>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a>            <span class="c1"># Sample draws from the base distribution</span>
-<a id="__codelineno-0-245" name="__codelineno-0-245"></a>            <span class="n">base_draws</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">per_batch_key</span><span class="p">)</span>
-<a id="__codelineno-0-246" name="__codelineno-0-246"></a>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a>            <span class="c1"># Evaluate base density</span>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a>            <span class="n">vari_evals</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">base_draws</span><span class="p">)</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a>            <span class="c1"># Apply forward transformations</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a>            <span class="n">draws</span> <span class="o">=</span> <span class="n">base_draws</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a>            <span class="k">for</span> <span class="nb">map</span> <span class="ow">in</span> <span class="n">vari</span><span class="o">.</span><span class="n">flows</span><span class="p">:</span>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a>                <span class="c1"># Apply transformation</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a>                <span class="n">draws</span><span class="p">,</span> <span class="n">log_jacs</span> <span class="o">=</span> <span class="nb">map</span><span class="o">.</span><span class="n">forward_and_adjust</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a>                <span class="c1"># Adjust variational density</span>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>                <span class="n">vari_evals</span> <span class="o">=</span> <span class="n">vari_evals</span> <span class="o">+</span> <span class="n">log_jacs</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>            <span class="c1"># Evaluate posterior at variational draws</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>            <span class="n">post_evals</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">eval_model</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
-<a id="__codelineno-0-261" name="__codelineno-0-261"></a>
-<a id="__codelineno-0-262" name="__codelineno-0-262"></a>            <span class="c1"># Compute unnormalized importance weight</span>
-<a id="__codelineno-0-263" name="__codelineno-0-263"></a>            <span class="n">log_uweight</span> <span class="o">=</span> <span class="n">post_evals</span> <span class="o">-</span> <span class="n">vari_evals</span>
-<a id="__codelineno-0-264" name="__codelineno-0-264"></a>
-<a id="__codelineno-0-265" name="__codelineno-0-265"></a>            <span class="c1"># Generate within-batch keys</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>            <span class="n">within_batch_keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">per_batch_key</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span><span class="n">reconstruct_and_query</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">within_batch_keys</span><span class="p">),</span> <span class="n">log_uweight</span><span class="p">)</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">__sir_sample</span><span class="p">(</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a>        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-208" name="__codelineno-0-208"></a>        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a>        <span class="n">vari</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a>        <span class="c1"># Split key for sampling &amp; resampling</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a>        <span class="n">s_key</span><span class="p">,</span> <span class="n">rs_key</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>        <span class="c1"># Split keys across batches</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>        <span class="n">per_batch_keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">s_key</span><span class="p">,</span> <span class="n">n_draws</span> <span class="o">//</span> <span class="n">batch_size</span><span class="p">)</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a>        <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span> <span class="n">in_axes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_and_query</span><span class="p">(</span><span class="n">draw</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">within_batch_key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">            Reconstruct model and evaluate query (either extract a node for &#39;sample&#39; or compute a posterior predictive for &#39;predictive&#39;).</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">            &quot;&quot;&quot;</span>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a>            <span class="c1"># Reconstruct model from variational draw</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a>            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">reconstruct_model</span><span class="p">(</span><span class="n">draw</span><span class="p">)</span><span class="o">.</span><span class="n">constrain</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a>            <span class="c1"># Evaluate callable</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a>            <span class="n">obj</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">within_batch_key</span><span class="p">)</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a>            <span class="c1"># Coerce from Node if needed</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a>                <span class="n">obj</span> <span class="o">=</span> <span class="n">byo</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a>                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a>                    <span class="k">return</span> <span class="n">obj</span>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a>                <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a>                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Return type of &#39;node&#39; argument for &#39;.sample&#39; &amp; &#39;func&#39; argument for &#39;.predictive&#39; must be &#39;Node[Array]&#39; or &#39;Array&#39;.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>                <span class="k">return</span> <span class="n">obj</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>            <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Return type of &#39;sample&#39; &amp; &#39;predictive&#39; must be &#39;Node[Array]&#39; or &#39;Array&#39;.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>        <span class="c1"># Sample in batches</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">batched_sample</span><span class="p">(</span><span class="n">per_batch_key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="n">Array</span><span class="p">]:</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>            <span class="c1"># Sample draws from the base distribution</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>            <span class="n">base_draws</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">per_batch_key</span><span class="p">)</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247"></a>
+<a id="__codelineno-0-248" name="__codelineno-0-248"></a>            <span class="c1"># Evaluate base density</span>
+<a id="__codelineno-0-249" name="__codelineno-0-249"></a>            <span class="n">vari_evals</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">base_draws</span><span class="p">)</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250"></a>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a>            <span class="c1"># Apply forward transformations</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252"></a>            <span class="n">draws</span> <span class="o">=</span> <span class="n">base_draws</span>
+<a id="__codelineno-0-253" name="__codelineno-0-253"></a>            <span class="k">for</span> <span class="nb">map</span> <span class="ow">in</span> <span class="n">vari</span><span class="o">.</span><span class="n">flows</span><span class="p">:</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254"></a>                <span class="c1"># Apply transformation</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255"></a>                <span class="n">draws</span><span class="p">,</span> <span class="n">log_jacs</span> <span class="o">=</span> <span class="nb">map</span><span class="o">.</span><span class="n">forward_and_adjust</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256"></a>
+<a id="__codelineno-0-257" name="__codelineno-0-257"></a>                <span class="c1"># Adjust variational density</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258"></a>                <span class="n">vari_evals</span> <span class="o">=</span> <span class="n">vari_evals</span> <span class="o">+</span> <span class="n">log_jacs</span>
+<a id="__codelineno-0-259" name="__codelineno-0-259"></a>
+<a id="__codelineno-0-260" name="__codelineno-0-260"></a>            <span class="c1"># Evaluate posterior at variational draws</span>
+<a id="__codelineno-0-261" name="__codelineno-0-261"></a>            <span class="n">post_evals</span> <span class="o">=</span> <span class="n">vari</span><span class="o">.</span><span class="n">eval_model</span><span class="p">(</span><span class="n">draws</span><span class="p">)</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262"></a>
+<a id="__codelineno-0-263" name="__codelineno-0-263"></a>            <span class="c1"># Compute unnormalized importance weight</span>
+<a id="__codelineno-0-264" name="__codelineno-0-264"></a>            <span class="n">log_uweight</span> <span class="o">=</span> <span class="n">post_evals</span> <span class="o">-</span> <span class="n">vari_evals</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265"></a>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>            <span class="c1"># Generate within-batch keys</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>            <span class="n">within_batch_keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">per_batch_key</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>            <span class="k">return</span> <span class="p">(</span><span class="n">reconstruct_and_query</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">within_batch_keys</span><span class="p">),</span> <span class="n">log_uweight</span><span class="p">)</span>
 <a id="__codelineno-0-270" name="__codelineno-0-270"></a>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>        <span class="c1"># Get posterior samples with importance weights</span>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>        <span class="n">posterior_draws</span><span class="p">,</span> <span class="n">log_uweights</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span>
-<a id="__codelineno-0-273" name="__codelineno-0-273"></a>            <span class="n">batched_sample</span><span class="p">,</span>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>            <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>            <span class="n">xs</span><span class="o">=</span><span class="n">per_batch_keys</span><span class="p">,</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>            <span class="n">length</span><span class="o">=</span><span class="n">n_draws</span> <span class="o">//</span> <span class="n">batch_size</span>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>        <span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>        <span class="c1"># Reshape to remove batch axis</span>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>        <span class="n">posterior_draws</span> <span class="o">=</span> <span class="n">posterior_draws</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">posterior_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>        <span class="n">log_uweights</span> <span class="o">=</span> <span class="n">log_uweights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">log_uweights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
-<a id="__codelineno-0-282" name="__codelineno-0-282"></a>
-<a id="__codelineno-0-283" name="__codelineno-0-283"></a>        <span class="c1"># Normalize and exponentiate to get importance weights</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>        <span class="n">weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_uweights</span> <span class="o">-</span> <span class="n">jssp</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">log_uweights</span><span class="p">))</span>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a>
-<a id="__codelineno-0-286" name="__codelineno-0-286"></a>        <span class="c1"># Re-sample draws</span>
-<a id="__codelineno-0-287" name="__codelineno-0-287"></a>        <span class="n">posterior_draws</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-<a id="__codelineno-0-288" name="__codelineno-0-288"></a>            <span class="n">key</span><span class="p">,</span>
-<a id="__codelineno-0-289" name="__codelineno-0-289"></a>            <span class="n">posterior_draws</span><span class="p">,</span>
-<a id="__codelineno-0-290" name="__codelineno-0-290"></a>            <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_draws</span><span class="p">,</span> <span class="p">),</span>
-<a id="__codelineno-0-291" name="__codelineno-0-291"></a>            <span class="n">p</span> <span class="o">=</span> <span class="n">weights</span><span class="p">,</span>
-<a id="__codelineno-0-292" name="__codelineno-0-292"></a>            <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
-<a id="__codelineno-0-293" name="__codelineno-0-293"></a>        <span class="p">)</span>
-<a id="__codelineno-0-294" name="__codelineno-0-294"></a>
-<a id="__codelineno-0-295" name="__codelineno-0-295"></a>        <span class="k">return</span> <span class="n">posterior_draws</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>        <span class="c1"># Get posterior samples with importance weights</span>
+<a id="__codelineno-0-273" name="__codelineno-0-273"></a>        <span class="n">post_draws</span><span class="p">,</span> <span class="n">log_uweights</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a>            <span class="n">batched_sample</span><span class="p">,</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>            <span class="n">per_batch_keys</span>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>        <span class="p">)</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>        <span class="c1"># Reshape to remove batch axis</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>        <span class="n">post_draws</span> <span class="o">=</span> <span class="n">post_draws</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">post_draws</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>        <span class="n">log_uweights</span> <span class="o">=</span> <span class="n">log_uweights</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">log_uweights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>        <span class="c1"># Normalize and exponentiate to get importance weights</span>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>        <span class="n">weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_uweights</span> <span class="o">-</span> <span class="n">jssp</span><span class="o">.</span><span class="n">logsumexp</span><span class="p">(</span><span class="n">log_uweights</span><span class="p">))</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a>        <span class="c1"># Re-sample draws</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>        <span class="n">post_draws</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a>            <span class="n">rs_key</span><span class="p">,</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288"></a>            <span class="n">post_draws</span><span class="p">,</span>
+<a id="__codelineno-0-289" name="__codelineno-0-289"></a>            <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_draws</span><span class="p">,</span> <span class="p">),</span>
+<a id="__codelineno-0-290" name="__codelineno-0-290"></a>            <span class="n">p</span> <span class="o">=</span> <span class="n">weights</span><span class="p">,</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291"></a>            <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292"></a>        <span class="p">)</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293"></a>
+<a id="__codelineno-0-294" name="__codelineno-0-294"></a>        <span class="k">return</span> <span class="n">post_draws</span>
+<a id="__codelineno-0-295" name="__codelineno-0-295"></a>
 <a id="__codelineno-0-296" name="__codelineno-0-296"></a>
-<a id="__codelineno-0-297" name="__codelineno-0-297"></a>
-<a id="__codelineno-0-298" name="__codelineno-0-298"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a>        <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-302" name="__codelineno-0-302"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-303" name="__codelineno-0-303"></a>        <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-304" name="__codelineno-0-304"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-305" name="__codelineno-0-305"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-306" name="__codelineno-0-306"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-307" name="__codelineno-0-307"></a><span class="sd">        Sample a node from the posterior distribution.</span>
-<a id="__codelineno-0-308" name="__codelineno-0-308"></a>
-<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">        Parameters:</span>
-<a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">            node: The name of the node.</span>
-<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">            n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory.</span>
-<a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">            sir: Whether to use sampling-importance-resampling.</span>
-<a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">            key: The PRNG key used to generate samples.</span>
-<a id="__codelineno-0-315" name="__codelineno-0-315"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-316" name="__codelineno-0-316"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
-<a id="__codelineno-0-317" name="__codelineno-0-317"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
-<a id="__codelineno-0-318" name="__codelineno-0-318"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-319" name="__codelineno-0-319"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
-<a id="__codelineno-0-320" name="__codelineno-0-320"></a>
-<a id="__codelineno-0-321" name="__codelineno-0-321"></a>        <span class="c1"># Construct callable to extract node</span>
-<a id="__codelineno-0-322" name="__codelineno-0-322"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<a id="__codelineno-0-323" name="__codelineno-0-323"></a>            <span class="k">return</span> <span class="n">byo</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">node</span><span class="p">))</span>
-<a id="__codelineno-0-324" name="__codelineno-0-324"></a>
-<a id="__codelineno-0-325" name="__codelineno-0-325"></a>        <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
-<a id="__codelineno-0-326" name="__codelineno-0-326"></a>            <span class="c1"># Do sampling-importance-resampling</span>
-<a id="__codelineno-0-327" name="__codelineno-0-327"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sir_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-328" name="__codelineno-0-328"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-329" name="__codelineno-0-329"></a>            <span class="c1"># Do regular sampling</span>
-<a id="__codelineno-0-330" name="__codelineno-0-330"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-297" name="__codelineno-0-297"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>        <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a>        <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a><span class="sd">        Sample a node from the posterior distribution.</span>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>
+<a id="__codelineno-0-308" name="__codelineno-0-308"></a><span class="sd">        Parameters:</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">            node: The name of the node.</span>
+<a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">            n_draws: The number of draws to sample from the posterior.</span>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">            sir: Whether to use sampling-importance-resampling.</span>
+<a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">            key: The PRNG key used to generate samples.</span>
+<a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-316" name="__codelineno-0-316"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
+<a id="__codelineno-0-317" name="__codelineno-0-317"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-319" name="__codelineno-0-319"></a>
+<a id="__codelineno-0-320" name="__codelineno-0-320"></a>        <span class="c1"># Construct callable to extract node</span>
+<a id="__codelineno-0-321" name="__codelineno-0-321"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<a id="__codelineno-0-322" name="__codelineno-0-322"></a>            <span class="k">return</span> <span class="n">byo</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">node</span><span class="p">))</span>
+<a id="__codelineno-0-323" name="__codelineno-0-323"></a>
+<a id="__codelineno-0-324" name="__codelineno-0-324"></a>        <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
+<a id="__codelineno-0-325" name="__codelineno-0-325"></a>            <span class="c1"># Do sampling-importance-resampling</span>
+<a id="__codelineno-0-326" name="__codelineno-0-326"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sir_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-327" name="__codelineno-0-327"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-328" name="__codelineno-0-328"></a>            <span class="c1"># Do regular sampling</span>
+<a id="__codelineno-0-329" name="__codelineno-0-329"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-330" name="__codelineno-0-330"></a>
 <a id="__codelineno-0-331" name="__codelineno-0-331"></a>
-<a id="__codelineno-0-332" name="__codelineno-0-332"></a>
-<a id="__codelineno-0-333" name="__codelineno-0-333"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">predictive</span><span class="p">(</span>
-<a id="__codelineno-0-334" name="__codelineno-0-334"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-335" name="__codelineno-0-335"></a>        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
-<a id="__codelineno-0-336" name="__codelineno-0-336"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-337" name="__codelineno-0-337"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-338" name="__codelineno-0-338"></a>        <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-339" name="__codelineno-0-339"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-340" name="__codelineno-0-340"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="sd">        Generate predictives from the posterior distribution.</span>
-<a id="__codelineno-0-343" name="__codelineno-0-343"></a>
-<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">        Parameters:</span>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">            func: A function that maps the model and a PRNG key to a predictive.</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">            n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory.</span>
-<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">            sir: Whether to use sampling-importance-resampling.</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">            key: The PRNG key used to generate samples.</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-352" name="__codelineno-0-352"></a>            <span class="n">max_batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a>
-<a id="__codelineno-0-354" name="__codelineno-0-354"></a>        <span class="c1"># Split keys</span>
-<a id="__codelineno-0-355" name="__codelineno-0-355"></a>        <span class="n">keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">n_draws</span> <span class="o">//</span> <span class="n">max_batch_size</span><span class="p">)</span>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a>        <span class="c1"># Reconstruct a model and generate a sample of the posterior predictive</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a>        <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span> <span class="n">in_axes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_and_predict</span><span class="p">(</span><span class="n">draw</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-360" name="__codelineno-0-360"></a>            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">reconstruct_model</span><span class="p">(</span><span class="n">draw</span><span class="p">)</span><span class="o">.</span><span class="n">constrain</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-361" name="__codelineno-0-361"></a>
-<a id="__codelineno-0-362" name="__codelineno-0-362"></a>            <span class="c1"># Compute predictive</span>
-<a id="__codelineno-0-363" name="__codelineno-0-363"></a>            <span class="n">obj</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>            <span class="c1"># Coerce from Node if needed</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>                <span class="n">obj</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">obj</span> <span class="c1"># type: ignore</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>
-<a id="__codelineno-0-369" name="__codelineno-0-369"></a>            <span class="k">return</span> <span class="n">obj</span>
-<a id="__codelineno-0-370" name="__codelineno-0-370"></a>
-<a id="__codelineno-0-371" name="__codelineno-0-371"></a>        <span class="c1"># Compute posterior predictive in batches</span>
-<a id="__codelineno-0-372" name="__codelineno-0-372"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">batched_sample</span><span class="p">(</span><span class="n">carry</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Array</span><span class="p">]:</span>
-<a id="__codelineno-0-373" name="__codelineno-0-373"></a>            <span class="c1"># Sample draws</span>
-<a id="__codelineno-0-374" name="__codelineno-0-374"></a>            <span class="n">draws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">max_batch_size</span><span class="p">,</span> <span class="n">sir</span> <span class="o">=</span> <span class="n">sir</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-375" name="__codelineno-0-375"></a>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a>            <span class="c1"># Generate additional keys for each draw</span>
-<a id="__codelineno-0-377" name="__codelineno-0-377"></a>            <span class="n">keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">)</span>
-<a id="__codelineno-0-378" name="__codelineno-0-378"></a>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a>            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reconstruct_and_predict</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
-<a id="__codelineno-0-380" name="__codelineno-0-380"></a>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a>        <span class="c1"># Generate samples of the posterior predictive</span>
-<a id="__codelineno-0-382" name="__codelineno-0-382"></a>        <span class="n">predictive_draws</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span>
-<a id="__codelineno-0-383" name="__codelineno-0-383"></a>            <span class="n">batched_sample</span><span class="p">,</span>
-<a id="__codelineno-0-384" name="__codelineno-0-384"></a>            <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-385" name="__codelineno-0-385"></a>            <span class="n">xs</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span>
-<a id="__codelineno-0-386" name="__codelineno-0-386"></a>            <span class="n">length</span><span class="o">=</span><span class="n">n_draws</span> <span class="o">//</span> <span class="n">max_batch_size</span>
-<a id="__codelineno-0-387" name="__codelineno-0-387"></a>        <span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-<a id="__codelineno-0-388" name="__codelineno-0-388"></a>
-<a id="__codelineno-0-389" name="__codelineno-0-389"></a>        <span class="k">return</span> <span class="n">predictive_draws</span>
+<a id="__codelineno-0-332" name="__codelineno-0-332"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">predictive</span><span class="p">(</span>
+<a id="__codelineno-0-333" name="__codelineno-0-333"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-334" name="__codelineno-0-334"></a>        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
+<a id="__codelineno-0-335" name="__codelineno-0-335"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-337" name="__codelineno-0-337"></a>        <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-338" name="__codelineno-0-338"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-339" name="__codelineno-0-339"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-340" name="__codelineno-0-340"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="sd">        Generate predictives from the posterior distribution.</span>
+<a id="__codelineno-0-342" name="__codelineno-0-342"></a>
+<a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">        Parameters:</span>
+<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">            func: A function that maps the model and a PRNG key to a predictive.</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">            n_draws: The number of draws to sample from the posterior.</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">            sir: Whether to use sampling-importance-resampling.</span>
+<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">            key: The PRNG key used to generate samples.</span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-351" name="__codelineno-0-351"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
+<a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-354" name="__codelineno-0-354"></a>
+<a id="__codelineno-0-355" name="__codelineno-0-355"></a>        <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
+<a id="__codelineno-0-356" name="__codelineno-0-356"></a>            <span class="c1"># Do sampling-importance-resampling</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sir_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a>            <span class="c1"># Do regular sampling</span>
+<a id="__codelineno-0-360" name="__codelineno-0-360"></a>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2480,7 +2422,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/bayinx/posterior.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-333">333</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-332">332</a></span>
+<span class="normal"><a href="#__codelineno-0-333">333</a></span>
 <span class="normal"><a href="#__codelineno-0-334">334</a></span>
 <span class="normal"><a href="#__codelineno-0-335">335</a></span>
 <span class="normal"><a href="#__codelineno-0-336">336</a></span>
@@ -2507,92 +2450,35 @@
 <span class="normal"><a href="#__codelineno-0-357">357</a></span>
 <span class="normal"><a href="#__codelineno-0-358">358</a></span>
 <span class="normal"><a href="#__codelineno-0-359">359</a></span>
-<span class="normal"><a href="#__codelineno-0-360">360</a></span>
-<span class="normal"><a href="#__codelineno-0-361">361</a></span>
-<span class="normal"><a href="#__codelineno-0-362">362</a></span>
-<span class="normal"><a href="#__codelineno-0-363">363</a></span>
-<span class="normal"><a href="#__codelineno-0-364">364</a></span>
-<span class="normal"><a href="#__codelineno-0-365">365</a></span>
-<span class="normal"><a href="#__codelineno-0-366">366</a></span>
-<span class="normal"><a href="#__codelineno-0-367">367</a></span>
-<span class="normal"><a href="#__codelineno-0-368">368</a></span>
-<span class="normal"><a href="#__codelineno-0-369">369</a></span>
-<span class="normal"><a href="#__codelineno-0-370">370</a></span>
-<span class="normal"><a href="#__codelineno-0-371">371</a></span>
-<span class="normal"><a href="#__codelineno-0-372">372</a></span>
-<span class="normal"><a href="#__codelineno-0-373">373</a></span>
-<span class="normal"><a href="#__codelineno-0-374">374</a></span>
-<span class="normal"><a href="#__codelineno-0-375">375</a></span>
-<span class="normal"><a href="#__codelineno-0-376">376</a></span>
-<span class="normal"><a href="#__codelineno-0-377">377</a></span>
-<span class="normal"><a href="#__codelineno-0-378">378</a></span>
-<span class="normal"><a href="#__codelineno-0-379">379</a></span>
-<span class="normal"><a href="#__codelineno-0-380">380</a></span>
-<span class="normal"><a href="#__codelineno-0-381">381</a></span>
-<span class="normal"><a href="#__codelineno-0-382">382</a></span>
-<span class="normal"><a href="#__codelineno-0-383">383</a></span>
-<span class="normal"><a href="#__codelineno-0-384">384</a></span>
-<span class="normal"><a href="#__codelineno-0-385">385</a></span>
-<span class="normal"><a href="#__codelineno-0-386">386</a></span>
-<span class="normal"><a href="#__codelineno-0-387">387</a></span>
-<span class="normal"><a href="#__codelineno-0-388">388</a></span>
-<span class="normal"><a href="#__codelineno-0-389">389</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-333" name="__codelineno-0-333"></a><span class="k">def</span><span class="w"> </span><span class="nf">predictive</span><span class="p">(</span>
-<a id="__codelineno-0-334" name="__codelineno-0-334"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-335" name="__codelineno-0-335"></a>    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
-<a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-337" name="__codelineno-0-337"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-338" name="__codelineno-0-338"></a>    <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-339" name="__codelineno-0-339"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-340" name="__codelineno-0-340"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-342" name="__codelineno-0-342"></a><span class="sd">    Generate predictives from the posterior distribution.</span>
-<a id="__codelineno-0-343" name="__codelineno-0-343"></a>
-<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">        func: A function that maps the model and a PRNG key to a predictive.</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">        n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory.</span>
-<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">        sir: Whether to use sampling-importance-resampling.</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">        key: The PRNG key used to generate samples.</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-351" name="__codelineno-0-351"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="n">max_batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a>
-<a id="__codelineno-0-354" name="__codelineno-0-354"></a>    <span class="c1"># Split keys</span>
-<a id="__codelineno-0-355" name="__codelineno-0-355"></a>    <span class="n">keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">n_draws</span> <span class="o">//</span> <span class="n">max_batch_size</span><span class="p">)</span>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a>    <span class="c1"># Reconstruct a model and generate a sample of the posterior predictive</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a>    <span class="nd">@partial</span><span class="p">(</span><span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">,</span> <span class="n">in_axes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_and_predict</span><span class="p">(</span><span class="n">draw</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-360" name="__codelineno-0-360"></a>        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">reconstruct_model</span><span class="p">(</span><span class="n">draw</span><span class="p">)</span><span class="o">.</span><span class="n">constrain</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<a id="__codelineno-0-361" name="__codelineno-0-361"></a>
-<a id="__codelineno-0-362" name="__codelineno-0-362"></a>        <span class="c1"># Compute predictive</span>
-<a id="__codelineno-0-363" name="__codelineno-0-363"></a>        <span class="n">obj</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="c1"># Coerce from Node if needed</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>            <span class="n">obj</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">obj</span> <span class="c1"># type: ignore</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>
-<a id="__codelineno-0-369" name="__codelineno-0-369"></a>        <span class="k">return</span> <span class="n">obj</span>
-<a id="__codelineno-0-370" name="__codelineno-0-370"></a>
-<a id="__codelineno-0-371" name="__codelineno-0-371"></a>    <span class="c1"># Compute posterior predictive in batches</span>
-<a id="__codelineno-0-372" name="__codelineno-0-372"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">batched_sample</span><span class="p">(</span><span class="n">carry</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Array</span><span class="p">]:</span>
-<a id="__codelineno-0-373" name="__codelineno-0-373"></a>        <span class="c1"># Sample draws</span>
-<a id="__codelineno-0-374" name="__codelineno-0-374"></a>        <span class="n">draws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">max_batch_size</span><span class="p">,</span> <span class="n">sir</span> <span class="o">=</span> <span class="n">sir</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-375" name="__codelineno-0-375"></a>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a>        <span class="c1"># Generate additional keys for each draw</span>
-<a id="__codelineno-0-377" name="__codelineno-0-377"></a>        <span class="n">keys</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">)</span>
-<a id="__codelineno-0-378" name="__codelineno-0-378"></a>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a>        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reconstruct_and_predict</span><span class="p">(</span><span class="n">draws</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
-<a id="__codelineno-0-380" name="__codelineno-0-380"></a>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a>    <span class="c1"># Generate samples of the posterior predictive</span>
-<a id="__codelineno-0-382" name="__codelineno-0-382"></a>    <span class="n">predictive_draws</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span>
-<a id="__codelineno-0-383" name="__codelineno-0-383"></a>        <span class="n">batched_sample</span><span class="p">,</span>
-<a id="__codelineno-0-384" name="__codelineno-0-384"></a>        <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-385" name="__codelineno-0-385"></a>        <span class="n">xs</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span>
-<a id="__codelineno-0-386" name="__codelineno-0-386"></a>        <span class="n">length</span><span class="o">=</span><span class="n">n_draws</span> <span class="o">//</span> <span class="n">max_batch_size</span>
-<a id="__codelineno-0-387" name="__codelineno-0-387"></a>    <span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-<a id="__codelineno-0-388" name="__codelineno-0-388"></a>
-<a id="__codelineno-0-389" name="__codelineno-0-389"></a>    <span class="k">return</span> <span class="n">predictive_draws</span>
+<span class="normal"><a href="#__codelineno-0-360">360</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-332" name="__codelineno-0-332"></a><span class="k">def</span><span class="w"> </span><span class="nf">predictive</span><span class="p">(</span>
+<a id="__codelineno-0-333" name="__codelineno-0-333"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-334" name="__codelineno-0-334"></a>    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
+<a id="__codelineno-0-335" name="__codelineno-0-335"></a>    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-337" name="__codelineno-0-337"></a>    <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-338" name="__codelineno-0-338"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-339" name="__codelineno-0-339"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-340" name="__codelineno-0-340"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-341" name="__codelineno-0-341"></a><span class="sd">    Generate predictives from the posterior distribution.</span>
+<a id="__codelineno-0-342" name="__codelineno-0-342"></a>
+<a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">        func: A function that maps the model and a PRNG key to a predictive.</span>
+<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">        n_draws: The number of draws to sample from the posterior.</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">        sir: Whether to use sampling-importance-resampling.</span>
+<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">        key: The PRNG key used to generate samples.</span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
+<a id="__codelineno-0-352" name="__codelineno-0-352"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-354" name="__codelineno-0-354"></a>
+<a id="__codelineno-0-355" name="__codelineno-0-355"></a>    <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
+<a id="__codelineno-0-356" name="__codelineno-0-356"></a>        <span class="c1"># Do sampling-importance-resampling</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sir_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a>        <span class="c1"># Do regular sampling</span>
+<a id="__codelineno-0-360" name="__codelineno-0-360"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2603,7 +2489,7 @@
 
 
 <h3 id="bayinx.posterior.Posterior.sample" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">sample</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Array</span></code>
+            <code class="highlight language-python"><span class="n">sample</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Array</span></code>
 
 <a href="#bayinx.posterior.Posterior.sample" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -2685,7 +2571,7 @@
               </div>
             </td>
             <td>
-                  <code>True</code>
+                  <code>False</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2710,7 +2596,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/bayinx/posterior.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-298">298</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-297">297</a></span>
+<span class="normal"><a href="#__codelineno-0-298">298</a></span>
 <span class="normal"><a href="#__codelineno-0-299">299</a></span>
 <span class="normal"><a href="#__codelineno-0-300">300</a></span>
 <span class="normal"><a href="#__codelineno-0-301">301</a></span>
@@ -2741,40 +2628,39 @@
 <span class="normal"><a href="#__codelineno-0-326">326</a></span>
 <span class="normal"><a href="#__codelineno-0-327">327</a></span>
 <span class="normal"><a href="#__codelineno-0-328">328</a></span>
-<span class="normal"><a href="#__codelineno-0-329">329</a></span>
-<span class="normal"><a href="#__codelineno-0-330">330</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-298" name="__codelineno-0-298"></a><span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
-<a id="__codelineno-0-299" name="__codelineno-0-299"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-300" name="__codelineno-0-300"></a>    <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-302" name="__codelineno-0-302"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<a id="__codelineno-0-303" name="__codelineno-0-303"></a>    <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-304" name="__codelineno-0-304"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-305" name="__codelineno-0-305"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
-<a id="__codelineno-0-306" name="__codelineno-0-306"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-307" name="__codelineno-0-307"></a><span class="sd">    Sample a node from the posterior distribution.</span>
-<a id="__codelineno-0-308" name="__codelineno-0-308"></a>
-<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">        node: The name of the node.</span>
-<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">        n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory.</span>
-<a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">        sir: Whether to use sampling-importance-resampling.</span>
-<a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">        key: The PRNG key used to generate samples.</span>
-<a id="__codelineno-0-315" name="__codelineno-0-315"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-316" name="__codelineno-0-316"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
-<a id="__codelineno-0-317" name="__codelineno-0-317"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
-<a id="__codelineno-0-318" name="__codelineno-0-318"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-319" name="__codelineno-0-319"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
-<a id="__codelineno-0-320" name="__codelineno-0-320"></a>
-<a id="__codelineno-0-321" name="__codelineno-0-321"></a>    <span class="c1"># Construct callable to extract node</span>
-<a id="__codelineno-0-322" name="__codelineno-0-322"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-<a id="__codelineno-0-323" name="__codelineno-0-323"></a>        <span class="k">return</span> <span class="n">byo</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">node</span><span class="p">))</span>
-<a id="__codelineno-0-324" name="__codelineno-0-324"></a>
-<a id="__codelineno-0-325" name="__codelineno-0-325"></a>    <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
-<a id="__codelineno-0-326" name="__codelineno-0-326"></a>        <span class="c1"># Do sampling-importance-resampling</span>
-<a id="__codelineno-0-327" name="__codelineno-0-327"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sir_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-0-328" name="__codelineno-0-328"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-329" name="__codelineno-0-329"></a>        <span class="c1"># Do regular sampling</span>
-<a id="__codelineno-0-330" name="__codelineno-0-330"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-329">329</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-297" name="__codelineno-0-297"></a><span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-299" name="__codelineno-0-299"></a>    <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300"></a>    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302"></a>    <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-306" name="__codelineno-0-306"></a><span class="sd">    Sample a node from the posterior distribution.</span>
+<a id="__codelineno-0-307" name="__codelineno-0-307"></a>
+<a id="__codelineno-0-308" name="__codelineno-0-308"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">        node: The name of the node.</span>
+<a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">        n_draws: The number of draws to sample from the posterior.</span>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">        sir: Whether to use sampling-importance-resampling.</span>
+<a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">        key: The PRNG key used to generate samples.</span>
+<a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-316" name="__codelineno-0-316"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
+<a id="__codelineno-0-317" name="__codelineno-0-317"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-319" name="__codelineno-0-319"></a>
+<a id="__codelineno-0-320" name="__codelineno-0-320"></a>    <span class="c1"># Construct callable to extract node</span>
+<a id="__codelineno-0-321" name="__codelineno-0-321"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<a id="__codelineno-0-322" name="__codelineno-0-322"></a>        <span class="k">return</span> <span class="n">byo</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">node</span><span class="p">))</span>
+<a id="__codelineno-0-323" name="__codelineno-0-323"></a>
+<a id="__codelineno-0-324" name="__codelineno-0-324"></a>    <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
+<a id="__codelineno-0-325" name="__codelineno-0-325"></a>        <span class="c1"># Do sampling-importance-resampling</span>
+<a id="__codelineno-0-326" name="__codelineno-0-326"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sir_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-327" name="__codelineno-0-327"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-328" name="__codelineno-0-328"></a>        <span class="c1"># Do regular sampling</span>
+<a id="__codelineno-0-329" name="__codelineno-0-329"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reg_sample</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
