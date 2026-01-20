@@ -33,7 +33,6 @@ def test_inference():
 
     # Get posterior
     rate_draws = posterior.sample('rate', int(1e6))
-    shape_draws = posterior.sample('shape', int(1e6))
 
     # Confirm approximation is accurate
     # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = mean(x)
