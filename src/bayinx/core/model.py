@@ -1,11 +1,8 @@
 from abc import abstractmethod
 from dataclasses import field, fields
 from typing import (
-    Dict,
     Optional,
     Self,
-    Tuple,
-    Type,
     get_origin,
     get_type_hints,
 )
@@ -19,12 +16,12 @@ from bayinx.constraints import Identity, Interval, Lower, Upper
 from bayinx.core.context import Target, _model_context, model_context
 from bayinx.core.node import Node
 from bayinx.core.types import HasConstraint
-from bayinx.core.utils import _extract_shape_params, _resolve_shape_spec
+from bayinx.core.utils import _extract_obj, _extract_shape_params, _resolve_shape_spec
 from bayinx.nodes import Continuous, Observed, Stochastic
 
 
 def define(
-    shape: Optional[int | str | Tuple[int | str, ...]] = None,
+    shape: Optional[int | str | tuple[int | str, ...]] = None,
     init: Optional[PyTree] = None,
     lower: Optional[float] = None,
     upper: Optional[float] = None
@@ -51,7 +48,7 @@ def define(
             #...
         ```
     """
-    metadata: Dict = {}
+    metadata: dict = {}
 
     if shape is not None:
         metadata["shape"] = shape
@@ -128,7 +125,7 @@ class Model(eqx.Module):
         }
 
         # Grab node types
-        node_types: dict[str, Type[Node]] = {
+        node_types: dict[str, type[Node]] = {
             k: get_origin(v) or v
             for k, v in get_type_hints(cls).items()
         }
@@ -202,7 +199,7 @@ class Model(eqx.Module):
 
         return filter_spec
 
-    def filter_for(self, node_type: Type[Stochastic]) -> Self:
+    def filter_for(self, node_type: type[Stochastic]) -> Self:
         """
         Generates a filter specification to subset stochastic elements of a certain type of the model.
         """
@@ -224,7 +221,7 @@ class Model(eqx.Module):
         return filter_spec
 
 
-    def constrain(self, jacobian: bool = True) -> Tuple[Self, Scalar]:
+    def constrain(self, jacobian: bool = True) -> tuple[Self, Scalar]:
         """
         Constrain nodes to the appropriate domain.
 
@@ -239,9 +236,12 @@ class Model(eqx.Module):
             node = getattr(self, f.name)
 
             # Check if node has a constraint
-            if isinstance(node, HasConstraint):
+            if isinstance(node, Stochastic) and isinstance(node, HasConstraint):
+                # Extract object and filter specification
+                obj, filter_spec = _extract_obj(node)
+
                 # Apply constraint
-                obj, log_jac = node._constraint.constrain(node.obj, node._filter_spec)
+                obj, log_jac = node._constraint.constrain(obj, filter_spec)
 
                 # Update values with constrained counterpart
                 model = eqx.tree_at(

@@ -32,7 +32,7 @@ def test_inference():
     posterior.fit()
 
     # Get posterior
-    rate_draws = posterior.sample('rate', int(1e6))
+    rate_draws = posterior.sample('mean', int(1e6))
 
     # Confirm approximation is accurate
     # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = mean(x)

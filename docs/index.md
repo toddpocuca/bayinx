@@ -77,7 +77,7 @@ Once fitted, you can sample from the approximated posterior distribution to get 
 
 ```py
 # Sample the posterior distribution for 'mean'
-mean_draws = posterior.sample('mean', int(1e7), max_batch_size = 100_000)
+mean_draws = posterior.sample('mean', int(1e7), 100_000)
 
 print(f"Analytic Posterior Mean for 'mean': {x_data.mean():.4f}")
 print(f"Posterior Mean Estimate for 'mean': {mean_draws.mean():.4f}")

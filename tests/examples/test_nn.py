@@ -43,7 +43,8 @@ class NeuralNetworkModel(byx.Model):
 
     def model(self, target):
         # Set prior
-        self.nn << Normal(0.0, 3.0)
+        self.nn.layers[0] << Normal(0.0, 3.0)
+        self.nn.layers[2] << Normal(0.0, 0.1)
 
         # Compute expected response
         mu = self.nn(self.x)

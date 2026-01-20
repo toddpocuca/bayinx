@@ -43,30 +43,73 @@ class Node[T: PyTree](eqx.Module):
         return node_filter_spec
 
     # Wrappers around internal dunder methods ----
+    def __getattribute__(self, name: str) -> Any:
+        # Look up attribute in node
+        try:
+            return super().__getattribute__(name)
+        except AttributeError:
+            import bayinx.ops as byo
+
+            # Extract internal object from node
+            obj = byo.obj(self)
+
+            # Look up attribute in internal object
+            try:
+                attr = getattr(obj, name)
+            except AttributeError:
+                # Raise an error that mentions both levels of lookup
+                raise AttributeError(
+                    f"'{type(self).__name__}' object and its internal "
+                    f"'{type(obj).__name__}' have no attribute '{name}'"
+                ) from None
+
+            # Wrap method to return nodes
+            if callable(attr):
+                def node_wrapper(*args, **kwargs):
+                    # Unwrap any Node arguments
+                    unwrapped_args = [arg.obj if isinstance(arg, Node) else arg for arg in args]
+                    unwrapped_kwargs = {k: (v.obj if isinstance(v, Node) else v) for k, v in kwargs.items()}
+
+                    result = attr(*unwrapped_args, **unwrapped_kwargs)
+
+                    # Wrap result as a node
+                    return Node(result, True)
+
+                return node_wrapper
+
+            # Wrap attribute as a node
+            return Node(attr, True)
+
     def __getitem__(self, key: Any) -> "Node":
         if isinstance(key, Node):
             raise TypeError("Subsetting nodes with nodes is not yet supported.")
 
+        # Extract object and filter_spec
+        obj, filter_spec = _extract_obj(self)
+
         # Subset internally
-        new_obj = self.obj[key]
-        if type(self.obj) is type(self._filter_spec):
-            new_filter_spec = self._filter_spec[key]
+        new_obj = obj[key]
+        if type(obj) is type(filter_spec):
+            new_filter_spec = filter_spec[key]
         else:
-            new_filter_spec = self._filter_spec
+            new_filter_spec = filter_spec
 
         # Create new subsetted node
         return type(self)(new_obj, new_filter_spec)
 
     def __iter__(self) -> Iterator["Node"]:
-        # Handle cases where _filter_spec is a scalar (e.g., bool) or 0-d array
-        if isinstance(self._filter_spec, Iterable):
-            specs = self._filter_spec
-        else:
-            # Broadcast the scalar spec (bool, int, or 0-d array)
-            specs = itertools.repeat(self._filter_spec)
+        # Extract object and filter_spec
+        obj, filter_spec = _extract_obj(self)
 
-        for obj_i, spec_i in zip(self.obj, specs):
-            # Create a new Node for the current element
+        # Handle cases where _filter_spec is a scalar (e.g., bool) or 0-d array
+        if isinstance(filter_spec, Iterable):
+            specs = filter_spec
+        else:
+            # Broadcast scalar specification
+            specs = itertools.repeat(filter_spec)
+
+        for obj_i, spec_i in zip(obj, specs):
+            # Create a new node for the current element
             yield Node(obj_i, spec_i)
 
     ## Arithmetic ----
