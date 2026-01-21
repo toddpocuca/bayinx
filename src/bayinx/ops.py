@@ -102,7 +102,7 @@ def asarray(node: Node[ArrayLike]) -> Node[Array]:
 
     # Slot in array
     node = eqx.tree_at(
-        lambda node: node.obj,
+        lambda node: node._byx__obj,
         node,
         node_obj
     )
