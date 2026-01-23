@@ -981,10 +981,10 @@
 \]</div>
 <p>where <span class="arithmatex">\(y_i \in \mathbb{R}\)</span> denotes our response variable, <span class="arithmatex">\(\mathbf{x}_i^\top \in \mathbb{R}^p\)</span> denotes our predictors structured as a vector, and <span class="arithmatex">\(\mathbf{\beta} \in \mathbb{R}^p\)</span> denotes the true parameters we wish to estimate.</p>
 <p>or put in another way:</p>
-<p>$$
+<div class="arithmatex">\[
     y_i = \mathbf{x}_i^\top \mathbf{\beta} + \epsilon_i
-$$
-where <span class="arithmatex">\(\epsilon_i \sim \text{Normal}(0, \sigma)\)</span>. But since these two formulations are equivalent, we will use the first.</p>
+\]</div>
+<p>where <span class="arithmatex">\(\epsilon_i \sim \text{Normal}(0, \sigma)\)</span>. But since these two formulations are equivalent, we will use the first.</p>
 <h2 id="translating-to-bayinx">Translating to Bayinx<a class="headerlink" href="#translating-to-bayinx" title="Permanent link">&para;</a></h2>
 <p>In Bayinx, model definitions are Python classes inheriting from <code>bayinx.Model</code>, and just as we defined the objects we used above in our model equations, we similarly have to declare the objects we wish to use in our model:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
