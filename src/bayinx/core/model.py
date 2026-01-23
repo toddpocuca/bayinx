@@ -241,11 +241,11 @@ class Model(eqx.Module):
                 obj, filter_spec = _extract_obj(node)
 
                 # Apply constraint
-                obj, log_jac = node._constraint.constrain(obj, filter_spec)
+                obj, log_jac = node._byx__constraint.constrain(obj, filter_spec)
 
                 # Update values with constrained counterpart
                 model = eqx.tree_at(
-                    where=lambda model: getattr(model, f.name).obj,
+                    where=lambda model: getattr(model, f.name)._byx__obj,
                     pytree=model,
                     replace=obj,
                 )

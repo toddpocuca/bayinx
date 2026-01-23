@@ -9,7 +9,7 @@ from bayinx.nodes import Continuous, Observed
 
 
 # Define model
-class SimpleBinomialModel(byx.Model):
+class SimpleGammaModel(byx.Model):
     mean: Continuous[Scalar] = define(shape = (), lower = 0)
     shape: Continuous[Scalar] = define(shape = (), lower = 0)
 
@@ -18,14 +18,15 @@ class SimpleBinomialModel(byx.Model):
     def model(self, target):
         self.x << Gamma(mean = self.mean, shape = self.shape)
 
+
 # Simulate sample
 n_obs = 1000
-x: Array = jr.gamma(jr.key(0), 2, (n_obs, )) * 5
+x: Array = jr.gamma(jr.key(0), 2, (n_obs, ))
 
 def test_inference():
     # Define posterior
     posterior = byx.Posterior(
-        SimpleBinomialModel,
+        SimpleGammaModel,
         x = x
     )
     posterior.configure([DiagAffine()])

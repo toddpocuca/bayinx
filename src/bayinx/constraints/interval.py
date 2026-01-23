@@ -2,7 +2,7 @@ from typing import Any, Tuple
 
 import jax.numpy as jnp
 import jax.tree as jt
-from jaxtyping import PyTree, Scalar, ScalarLike
+from jaxtyping import PyTree, Scalar
 
 from bayinx.core.constraint import Constraint
 
@@ -20,7 +20,9 @@ class Interval(Constraint):
     lb: Scalar
     ub: Scalar
 
-    def __init__(self, lb: ScalarLike, ub: ScalarLike):
+    def __init__(self, lb: int | float | Scalar, ub: int | float | Scalar):
+        lb, ub = float(lb), float(ub)
+
         self.lb = jnp.asarray(lb)
         self.ub = jnp.asarray(ub)
 

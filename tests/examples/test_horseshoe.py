@@ -22,7 +22,7 @@ class HorseshoeModel(byx.Model):
 def test_inference():
     # Define posterior
     posterior = byx.Posterior(HorseshoeModel)
-    posterior.configure([FullAffine()] + [Sylvester(2)] * 20)
+    posterior.configure([FullAffine()] + [Sylvester(2)] * 16)
     posterior.fit(learning_rate = 2e-4, max_iters = 500_000, grad_draws = 8, max_batch_size = 8)
 
     # Get posterior samples

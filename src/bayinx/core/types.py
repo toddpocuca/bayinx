@@ -13,6 +13,6 @@ class HasConstraint[T: PyTree](Protocol):
     Protocol for probabilistic nodes that have constraints.
     """
 
-    obj: T
-    _filter_spec: PyTree
-    _constraint: Constraint
+    _byx__obj: T
+    _byx__filter_spec: PyTree
+    _byx__constraint: Constraint

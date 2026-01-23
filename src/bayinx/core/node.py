@@ -14,8 +14,8 @@ class Node[T: PyTree](eqx.Module):
 
 
     # Attributes
-    - `obj`: An internal realization of the node.
-    - `_filter_spec`: An internal filter specification for `obj`.
+    - `_byx__obj`: An internal realization of the node.
+    - `_byx__filter_spec`: An internal filter specification for `obj`.
     """
 
     _byx__obj: T
@@ -42,7 +42,7 @@ class Node[T: PyTree](eqx.Module):
 
         return node_filter_spec
 
-    # Wrappers around internal dunder methods ----
+
     def __getattribute__(self, name: str) -> Any:
         # Look up attribute in node
         try:
@@ -79,6 +79,7 @@ class Node[T: PyTree](eqx.Module):
             # Wrap attribute as a node
             return Node(attr, True)
 
+    # Wrappers around internal dunder methods ----
     def __getitem__(self, key: Any) -> "Node":
         if isinstance(key, Node):
             raise TypeError("Subsetting nodes with nodes is not yet supported.")

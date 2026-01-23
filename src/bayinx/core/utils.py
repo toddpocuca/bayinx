@@ -1,9 +1,10 @@
-
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import jax.tree as jt
 from jaxtyping import PyTree
 
+if TYPE_CHECKING:
+    from bayinx.core.node import Node
 
 def _extract_shape_params(shape_spec: int | str | tuple[int | str, ...]) -> set[str]:
     """
@@ -61,9 +62,9 @@ def _resolve_shape_spec(
 
     return tuple(resolved_spec)
 
-def _extract_obj[T: PyTree](x: T) -> tuple[T, PyTree]:
+def _extract_obj[T: PyTree](x: "Node[T]" | T) -> tuple[T, PyTree]:
     """
-    Extract the object and its (potentially implicit) filter specification.
+    Extract an object and its (potentially implicit) filter specification.
     """
     from bayinx.core.node import Node
 

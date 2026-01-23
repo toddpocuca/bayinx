@@ -2,7 +2,7 @@ from typing import Any, Tuple
 
 import jax.numpy as jnp
 import jax.tree as jt
-from jaxtyping import PyTree, Scalar, ScalarLike
+from jaxtyping import PyTree, Scalar
 
 from bayinx.core.constraint import Constraint
 
@@ -17,7 +17,9 @@ class Upper(Constraint):
 
     ub: Scalar
 
-    def __init__(self, ub: ScalarLike):
+    def __init__(self, ub: int | float | Scalar):
+        ub = float(ub)
+
         self.ub = jnp.asarray(ub)
 
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:

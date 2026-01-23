@@ -9,7 +9,7 @@ from bayinx.nodes import Continuous, Observed
 
 
 # Define model
-class SimpleBinomialModel(byx.Model, init=False):
+class SimpleBinomialModel(byx.Model):
     p: Continuous[Scalar] = define(shape = (), lower = 0, upper = 1)
 
     x: Observed[Array] = define(shape = 'n_obs', lower = 0)
@@ -35,7 +35,7 @@ def test_inference():
     posterior.fit()
 
     # Get posterior
-    p_draws = posterior.sample('p', int(1e6))
+    p_draws = posterior.sample('p', int(2e6))
 
     # Confirm approximation is accurate
     # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = mean(x)

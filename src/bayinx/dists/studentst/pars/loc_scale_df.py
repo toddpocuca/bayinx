@@ -3,53 +3,54 @@ from typing import Tuple
 import jax.numpy as jnp
 import jax.random as jr
 from jax.scipy.stats import t as jsst_t
-from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 PI = 3.141592653589793
 
-def _prob(x: Real[ArrayLike, "..."], df: Real[ArrayLike, "..."], loc: Real[ArrayLike, "..."], scale: Real[ArrayLike, "..."]) -> Real[Array, "..."]:
+def _prob(x: ArrayLike, df: ArrayLike, loc: ArrayLike, scale: ArrayLike) -> Array:
     return jnp.exp(_logprob(x, df, loc, scale))
 
 def _logprob(
-    x: Real[ArrayLike, "..."],
-    df: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    df: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike
+) -> Array:
     x, df, loc, scale = jnp.asarray(x), jnp.asarray(df), jnp.asarray(loc), jnp.asarray(scale)
 
     return jsst_t.logpdf(x, df, loc, scale)
 
-#def _cdf(x: Real[ArrayLike, "..."], df: Real[ArrayLike, "..."], loc: Real[ArrayLike, "..."], scale: Real[ArrayLike, "..."]) -> Real[Array, "..."]:
+#def _cdf(x: ArrayLike, df: ArrayLike, loc: ArrayLike, scale: ArrayLike) -> Array:
 #    pass
 
-#def _logcdf(x: Real[ArrayLike, "..."], df: Real[ArrayLike, "..."], loc: Real[ArrayLike, "..."], scale: Real[ArrayLike, "..."]) -> Real[Array, "..."]:
+#def _logcdf(x: ArrayLike, df: ArrayLike, loc: ArrayLike, scale: ArrayLike) -> Array:
 #    pass
 
-#def _ccdf(x: Real[ArrayLike, "..."], df: Real[ArrayLike, "..."], loc: Real[ArrayLike, "..."], scale: Real[ArrayLike, "..."]) -> Real[Array, "..."]:
+#def _ccdf(x: ArrayLike, df: ArrayLike, loc: ArrayLike, scale: ArrayLike) -> Array:
 #    pass
 
-#def _logccdf(x: Real[ArrayLike, "..."], df: Real[ArrayLike, "..."], loc: Real[ArrayLike, "..."], scale: Real[ArrayLike, "..."]) -> Real[Array, "..."]:
+#def _logccdf(x: ArrayLike, df: ArrayLike, loc: ArrayLike, scale: ArrayLike) -> Array:
 #    pass
 
 class LocScaleStudentsT(Parameterization):
     """
     A location-scale parameterization of the Student's T distribution.
     """
-    df: Node[Real[Array, "..."]]
-    loc: Node[Real[Array, "..."]]
-    scale: Node[Real[Array, "..."]]
+    df: Node[Array]
+    loc: Node[Array]
+    scale: Node[Array]
 
     def __init__(
         self,
-        df: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        loc: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        scale: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        df: ArrayObject,
+        loc: ArrayObject,
+        scale: ArrayObject
     ):
         for name, val in [("df", df), ("loc", loc), ("scale", scale)]:
             if isinstance(val, Node):

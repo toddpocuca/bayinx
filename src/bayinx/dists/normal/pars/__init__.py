@@ -1,3 +1,3 @@
-from .mean_prec import MeanPrecisionNormal as MeanPrecisionNormal
-from .mean_scale import MeanScaleNormal as MeanScaleNormal
-from .mean_var import MeanVarNormal as MeanVarNormal
+from .loc_prec import LocPrecisionNormal as LocPrecisionNormal
+from .loc_scale import LocScaleNormal as LocScaleNormal
+from .loc_var import LocVarNormal as LocVarNormal

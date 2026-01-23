@@ -3,20 +3,21 @@ from typing import Tuple
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
-from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 PI = 3.141592653589793
 
 def _prob(
-    x: Real[ArrayLike, "..."],
-    mean: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    mean: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
@@ -24,21 +25,24 @@ def _prob(
 
 
 def _logprob(
-    x: Real[ArrayLike, "..."],
-    mean: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    mean: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
-    return -jnp.log(jnp.sqrt(2.0 * PI)) - jnp.log(scale) - 0.5 * jnp.square((x - mean) / scale)
+    # Compute variance
+    var = jnp.square(scale)
+
+    return -0.5 * (jnp.log(2.0 * PI * var) + jnp.square(x - mean) / var)
 
 
 def _cdf(
-    x: Real[ArrayLike, "..."],
-    mean: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    mean: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
@@ -46,10 +50,10 @@ def _cdf(
 
 
 def _logcdf(
-    x: Real[ArrayLike, "..."],
-    mean: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    mean: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
@@ -57,10 +61,10 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Real[ArrayLike, "..."],
-    mean: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    mean: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
@@ -68,10 +72,10 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Real[ArrayLike, "..."],
-    mean: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    mean: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
 
@@ -79,18 +83,18 @@ def _logccdf(
 
 
 
-class MeanScaleNormal(Parameterization):
+class LocScaleNormal(Parameterization):
     """
     A mean-scale parameterization of the normal distribution.
     """
 
-    mean: Node[Real[Array, "..."]]
-    scale: Node[Real[Array, "..."]]
+    mean: Node[Array]
+    scale: Node[Array]
 
     def __init__(
         self,
-        mean: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        scale: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        mean: ArrayObject,
+        scale: ArrayObject
     ):
         # Initialize mean parameter
         if isinstance(mean, Node):

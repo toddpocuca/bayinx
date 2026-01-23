@@ -20,6 +20,7 @@ or put in another way:
 $$
     y_i = \mathbf{x}_i^\top \mathbf{\beta} + \epsilon_i
 $$
+
 where $\epsilon_i \sim \text{Normal}(0, \sigma)$. But since these two formulations are equivalent, we will use the first.
 
 ## Translating to Bayinx
