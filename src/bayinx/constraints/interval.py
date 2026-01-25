@@ -2,10 +2,9 @@ from typing import Any, Tuple
 
 import jax.numpy as jnp
 import jax.tree as jt
-from jaxtyping import PyTree, Scalar, ScalarLike
+from jaxtyping import PyTree, Scalar
 
 from bayinx.core.constraint import Constraint
-from bayinx.core.types import T
 
 
 class Interval(Constraint):
@@ -21,11 +20,13 @@ class Interval(Constraint):
     lb: Scalar
     ub: Scalar
 
-    def __init__(self, lb: ScalarLike, ub: ScalarLike):
+    def __init__(self, lb: int | float | Scalar, ub: int | float | Scalar):
+        lb, ub = float(lb), float(ub)
+
         self.lb = jnp.asarray(lb)
         self.ub = jnp.asarray(ub)
 
-    def constrain(self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
+    def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the scaled Sigmoid transformation to the leaves of a `PyTree` and
         computes the log-Jacobian adjustment.
@@ -61,14 +62,14 @@ class Interval(Constraint):
 
         return obj, log_jac
 
-    def check(self, obj: T, filter_spec: PyTree) -> bool:
+    def check[T: PyTree](self, obj: T, filter_spec: PyTree) -> bool:
         """
         Checks if all relevant leaves of `obj` are in the interval [lb, ub].
         """
         def check_leaf(leaf: Any, filter: bool):
             if filter:
                 # Check constraint
-                return jnp.all(self.lb <= leaf & leaf <= self.ub)
+                return jnp.all((self.lb <= leaf) & (leaf <= self.ub))
             else:
                 return True
 

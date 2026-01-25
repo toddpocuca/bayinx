@@ -1,5 +1,8 @@
 from .bernoulli.distribution import Bernoulli as Bernoulli
 from .binomial.distribution import Binomial as Binomial
+from .cauchy.distribution import Cauchy as Cauchy
 from .exponential.distribution import Exponential as Exponential
+from .gamma.distribution import Gamma as Gamma
 from .normal.distribution import Normal as Normal
 from .poisson.distribution import Poisson as Poisson
+from .studentst.distribution import StudentsT as StudentsT

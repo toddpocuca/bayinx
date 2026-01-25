@@ -2,10 +2,9 @@ from typing import Any, Tuple
 
 import jax.numpy as jnp
 import jax.tree as jt
-from jaxtyping import PyTree, Scalar, ScalarLike
+from jaxtyping import PyTree, Scalar
 
 from bayinx.core.constraint import Constraint
-from bayinx.core.types import T
 
 
 class Lower(Constraint):
@@ -14,17 +13,32 @@ class Lower(Constraint):
 
     # Attributes
     - `lb`: The lower bound.
+
+    Definition:
+        The constraint is defined as:
+
+            $$
+            y = \\exp(x) + \\text{lb}
+            $$
+
+        Which has a log-Jacobian adjustment of:
+
+            $$
+            \\log |\\frac{dy}{dx}| = \\log |\\exp(x)| = \\log \\exp(x) = x
+            $$
+
     """
 
     lb: Scalar
 
-    def __init__(self, lb: ScalarLike):
+    def __init__(self, lb: int | float | Scalar):
+        lb = float(lb)
         self.lb = jnp.asarray(lb)
 
-    def constrain(self, obj: T, filter_spec: T) -> Tuple[T, Scalar]:
+    def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the exponential transformation to the leaves of a `PyTree` and
-        computes the log-Jacobian adjustment of the transformation.
+        computes the log-Jacobian adjustment of the transformation.\\
 
         # Parameters
         - `x`: The unconstrained `PyTree`.
@@ -41,11 +55,11 @@ class Lower(Constraint):
             nonlocal log_jac  # Reference outer variable
 
             if filter:
-                # Apply transformation
-                constrained = jnp.exp(leaf) + self.lb
-
                 # Accumulate Jacobian adjustment
                 log_jac = log_jac + jnp.sum(leaf)
+
+                # Apply transformation
+                constrained = jnp.exp(leaf) + self.lb
 
                 return constrained
             else:
@@ -56,7 +70,7 @@ class Lower(Constraint):
 
         return obj, log_jac
 
-    def check(self, obj: T, filter_spec: PyTree) -> bool:
+    def check[T: PyTree](self, obj: T, filter_spec: PyTree) -> bool:
         """
         Checks if all relevant leaves of `obj` are greater than or equal to `lb`.
         """

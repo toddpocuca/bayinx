@@ -9,11 +9,11 @@ from jaxtyping import Scalar
 _model_context = threading.local()
 
 
+# Getting around lack of mutability with JAX
 @dataclass
 class Target:
     value: Scalar
 
-    # Define relevant methods to get around lack of explicit mutability in JAX
     def __iadd__(self, other):
         self.value = self.value + other
         return self

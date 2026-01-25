@@ -7,46 +7,46 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-    "languages": {
-        "Python": {
-            "language_servers": ["ty", "ruff"],
-            "format_on_save": "on",
-            "formatter": [
-                {
-                    "code_actions": {
-                        "source.fixAll.ruff": true,
-                        "source.organizeImports.ruff": true
-                    }
-                }
-            ]
-        },
-        "Markdown": {
-            "tab_size": 4
+  "languages": {
+    "Python": {
+      "language_servers": ["ty", "ruff", "!basedpyright"],
+      "format_on_save": "on",
+      "formatter": [
+        {
+          "code_actions": {
+            "source.fixAll.ruff": true,
+            "source.organizeImports.ruff": true
+          }
         }
+      ]
     },
-    "inlay_hints": {
-        "enabled": true
-    },
-    "lsp": {
-        "ty": {
-            "settings": {
-                "inlayHints": {}
-            }
-        },
-        "ruff": {
-            "initialization_options": {
-                "settings": {
-                    "lineLength": 90,
-                    "lint": {
-                        "extendSelect": ["I"]
-                    }
-                }
-            }
-        }
-    },
-    "git": {
-        "inline_blame": {
-            "enabled": false
-        }
+    "Markdown": {
+      "tab_size": 4
     }
+  },
+  "inlay_hints": {
+    "enabled": true
+  },
+  "lsp": {
+    "ty": {
+      "settings": {
+        "inlayHints": {}
+      }
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          "lineLength": 90,
+          "lint": {
+            "extendSelect": ["I"]
+          }
+        }
+      }
+    }
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": false
+    }
+  }
 }

@@ -5,17 +5,16 @@ import jax.tree as jt
 from jaxtyping import PyTree
 
 from bayinx.core.node import Node
-from bayinx.core.types import T
 
 
-class Observed(Node[T]):
+class Observed[T: PyTree](Node[T]):
     """
     A container for observed nodes of a probabilistic model.
 
 
-    # Attributes
-    - `obj`: An internal realization of the node.
-    - `_filter_spec`: An internal filter specification for `obj`.
+    Attributes:
+        obj: An internal realization of the node.
+        _filter_spec: An internal filter specification for `obj`.
     """
 
     def __init__(
@@ -32,5 +31,5 @@ class Observed(Node[T]):
                 replace=jt.map(eqx.is_array_like, obj),
             )
 
-        self.obj = obj
-        self._filter_spec = filter_spec
+        self._byx__obj = obj
+        self._byx__filter_spec = filter_spec

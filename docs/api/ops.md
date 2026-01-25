@@ -1,0 +1,3 @@
+# Operations
+
+::: bayinx.ops

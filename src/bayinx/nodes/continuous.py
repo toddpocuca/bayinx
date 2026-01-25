@@ -8,7 +8,6 @@ from jaxtyping import Array, PyTree
 
 from bayinx.constraints import Identity
 from bayinx.core.constraint import Constraint
-from bayinx.core.types import T
 from bayinx.nodes.stochastic import Stochastic
 
 
@@ -28,18 +27,18 @@ def is_float_like(element: Any) -> bool:
         return isinstance(element, float)
 
 
-class Continuous(Stochastic[T]):
+class Continuous[T: PyTree](Stochastic[T]):
     """
     A container for continuous stochastic nodes of a probabilistic model.
 
 
-    # Attributes
-    - `obj`: An internal realization of the node.
-    - `_filter_spec`: An internal filter specification for `obj`.
-    - `_constraint`: A constraining transformation.
+    Attributes:
+        obj: An internal realization of the node.
+        _filter_spec: An internal filter specification for `obj`.
+        _constraint: A constraining transformation.
     """
 
-    _constraint: Constraint
+    _byx__constraint: Constraint
 
 
     def __init__(
@@ -59,6 +58,6 @@ class Continuous(Stochastic[T]):
                 replace=jt.map(is_float_like, obj),
             )
 
-        self.obj = obj
-        self._filter_spec = filter_spec
-        self._constraint = constraint
+        self._byx__obj = obj
+        self._byx__filter_spec = filter_spec
+        self._byx__constraint = constraint

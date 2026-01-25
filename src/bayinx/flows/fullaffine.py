@@ -1,7 +1,6 @@
 from typing import Callable, Dict, Tuple
 
 import equinox as eqx
-import jax
 import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, Float, PRNGKeyArray, Scalar
@@ -57,6 +56,7 @@ class FullAffineLayer(FlowLayer):
 
     @eqx.filter_jit
     def forward(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        # Get constrained parameters
         params = self.transform_params()
 
         # Extract parameters
@@ -64,60 +64,85 @@ class FullAffineLayer(FlowLayer):
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
         # Compute forward transformation
-        draws = (scale @ draws.T).T + shift
+        draws = draws @ scale + shift
 
         return draws
 
     def __adjust(self, draw: Float[Array, " n_dim"]) -> Float[Array, " n_dim"]:
         params = self.transform_params()
 
-        # Extract parameters
+        # Extract relevant parameters
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
-        # Compute log-Jacobian adjustments
-        log_jac: Array = jnp.log(jnp.diag(scale)).sum()
+        # Compute log-Jacobian adjustment
+        log_jac: Scalar = -jnp.log(jnp.diag(scale)).sum()
 
         assert log_jac.shape == ()
 
         return log_jac
 
     @eqx.filter_jit
-    def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        f = jax.vmap(self.__adjust, 0)
-        return f(draws)
-
-    def __forward_and_adjust(self, draw: Float[Array, " n_dim"]) -> Tuple[Float[Array, " n_dim"], Scalar]:
+    def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, " n_draws"]:
+        # Get constrained parameters
         params = self.transform_params()
 
-        assert len(draw.shape) == 1
+        # Extract relevant parameters
+        scale: Float[Array, "n_dim n_dim"] = params["scale"]
+
+        # Compute log-Jacobian adjustment
+        log_jacs = jnp.full((draws.shape[0]), -jnp.log(jnp.diag(scale)).sum())
+
+        return log_jacs
+
+    @eqx.filter_jit
+    def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Float[Array, " n_draws"]]:
+        # Get constrained parameters
+        params = self.transform_params()
 
         # Extract parameters
         shift: Float[Array, " n_dim"] = params["shift"]
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
+        # Compute log-Jacobian adjustment
+        log_jacs = jnp.full((draws.shape[0]), -jnp.log(jnp.diag(scale)).sum())
+
         # Compute forward transformation
-        draw = (scale @ draw.T).T + shift
+        draws = draws @ scale + shift
 
-        assert len(draw.shape) == 1
-
-        # Compute log_jac
-        log_jac: Scalar = jnp.log(jnp.diag(scale)).sum()
-
-        assert log_jac.shape == ()
-
-        return draw, log_jac
-
-    @eqx.filter_jit
-    def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
-        f = jax.vmap(self.__forward_and_adjust, 0)
-        return f(draws)
+        return draws, log_jacs
 
 
 class FullAffine(FlowSpec):
+    """
+    A specification for the full affine flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{L z} + \\mathbf{c}$
+
+        Where $\\mathbf{z} \\in \\mathbb{R}^D$, $\\mathbf{L} \\in \\mathbb{R}^{D, D}$ is lower triangular with a non-negative diagonal, and $\\mathbf{c} \\in \\mathbb{R}^D$.
+
+    Attributes:
+        key: The PRNG key used to generate the full affine flow layer.
+    """
     key: PRNGKeyArray
 
     def __init__(self, key: PRNGKeyArray = jr.key(0)):
+        """
+        Initializes the specification for a full affine flow.
+
+        Parameters:
+            key: A PRNG key used to generate the full affine flow.
+        """
         self.key = key
 
     def construct(self, dim: int) -> FullAffineLayer:
+        """
+        Constructs a full affine flow layer.
+
+        Parameters:
+            dim: The dimension of the parameter space.
+
+        Returns:
+            A FullAffineLayer of dimension `dim`.
+        """
         return FullAffineLayer(dim, self.key)

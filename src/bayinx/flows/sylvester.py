@@ -11,22 +11,18 @@ from bayinx.core.flow import FlowLayer, FlowSpec
 
 
 def _h(x: Array) -> Array:
-    """Non-linearity for Sylvester flow."""
     return jnp.tanh(x)
 
-
 def _dh(x: Array) -> Array:
-    """Derivative of the non-linearity."""
-    return 1.0 - jnp.tanh(x)**2
-
+    return 1.0 - jnp.square(jnp.tanh(x))
 
 def _construct_orthogonal(vectors: Float[Array, " dim rank"]) -> Float[Array, " dim rank"]:
     """
-    Constructs a D x M orthogonal matrix (Q) using Householder reflections.
+    Constructs a thin orthogonal matrix using Householder reflections.
     """
     D, M = vectors.shape
 
-    # Initialize Q as the thin identity matrix (first M columns of I_D)
+    # Initialize Q as the thin identity matrix
     Q_initial = jnp.eye(D, M)
 
     def apply_reflection(Q_current, v_k):
@@ -77,86 +73,87 @@ class SylvesterLayer(FlowLayer):
         self.static = False
         self.rank = rank
 
+        # Split key
         k1, k2, k3, k4 = jr.split(key, 4)
 
         # Initialize parameters
-        # hvecs: D x M matrix where each column is a Householder vector
         self.params = {
-            "hvecs": jr.normal(k1, (dim, rank)) / dim**0.5,
-            "r1": jr.normal(k2, (rank, rank)) / rank**0.5,
-            "r2": jr.normal(k3, (rank, rank)) / rank**0.5,
-            "b": jr.normal(k4, (rank,)) / rank**0.5,
+            "Q": jr.normal(k1, (dim, rank)) * 0.1 / (dim * rank)**0.5,
+            "R1": jr.normal(k2, (rank, rank)) * 0.1 / rank,
+            "R2": jr.normal(k3, (rank, rank)) * 0.1 / rank,
+            "shift": jr.normal(k4, (rank,)) * 0.1 / rank**0.5,
+            "scale": 0.55 + jr.normal(k4, (rank,)) * 0.1 / rank**0.5
         }
 
-        # Constraint for Upper Triangular matrices with positive diagonal
-        def constrain_triangular(matrix: Array):
-            # Extract diagonal and apply exponential to ensure invertibility
-            diag: Array = jnp.exp(jnp.diag(matrix))
-            # Return upper triangular matrix with modified diagonal
-            return jnp.fill_diagonal(jnp.triu(matrix), diag, inplace=False)
-
         self.constraints = {
-            "r1": constrain_triangular,
-            "r2": constrain_triangular
+            "Q": lambda hvecs: hvecs / jnp.linalg.norm(hvecs, axis = 0),
+            "R1": jnp.triu,
+            "R2": jnp.triu,
+            "scale": jnp.exp
         }
 
     def transform_params(self) -> Dict[str, Array]:
         """
-        Applies constraints and constructs the orthogonal matrix Q.
+        Constructs the orthonormal matrix Q, and constrains R2 based on R1 to ensure invertibility.
         """
-        constrained = self.constrain_params()
+        params = self.constrain_params()
+        eps = jnp.finfo(jnp.array(0.0)).eps.item()
 
-        # Construct orthogonal matrix
-        q = _construct_orthogonal(constrained["hvecs"])
-        constrained["q"] = q
+        # Extract relevant parameters
+        hvecs = params["Q"]
+        R1 = params["R1"]
+        R2 = params["R2"]
 
-        return constrained
+        # Construct orthogonal matrix from householder vectors
+        params["Q"] = _construct_orthogonal(hvecs)
 
-    def __forward(self, draw: Float[Array, " n_dim"]) -> Float[Array, " n_dim"]:
-        params = self.transform_params()
+        # Constrain diagonals of R2 to ensure invertibility
+        R1_diag = jnp.diag(R1)
+        R1_diag = jnp.sign(R1_diag) * (jnp.maximum(jnp.abs(R1_diag), eps))
+        R2_diag = (jnp.exp(jnp.diag(R2)) - 1.0) / R1_diag
+        params["R2"] = jnp.fill_diagonal(R2, R2_diag, inplace = False)
 
+        return params
+
+    def __forward(self, draw: Float[Array, " n_dim"], params: Dict[str, Array]) -> Float[Array, " n_dim"]:
         # Extract parameters
-        Q: Float[Array, "dim rank"] = params["q"]
-        R1: Float[Array, "rank rank"] = params["r1"]
-        R2: Float[Array, "rank rank"] = params["r2"]
-        b: Float[Array, " rank"] = params["b"]
-
-        # Compute inner terms
-        y = R2.dot(Q.T.dot(draw)) + b
-        h_y = _h(y)
+        Q: Float[Array, "dim rank"] = params["Q"]
+        R1: Float[Array, "rank rank"] = params["R1"]
+        R2: Float[Array, "rank rank"] = params["R2"]
+        shift: Float[Array, " rank"] = params["shift"]
+        scale: Float[Array, " rank"] = params["scale"]
 
         # Compute forward transform
-        draw = draw + Q.dot(R1.dot(h_y))
+        draw = draw + Q @ R1 @ (scale * _h(( R2 @ Q.T @ draw - shift) / scale))
 
         return draw
 
     @eqx.filter_jit
     def forward(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        f = jax.vmap(self.__forward, 0)
-        return f(draws)
-
-    def __adjust(self, draw: Float[Array, " n_dim"]) -> Scalar:
+        # Extract constrained parameters
         params = self.transform_params()
 
+        f = jax.vmap(self.__forward, (0, None))
+        return f(draws, params)
+
+    def __adjust(self, draw: Float[Array, " n_dim"], params: Dict[str, Array]) -> Scalar:
         # Extract parameters
-        Q: Float[Array, "dim rank"] = params["q"]
-        R1: Float[Array, "rank rank"] = params["r1"]
-        R2: Float[Array, "rank rank"] = params["r2"]
-        b: Float[Array, " rank"] = params["b"]
+        Q: Float[Array, "dim rank"] = params["Q"]
+        R1: Float[Array, "rank rank"] = params["R1"]
+        R2: Float[Array, "rank rank"] = params["R2"]
+        shift: Float[Array, " rank"] = params["shift"]
+        scale: Float[Array, " rank"] = params["scale"]
 
-        # Recompute the argument to the nonlinearity
-        term = R2.dot(Q.T.dot(draw)) + b
-        diag_h_prime = _dh(term)
+        # Compute inner derivative term
+        dh_term = _dh(( R2 @ Q.T @ draw - shift) / scale)
 
-        # Diagonal of R1 and R2
-        d_r1 = jnp.diag(R1)
-        d_r2 = jnp.diag(R2)
+        # Extract diagonals
+        R1_diag = jnp.diag(R1)
+        R2_diag = jnp.diag(R2)
 
-        # Diagonal term of the matrix (I + diag(h') R2 R1)
-        # diag_term_i = 1 + h'_i * (R2_ii * R1_ii)
-        diag_term = 1.0 + diag_h_prime * d_r2 * d_r1
-
-        log_jac = jnp.sum(jnp.log(diag_term))
+        # Compute log-Jacobian adjustment
+        derivs = 1 + dh_term * R2_diag * R1_diag
+        log_jac = -jnp.sum(jnp.log(jnp.abs(derivs)))
 
         assert log_jac.shape == ()
 
@@ -164,62 +161,86 @@ class SylvesterLayer(FlowLayer):
 
     @eqx.filter_jit
     def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        f = jax.vmap(self.__adjust, 0)
-        return f(draws)
-
-    def __forward_and_adjust(self, draw: Float[Array, " n_dim"]) -> Tuple[Float[Array, " n_dim"], Scalar]:
+        # Extract constrained parameters
         params = self.transform_params()
 
-        Q: Float[Array, "dim rank"] = params["q"]
-        R1: Float[Array, "rank rank"] = params["r1"]
-        R2: Float[Array, "rank rank"] = params["r2"]
-        b: Float[Array, " rank"] = params["b"]
+        f = jax.vmap(self.__adjust, (0, None))
+        return f(draws, params)
 
-        # --- Forward ---
-        q_z = jnp.dot(Q.T, draw)
-        arg = jnp.dot(R2, q_z) + b
+    def __forward_and_adjust(self, draw: Float[Array, " n_dim"], params: Dict[str, Array]) -> Tuple[Float[Array, " n_dim"], Scalar]:
+        # Extract parameters
+        Q: Float[Array, "dim rank"] = params["Q"]
+        R1: Float[Array, "rank rank"] = params["R1"]
+        R2: Float[Array, "rank rank"] = params["R2"]
+        shift: Float[Array, " rank"] = params["shift"]
+        scale: Float[Array, " rank"] = params["scale"]
 
-        # h(arg)
-        h_y = _h(arg)
+        # Compute shared inner term
+        shared_term = ( R2 @ Q.T @ draw - shift) / scale
 
-        # Update
-        term = jnp.dot(R1, h_y)
-        draw_new = draw + jnp.dot(Q, term)
+        # Compute derivative term
+        dh_term = _dh(shared_term)
 
-        # --- Adjust ---
-        # Derivative h'(arg)
-        diag_h_prime = _dh(arg)
+        # Extract diagonals
+        R1_diag = jnp.diag(R1)
+        R2_diag = jnp.diag(R2)
 
-        # Diagonals of triangular matrices
-        d_r1 = jnp.diag(R1)
-        d_r2 = jnp.diag(R2)
+        # Compute log-Jacobian adjustment
+        derivs = 1 + dh_term * R2_diag * R1_diag
+        log_jac = -jnp.sum(jnp.log(jnp.abs(derivs)))
 
-        # Log-det of triangular matrix
-        diag_term = 1.0 + diag_h_prime * d_r2 * d_r1
-        log_jac = jnp.sum(jnp.log(jnp.abs(diag_term)))
+        # Compute forward transform
+        draw = draw + Q @ R1 @ (scale * _h(shared_term))
 
-        assert len(draw_new.shape) == 1
+        assert len(draw.shape) == 1
         assert log_jac.shape == ()
 
-        return draw_new, log_jac
+        return draw, log_jac
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
-        f = jax.vmap(self.__forward_and_adjust, 0)
-        return f(draws)
+        # Extract constrained parameters
+        params = self.transform_params()
 
+        f = jax.vmap(self.__forward_and_adjust, (0, None))
+        return f(draws, params)
 
 class Sylvester(FlowSpec):
     """
     A specification for the Sylvester flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{z} + \\mathbf{Q} \\mathbf{R}_1 h(\\mathbf{R}_2 \\mathbf{Q}^\\top \\mathbf{z} + \\mathbf{b})$
+
+    Attributes:
+        rank: The rank of the Sylvester flow (number of hidden units).
+        key: The PRNG key used to generate a Sylvester flow layer.
     """
     rank: int
+    key: PRNGKeyArray
 
-    def __init__(self, rank: int):
+    def __init__(self, rank: int, key: PRNGKeyArray = jr.key(0)):
+        """
+        Initializes the specification for a Sylvester flow.
+
+        Parameters:
+            rank: The rank of the transformation (number of hidden units).
+            key: A PRNG key used to generate the flow layer.
+        """
         self.rank = rank
+        self.key = key
 
     def construct(self, dim: int) -> SylvesterLayer:
+        """
+        Constructs a Sylvester flow layer.
+
+        Parameters:
+            dim: The dimension of the parameter space.
+
+        Returns:
+            A SylvesterLayer of dimension `dim` and rank `self.rank`.
+        """
         if self.rank > dim:
             raise ValueError(f"Rank {self.rank} cannot be greater than dimension {dim}.")
 
-        return SylvesterLayer(dim, self.rank)
+        return SylvesterLayer(dim, self.rank, self.key)

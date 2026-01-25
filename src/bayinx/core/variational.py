@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from functools import partial
-from typing import Callable, Generic, Self, Tuple, TypeVar
+from typing import Callable, Self, Tuple
 
 import equinox as eqx
 import jax
@@ -8,21 +8,21 @@ import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import optax as opx
-from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
+from jaxtyping import Array, Bool, PRNGKeyArray, Scalar
 from optax import GradientTransformation, OptState
 
 from bayinx.core.model import Model
+from bayinx.core.progress import close_progress, update_progress
 
-M = TypeVar("M", bound=Model)
 
-class Variational(eqx.Module, Generic[M]):
+class Variational[M: Model](eqx.Module):
     """
-    An abstract base class used to define variational methods.
+    An abstract base class used to define variational inference methods.
 
-    # Attributes
-    - `dim`: The dimension of the support.
-    - `_unflatten`: A function to transform draws from the variational distribution back to a `Model`.
-    - `_static`: The static component of a partitioned `Model` used to initialize the `Variational` object.
+    Attributes:
+        dim: The dimension of the parameter space.
+        _unflatten: A function to transform draws from the variational distribution back to a `Model`.
+        _static: The static component of a partitioned `Model` used to initialize the `Variational` object.
     """
     dim: int
     _unflatten: Callable[[Array], M]
@@ -66,7 +66,7 @@ class Variational(eqx.Module, Generic[M]):
         pass
 
     @abstractmethod
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, PyTree]:
+    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, M]:
         """
         Evaluate the ELBO and its gradient.
         """
@@ -104,39 +104,58 @@ class Variational(eqx.Module, Generic[M]):
         learning_rate: float,
         tolerance: float,
         grad_draws: int,
-        batch_size: int,
+        max_batch_size: int,
         key: PRNGKeyArray = jr.key(0),
+        verbose: bool = True,
+        print_rate: int = 5000
     ) -> Self:
         """
         Optimize the variational distribution.
         """
+        # Create unique identifier for optimization loop
+        loop_id = jr.key_data(key).sum()
+
+        # Determine actual batch size for ELBO & gradient computations
+        grad_batch_size = grad_draws if max_batch_size >= grad_draws else max_batch_size
+
         # Partition variational
         dyn, static = eqx.partition(self, self.filter_spec)
 
-        # Construct scheduler
-        schedule = opx.cosine_decay_schedule(
+        # Construct schedulers
+        lr_schedule: Callable = opx.cosine_decay_schedule(
             learning_rate,
-            max_iters
+            max_iters,
+            jnp.finfo(jnp.array(0.0)).eps.item()
         )
 
         # Initialize optimizer
         optim: GradientTransformation = opx.chain(
-            opx.scale(-1.0), opx.adam(schedule, nesterov = True) # replace learning_rate with scheduler
+            opx.scale(-1.0),
+            opx.adamax(lr_schedule)
         )
         opt_state: OptState = optim.init(dyn)
 
-        def condition(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]):
+        # Initialize progress bar
+        if verbose:
+            update_progress(loop_id, 0, max_iters, "Fitting Variational Approximation", print_rate)
+
+        # Helper functions for optimization loop
+        def condition(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Bool[Array, ""]:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 
             return i < max_iters
 
-        def body(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]):
+        def body(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Tuple[Self, OptState, Scalar, PRNGKeyArray]:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 
             # Update iteration
             i = i + 1
+
+            # Update progress bar
+            if verbose:
+                update_progress(loop_id, i, max_iters, "Fitting Variational Approximation", print_rate)
 
             # Update PRNG key
             key, _ = jr.split(key)
@@ -144,12 +163,12 @@ class Variational(eqx.Module, Generic[M]):
             # Reconstruct variational
             vari: Self = eqx.combine(dyn, static)
 
-            # Compute gradient of the ELBO for update
-            update: M = vari.elbo_grad(grad_draws, batch_size, key)
+            # Compute ELBO gradient
+            update: M = vari.elbo_grad(grad_draws, grad_batch_size, key)
 
             # Transform update through optimizer
             update, opt_state = optim.update( # type: ignore
-                update, opt_state, eqx.filter(dyn, dyn.filter_spec) # type: ignore
+                update, opt_state, dyn # type: ignore
             )
 
             # Update variational distribution
@@ -158,11 +177,14 @@ class Variational(eqx.Module, Generic[M]):
             return dyn, opt_state, i, key
 
         # Run optimization loop
-        dyn = lax.while_loop(
+        dyn, _, iter, _ = lax.while_loop(
             cond_fun=condition,
             body_fun=body,
             init_val=(dyn, opt_state, jnp.array(0, jnp.uint32), key),
-        )[0]
+        )
+
+        # Close progress bar
+        close_progress(loop_id, iter)
 
         # Return optimized variational
         return eqx.combine(dyn, static)

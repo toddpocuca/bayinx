@@ -1,6 +1,6 @@
 [project]
 name = "bayinx"
-version = "0.5.7"
+version = "0.6.7"
 description = "Bayesian Inference with JAX"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -12,6 +12,7 @@ dependencies = [
     "optax>=0.2.4",
     "bayinx-example",
     "arviz>=0.22.0",
+    "tqdm>=4.67.1",
 ]
 authors = [{ name = "Todd Pocuca" }]
 maintainers = [{ name = "Todd Pocuca" }]
@@ -26,34 +27,20 @@ packages = ["src/bayinx"]
 [tool.pytest.ini_options]
 addopts = "-q --benchmark-min-rounds=30 --benchmark-columns=rounds,mean,median,stddev --benchmark-group-by=func"
 
-[tool.bumpversion]
-current_version = "0.5.7"
-parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
-serialize = ["{major}.{minor}.{patch}"]
-search = "{current_version}"
-replace = "{new_version}"
-regex = false
-ignore_missing_version = false
-ignore_missing_files = false
-tag = true
-sign_tags = false
-tag_name = "v{new_version}"
-tag_message = "Bump version: {current_version} → {new_version}"
-allow_dirty = false
-commit = true
-message = "Bump version: {current_version} → {new_version}"
-moveable_tags = []
-commit_args = ""
-setup_hooks = []
-pre_commit_hooks = []
-post_commit_hooks = []
-
 [dependency-groups]
 cuda = [
     "jax[cuda]>=0.8.0",
 ]
 dev = [
-    "pdoc>=16.0.0",
+    "cairocffi>=1.7.1",
+    "lets-plot>=4.8.1",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.0",
+    "mkdocstrings[python]>=1.0.0",
+    "plotnine>=0.15.2",
+    "polars>=1.36.1",
+    "pyarrow>=22.0.0",
+    "pymdown-extensions>=10.18",
     "pytest>=8.3.5",
     "pytest-benchmark>=5.1.0",
 ]

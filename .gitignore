@@ -13,9 +13,8 @@ wheels/
 
 # Other
 .ruff_cache
-
-# My stuff
 uv.lock
+<<<<<<< HEAD
 
 # emacs chaff
 *~
@@ -25,3 +24,4 @@ uv.lock
 
 # bmb uv project
 bayinx_example/
+site/

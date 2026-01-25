@@ -1,10 +1,10 @@
 from typing import Tuple
 
-import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -17,7 +17,7 @@ def _prob(
     # Cast to Array
     x, q = jnp.asarray(x), jnp.asarray(q)
 
-    return lax.exp(_logprob(x,q))
+    return jnp.exp(_logprob(x,q))
 
 
 def _logprob(
@@ -27,7 +27,7 @@ def _logprob(
     # Cast to Array
     x, q = jnp.asarray(x), jnp.asarray(q)
 
-    return x * lax.log1p(q) + (1.0 - x) * lax.log1p(q)
+    return x * jnp.log1p(q) + (1.0 - x) * jnp.log(q)
 
 
 def _cdf(
@@ -54,7 +54,7 @@ def _logcdf(
     return jnp.where(
         x < 0.0,
         -jnp.inf,
-        jnp.where(x < 1.0, lax.log(q), 0.0)
+        jnp.where(x < 1.0, jnp.log(q), 0.0)
     )
 
 
@@ -82,7 +82,7 @@ def _logccdf(
     return jnp.where(
         x < 0.0,
         0.0,
-        jnp.where(x < 1.0, lax.log1p(-q), -jnp.inf)
+        jnp.where(x < 1.0, jnp.log1p(-q), -jnp.inf)
     )
 
 
@@ -99,13 +99,19 @@ class ProbFailureBernoulli(Parameterization):
     ):
         # Initialize probability of success
         if isinstance(q, Node):
-            if isinstance(q.obj, ArrayLike):
+            if isinstance(byo.obj(q), ArrayLike):
                 self.q = q # type: ignore
         else:
             self.q = Observed(jnp.asarray(q))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.q.obj)
+        # Extract probability of failure
+        q = byo.obj(self.q)
+
+        return _logprob(x, q)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.bernoulli(key, self.q.obj, shape)
+        # Extract probability of success
+        p = 1.0 - byo.obj(self.q)
+
+        return jr.bernoulli(key, p, shape)

@@ -1,11 +1,12 @@
-
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Optional
 
 import jax.tree as jt
 from jaxtyping import PyTree
 
+if TYPE_CHECKING:
+    from bayinx.core.node import Node
 
-def _extract_shape_params(shape_spec: int | str | Tuple[int | str, ...]) -> set[str]:
+def _extract_shape_params(shape_spec: int | str | tuple[int | str, ...]) -> set[str]:
     """
     Extract parameter names from shape specification.
     """
@@ -20,9 +21,9 @@ def _extract_shape_params(shape_spec: int | str | Tuple[int | str, ...]) -> set[
     return params
 
 def _resolve_shape_spec(
-    shape_spec: None | int | str | Tuple[int | str, ...],
-    shape_values: Dict[str, int]
-) -> None | Tuple[int, ...]:
+    shape_spec: None | int | str | tuple[int | str, ...],
+    shape_values: dict[str, int]
+) -> None | tuple[int, ...]:
     """
     Replaces named dimensions in a shape specification with their integer or tuple values.
 
@@ -37,7 +38,7 @@ def _resolve_shape_spec(
     if isinstance(shape_spec, (int, str)):
         shape_spec = (shape_spec,)
 
-    resolved_spec: List[int] = []
+    resolved_spec: list[int] = []
     for dim in shape_spec:
         if isinstance(dim, str):
             if dim in shape_values:
@@ -61,25 +62,25 @@ def _resolve_shape_spec(
 
     return tuple(resolved_spec)
 
-def _extract_obj(x: Any) -> Tuple[Any, Any]:
+def _extract_obj[T: PyTree](x: "Node[T]" | T) -> tuple[T, PyTree]:
     """
-    Extract the object and its (potentially implicit) filter specification.
+    Extract an object and its (potentially implicit) filter specification.
     """
     from bayinx.core.node import Node
 
     if isinstance(x, Node):
-        obj = x.obj
-        filter_spec = x._filter_spec
+        obj = x._byx__obj
+        filter_spec = x._byx__filter_spec
     else:
-        obj: Any = x # type: ignore
+        obj: Any = x
         filter_spec = True # implicit filter specification
 
     return (obj, filter_spec)
 
 
 def _merge_filter_specs(
-    filter_specs: List[PyTree],
-    objs: Optional[List[PyTree]] = None,
+    filter_specs: list[PyTree],
+    objs: Optional[list[PyTree]] = None,
     obj: Optional[PyTree] = None
 ) -> PyTree:
     """
@@ -92,9 +93,9 @@ def _merge_filter_specs(
         return all(args)
 
     if objs is None and obj is None:
-        filter_spec: Any = jt.map(_merge, *filter_specs) # type: ignore
+        filter_spec: Any = jt.map(_merge, *filter_specs)
     else:
-        selected_specs: List[PyTree] = []
+        selected_specs: list[PyTree] = []
 
         # Include filter specs whose objects share the correct type
         for cur_obj, cur_spec in zip(objs, filter_specs): # type: ignore

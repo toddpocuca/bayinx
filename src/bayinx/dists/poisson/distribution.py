@@ -11,6 +11,10 @@ from .pars import LogRatePoisson, RatePoisson
 class Poisson(Distribution):
     """
     A Poisson distribution.
+
+    Parameters:
+        rate: Parameterizes a Poisson distribution by its rate.
+        log_rate: Parameterizes a Poisson distribution by the log-transformed rate.
     """
 
     par: Parameterization

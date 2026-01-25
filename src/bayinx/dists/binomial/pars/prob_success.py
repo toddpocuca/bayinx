@@ -1,11 +1,11 @@
 from typing import Tuple
 
-import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
 
+import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
 from bayinx.nodes import Observed
@@ -24,7 +24,7 @@ def _prob(
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return lax.exp(_logprob(x, n, p))
+    return jnp.exp(_logprob(x, n, p))
 
 
 def _logprob(
@@ -35,7 +35,7 @@ def _logprob(
     # Cast to Array
     k, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return _log_binom_coeff(n, k) + k * lax.log(p) + (n - k) * lax.log1p(-p)
+    return _log_binom_coeff(n, k) + k * jnp.log(p) + (n - k) * jnp.log1p(-p)
 
 
 def _cdf(
@@ -57,7 +57,7 @@ def _logcdf(
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return lax.log(_cdf(x, n, p)) # TODO
+    return jnp.log(_cdf(x, n, p)) # TODO
 
 
 def _ccdf(
@@ -79,7 +79,7 @@ def _logccdf(
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
-    return lax.log(_ccdf(x, n, p)) # TODO
+    return jnp.log(_ccdf(x, n, p)) # TODO
 
 
 class ProbSuccessBinomial(Parameterization):
@@ -97,20 +97,28 @@ class ProbSuccessBinomial(Parameterization):
     ):
         # Initialize number of trials
         if isinstance(n, Node):
-            if isinstance(n.obj, ArrayLike):
+            if isinstance(n._byx__obj, ArrayLike):
                 self.n = n # type: ignore
         else:
             self.n = Observed(jnp.asarray(n))
 
         # Initialize probability of success
         if isinstance(p, Node):
-            if isinstance(p.obj, ArrayLike):
+            if isinstance(p._byx__obj, ArrayLike):
                 self.p = p # type: ignore
         else:
             self.p = Observed(jnp.asarray(p))
 
     def logprob(self, x: ArrayLike) -> Scalar:
-        return _logprob(x, self.n.obj, self.p.obj)
+        # Extract parameters
+        n = byo.obj(self.n)
+        p = byo.obj(self.p)
+
+        return _logprob(x, n, p)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
-        return jr.binomial(key, self.n.obj, self.p.obj, shape)
+        # Extract parameters
+        n = byo.obj(self.n)
+        p = byo.obj(self.p)
+
+        return jr.binomial(key, n, p, shape)

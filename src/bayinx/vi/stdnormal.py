@@ -7,13 +7,14 @@ import jax.tree_util as jtu
 from jax.flatten_util import ravel_pytree
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
-from bayinx.core.variational import M, Variational
+from bayinx.core.model import Model
+from bayinx.core.variational import Variational
 from bayinx.dists.normal.pars.mean_scale import _logprob
 
 
-class Standard(Variational[M]):
+class StandardNormal[M: Model](Variational[M]):
     """
-    A standard normal approximation to a posterior distribution.
+    A standard normal approximation of a posterior distribution.
 
     # Attributes
     - `dim`: The dimension of the support.
@@ -41,9 +42,7 @@ class Standard(Variational[M]):
         # Sample variational draws
         draws: Array = jr.normal(key=key, shape=(n, self.dim))
 
-        # Shape checks
         assert len(draws.shape) == 2
-
         return draws
 
     @eqx.filter_jit

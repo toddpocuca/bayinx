@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 jobs:
   build_release_publish:
@@ -21,6 +22,8 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
+          cache-dependency-glob: |
+            **/pyproject.toml
 
       - name: Set up Python using uv
         run: uv python install 3.13

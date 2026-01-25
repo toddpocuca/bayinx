@@ -1,11 +1,8 @@
 from abc import abstractmethod
 from dataclasses import field, fields
 from typing import (
-    Dict,
     Optional,
     Self,
-    Tuple,
-    Type,
     get_origin,
     get_type_hints,
 )
@@ -16,29 +13,42 @@ import jax.tree as jt
 from jaxtyping import PyTree, Scalar
 
 from bayinx.constraints import Identity, Interval, Lower, Upper
-from bayinx.core.context import _model_context, model_context
+from bayinx.core.context import Target, _model_context, model_context
 from bayinx.core.node import Node
 from bayinx.core.types import HasConstraint
-from bayinx.core.utils import _extract_shape_params, _resolve_shape_spec
+from bayinx.core.utils import _extract_obj, _extract_shape_params, _resolve_shape_spec
 from bayinx.nodes import Continuous, Observed, Stochastic
 
 
 def define(
-    shape: Optional[int | str | Tuple[int | str, ...]] = None,
+    shape: Optional[int | str | tuple[int | str, ...]] = None,
     init: Optional[PyTree] = None,
     lower: Optional[float] = None,
     upper: Optional[float] = None
 ):
     """
-    Define a stochastic node.
+    Define a node.
 
-    # Parameters
-    - `shape`: Specify the shape of the node.
-    - `init`: Specify the node in the definition.
-    - `lower`: Enforce a lower bound on a stochastic node.
-    - `upper`: Enforce an upper bound on a stochastic bode.
+    Parameters:
+        shape: Specify the shape of the node.
+        init: Specify the node in the definition.
+        lower: Enforce a lower bound.
+        upper: Enforce an upper bound.
+
+    Example:
+        ```py
+        from bayinx import Model, define
+        from bayinx.nodes import Continuous, Observed
+
+
+        class MyModel(Model):
+            my_stoch_node: Continuous = define(shape = 'n_pars', lower = 0, upper = 1)
+            my_obs_node: Observed = define(shape = 'n_obs', lower = 0)
+
+            #...
+        ```
     """
-    metadata: Dict = {}
+    metadata: dict = {}
 
     if shape is not None:
         metadata["shape"] = shape
@@ -63,6 +73,25 @@ def define(
 class Model(eqx.Module):
     """
     A base class used to define probabilistic models.
+
+    Example:
+        ```py
+        import bayinx as byx
+        import bayinx.nodes as byn
+        import bayinx.dists as byd
+
+
+        class MyModel(byx.Model):
+            mu: byn.Continuous = byx.define(shape = ())
+            sigma: byn.Continuous = byx.define(shape = (), lower = 0)
+
+            x: byn.Continuous = byx.define(shape = 'n_obs')
+
+            def model(self, target):
+                self.x << byd.Normal(self.mu, self.sigma)
+
+                return target
+        ```
     """
 
     def __init_subclass__(cls, **kwargs):
@@ -96,7 +125,10 @@ class Model(eqx.Module):
         }
 
         # Grab node types
-        node_types: dict[str, Type[Node]] = {k: get_origin(v) for k, v in get_type_hints(cls).items()}
+        node_types: dict[str, type[Node]] = {
+            k: get_origin(v) or v
+            for k, v in get_type_hints(cls).items()
+        }
 
 
         # Auto-initialize parameters based on field metadata and type annotations
@@ -136,7 +168,7 @@ class Model(eqx.Module):
                 node = Observed(obj)
 
                 # Check constraints (if available)
-                if not node_defn.metadata['constraint'].check(node.obj, node._filter_spec):
+                if not node_defn.metadata['constraint'].check(obj, node._byx__filter_spec):
                     raise ValueError(f"Observed values for '{node_defn.name}' do not satisfy constraint '{node_defn.metadata['constraint']}'.")
 
                 setattr(self, node_defn.name, Observed(obj))
@@ -152,7 +184,7 @@ class Model(eqx.Module):
         # Generate empty specification
         filter_spec: Self = jt.map(lambda _: False, self)
 
-        for f in fields(self): # type: ignore
+        for f in fields(self):
             # Extract attribute
             node: Node = getattr(self, f.name)
 
@@ -167,14 +199,14 @@ class Model(eqx.Module):
 
         return filter_spec
 
-    def filter_for(self, node_type: Type[Stochastic]) -> Self:
+    def filter_for(self, node_type: type[Stochastic]) -> Self:
         """
         Generates a filter specification to subset stochastic elements of a certain type of the model.
         """
         # Generate empty specification
         filter_spec: Self = jt.map(lambda _: False, self)
 
-        for f in fields(self): # type: ignore
+        for f in fields(self):
             # Extract node
             node: Node = getattr(self, f.name)
 
@@ -189,7 +221,7 @@ class Model(eqx.Module):
         return filter_spec
 
 
-    def constrain(self, jacobian: bool = True) -> Tuple[Self, Scalar]:
+    def constrain(self, jacobian: bool = True) -> tuple[Self, Scalar]:
         """
         Constrain nodes to the appropriate domain.
 
@@ -197,45 +229,48 @@ class Model(eqx.Module):
         A tuple containing the constrained `Model` object and the log-Jacobian adjustment.
         """
         model: Self = self
-        target: Scalar = jnp.array(0.0)
+        total: Scalar = jnp.array(0.0)
 
-        for f in fields(self): # type: ignore
+        for f in fields(self):
             # Extract attribute
             node = getattr(self, f.name)
 
             # Check if node has a constraint
-            if isinstance(node, HasConstraint):
+            if isinstance(node, Stochastic) and isinstance(node, HasConstraint):
+                # Extract object and filter specification
+                obj, filter_spec = _extract_obj(node)
+
                 # Apply constraint
-                obj, log_jac = node._constraint.constrain(node.obj, node._filter_spec)
+                obj, log_jac = node._byx__constraint.constrain(obj, filter_spec)
 
                 # Update values with constrained counterpart
                 model = eqx.tree_at(
-                    where=lambda model: getattr(model, f.name).obj,
+                    where=lambda model: getattr(model, f.name)._byx__obj,
                     pytree=model,
                     replace=obj,
                 )
 
                 # Adjust posterior density
                 if jacobian:
-                    target += log_jac
+                    total += log_jac
 
-        return model, target
+        return model, total
 
     @abstractmethod
-    def model(self, target: Scalar) -> Scalar:
+    def model(self, target: Target):
         pass
 
     @eqx.filter_jit
     def __call__(self) -> Scalar:
         with model_context():
+            target = _model_context.target
+
             # Constrain the model and accumulate Jacobian adjustments
-            self, target = self.constrain()
+            self, log_jac = self.constrain()
+            target += log_jac
 
-            # Accumulate manual increments
-            target += self.model(jnp.array(0.0))
+            # Accumulate model log probabilities
+            self.model(target)
 
-            # Accumulate implicit increments
-            target += _model_context.target.value
-
-            # Return the accumulated target
-            return target
+            # Return the target density
+            return target.value

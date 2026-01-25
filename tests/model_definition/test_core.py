@@ -30,10 +30,10 @@ def test_init():
     model = MyModel(x = jnp.array(0.0), y = jnp.array([0.0, 0.0, 0.0]))
 
     # Test filter specification
-    assert model.filter_spec.x.obj # Stochastic nodes should be included
-    assert not model.filter_spec.y.obj # Observed nodes should be excluded
-    assert not model.filter_spec.misc_1.obj # Regardless of type
-    assert not model.filter_spec.misc_2.obj[0] # But should be PyTrees internally
+    assert model.filter_spec.x._byx__obj # Stochastic nodes should be included
+    assert not model.filter_spec.y._byx__obj # Observed nodes should be excluded
+    assert not model.filter_spec.misc_1._byx__obj # Regardless of type
+    assert not model.filter_spec.misc_2._byx__obj[0] # But should be PyTrees internally
 
     # Test (log unnormalized) posterior evaluation
     assert abs(model() - jnp.array(-2.756815599614018453)) < 1e-6 # 3 * log P_Z(0)
@@ -44,5 +44,5 @@ def test_subset():
     """
     model = MyModel(x = jnp.array(0.0), y = jnp.array([0.0, 0.0, 0.0]))
 
-    assert model.misc_2[0].obj == "ciao"
-    assert model.misc_3['key'].obj == "value"
+    assert model.misc_2[0]._byx__obj == "ciao"
+    assert model.misc_3['key']._byx__obj == "value"

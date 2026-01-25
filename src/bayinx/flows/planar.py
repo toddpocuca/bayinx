@@ -85,8 +85,8 @@ class PlanarLayer(FlowLayer):
         # Compute inner term
         a = draw.dot(w) + b
 
-        # Compute log-Jacobian adjustment
-        log_jac: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Scalar = -jnp.log(1.0 + u.dot(_dh(a) * w))
 
         assert log_jac.shape == ()
         return log_jac
@@ -110,8 +110,8 @@ class PlanarLayer(FlowLayer):
         # Compute forward transformation
         draw = draw + u * _h(a)
 
-        # Compute log-Jacobian adjustment
-        log_jac: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
+        # Compute log-Jacobian adjustment from the forward transformation
+        log_jac: Scalar = -jnp.log(1.0 + u.dot(_dh(a) * w))
 
         assert len(draw.shape) == 1
         assert log_jac.shape == ()
@@ -147,6 +147,10 @@ class PlanarLayer(FlowLayer):
 class Planar(FlowSpec):
     """
     A specification for the Planar flow.
+
+    Definition:
+        $T(\\mathbf{z}) = \\mathbf{z} + \\mathbf{u} h(\\mathbf{w}^\\top \\mathbf{z} + b)$
+
     """
     def __init__(self):
         pass

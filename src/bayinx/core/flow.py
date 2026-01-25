@@ -10,14 +10,14 @@ class FlowLayer(eqx.Module):
     """
     An abstract base class for a flow layer.
 
-    # Attributes
-    - `params`: The parameters of the diffeomorphism. # TODO FOR ALL FLOWS
-    - `constraints`: The constraining transformations for parameters.
-    - `static`: Whether the flow layer is frozen (parameters are not subject to further optimization).
+    Attributes:
+        params: The parameters of the diffeomorphism. # TODO FOR ALL FLOWS
+        constraints: The constraining transformations for parameters.
+        static: Whether the flow layer is frozen (parameters are not subject to further optimization).
     """
 
-    params: Dict[str, PyTree]
-    constraints: Dict[str, Callable[[PyTree], Array]]
+    params: dict[str, PyTree]
+    constraints: dict[str, Callable[[PyTree], Array]]
     static: bool
 
     @abstractmethod
@@ -73,7 +73,7 @@ class FlowLayer(eqx.Module):
         # Returns
         The constrained parameters of the diffeomorphism.
         """
-        params = self.params
+        params = self.params.copy()
 
         for par, map in self.constraints.items():
             params[par] = map(params[par])

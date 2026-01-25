@@ -11,7 +11,7 @@ from jaxtyping import Array, Scalar
 import bayinx as byx
 from bayinx import define
 from bayinx.dists import Normal
-from bayinx.flows import LowRankAffine
+from bayinx.flows import DiagAffine
 from bayinx.nodes import Continuous, Observed
 
 
@@ -33,7 +33,7 @@ class LinearModel(byx.Model):
         return target
 
 # Simulate sample
-n_obs = 2500
+n_obs = 1000
 n_predictors = 5
 X: Array = jr.normal(jr.key(0), (n_obs, n_predictors - 1))
 X = jnp.column_stack((jnp.ones((n_obs,)), X))
@@ -51,8 +51,8 @@ def test_inference():
     )
 
     # Configure and fit
-    posterior.configure(flowspecs = [LowRankAffine(2)])
-    posterior.fit(max_iters = int(1e5), learning_rate = 1e-2)
+    posterior.configure(flowspecs = [DiagAffine()])
+    posterior.fit()
 
     # Check fit
-    assert jnp.linalg.norm(posterior.sample('beta', int(1e6)).mean(0) - beta) < 0.1
+    assert jnp.linalg.norm(posterior.sample('beta', int(1e5)).mean(0) - beta) < 0.1
