@@ -1037,10 +1037,11 @@ If you are experienced with Stan and have at least some familiarity with Python 
 <h3 id="bayinx-implementation">Bayinx Implementation<a class="headerlink" href="#bayinx-implementation" title="Permanent link">&para;</a></h3>
 <p>In Bayinx, we create a new class that inherits from <code>bayinx.Model</code>,
 annotate attributes with a "node type" (e.g., <code>Continuous</code> for continuous parameters, <code>Observed</code> for observed data),
-and assign them the <code>define</code> function to further specify information about <em>model nodes</em>.</p>
+and assign them the <code>define</code> function to further specify metadata about <em>model nodes</em>.</p>
 <details class="info">
 <summary>Confused: Model Nodes</summary>
-<p>Objects available to the model are described as "model nodes" borrowing from BUGS/JAGS ...</p>
+<p>Objects available to the model are described as "model nodes", borrowing from BUGS/JAGS terminology.
+In a probabilistic graphical model, a node represents a random variable or constant data.</p>
 </details>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
@@ -1063,8 +1064,13 @@ and assign them the <code>define</code> function to further specify information 
 <a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
 </code></pre></div>
 <details class="info">
-<summary>Confused: Type Annotations</summary>
-<p>Type annotations were introduced in Python 3.5 and</p>
+<summary>Confused: Type-Hinting &amp; Field Metadata</summary>
+<p>Type-hinting/annotations were introduced in Python 3.5 to provide a way for developers to indicate the expected data types of variables.
+While Python doesn't enforce these at runtime, they are useful for documentation and static analysis tools.
+Further functionality was introduced in Python 3.7 with "dataclasses," where attributes (called <em>fields</em> when annotated) could be imbued with metadata with <code>dataclasses.field(metadata = ...)</code>.
+Internally, <code>bayinx.define</code> uses this metadata pattern to automatically handle shapes, initialization, and constraints (like <code>lower=0</code>) during class creation,
+effectively replacing the <code>parameters</code> and <code>data</code> blocks in Stan.
+If you're interested</p>
 </details>
 <p>The <code>data</code> and <code>parameters</code> blocks are essentially merged into one "block"; defining an object as data or parameter is done by defining a new attribute.</p>
 <p>The <code>model</code> block in Stan is equivalent to the <code>model</code> method of our new class, which takes in <code>self</code> and the accumulator <code>target</code> that stores the (unnormalized) posterior log-density.
@@ -1075,8 +1081,8 @@ Just like in Stan, you do not need to work with <code>target</code> explicitly f
 However, since distribution statements need access to a distribution and an object to compute a log-probability mass/density, we need a suitable binary operator that is unlikely to be used in the context of statistical modelling.
 The best choice I could find was the bitwise shift operator <code>&lt;&lt;</code>, which is overloaded to implicitly accumulate a log-probability mass/density.</p>
 </details>
-<p>Similar to Stan, distribution statements are broadcasted (even across <a href="https://docs.jax.dev/en/latest/pytrees.html">PyTrees</a>!) &amp; vectorized.</p>
-<p>Fitting the model is done by passing the model definition and shapes/data to <code>Posterior</code>, constructing a specification for the normalizing flow architecture, and the optimizing the variational approximation:
+<p>Similar to Stan, distribution statements are broadcasted &amp; vectorized.</p>
+<p>Fitting the model is done by passing the model definition and shapes/data to <code>Posterior</code>, constructing a specification for the normalizing flow architecture, and then optimizing the variational approximation:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Posterior</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagAffine</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
@@ -1091,36 +1097,28 @@ The best choice I could find was the bitwise shift operator <code>&lt;&lt;</code
 </code></pre></div></p>
 <details class="info">
 <summary>Curious: What is <code>DiagAffine</code>?</summary>
-<p>A <a href="http://127.0.0.1:8000/bayinx/api/flows/#bayinx.flows.DiagAffine">diagonal affine flow layer</a> applies an element-wise scale and shift to the output of the previous layer.</p>
+<p>A <a href="https://toddpocuca.github.io/bayinx/api/flows/#bayinx.flows.DiagAffine">diagonal affine flow layer</a> applies an element-wise scale and shift to the output of the previous layer.
+With a standard normal base distribution, it is equivalent to <a href="https://mc-stan.org/docs/cmdstan-guide/variational_config.html#variational-inference-using-advi">meanfield ADVI</a>.</p>
 <details class="info">
 <summary>Confused: What is a normalizing flow?</summary>
-<p>Take a look at ...</p>
+<p>Take a look at the overview on normalizing flows available <a href="https://toddpocuca.github.io/bayinx/nf/">here</a>.</p>
 </details>
 </details>
-<p>This highlights most of the important similarities between Stan and Bayinx, but there are some important differences the two.</p>
+<p>This highlights most of the important similarities between Stan and Bayinx, but there are some important differences between the two.</p>
 <h2 id="differences-between-bayinx-stan">Differences Between Bayinx &amp; Stan<a class="headerlink" href="#differences-between-bayinx-stan" title="Permanent link">&para;</a></h2>
 <h3 id="who-needs-shapes">Who Needs Shapes!<a class="headerlink" href="#who-needs-shapes" title="Permanent link">&para;</a></h3>
 <p>You don't technically <em>need</em> to define the shape of a node in Bayinx, it's offered so we can perform shape-checks during initialization, but recall above how we used <code>n_obs</code> to define the shape of <code>x</code>? We could've just written:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNormalModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">mu</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">())</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span> <span class="o">=</span> <span class="n">define</span><span class="p">()</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="c1"># Defining priors</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">&lt;&lt;</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">scale</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="c1"># Defining likelihood</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="n">SimpleNormalModel</span><span class="p">,</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span> <span class="c1"># This can hold any shape!</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="p">)</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">DiagAffine</span><span class="p">()])</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="c1"># ...</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span> <span class="o">=</span> <span class="n">define</span><span class="p">()</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="c1"># ...</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">SimpleNormalModel</span><span class="p">,</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span> <span class="c1"># This can hold any shape!</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">)</span>
 </code></pre></div>
 <p>In fact, we can even drop the shape definitions on <em>everything</em>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNormalModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -1129,27 +1127,29 @@ The best choice I could find was the bitwise shift operator <code>&lt;&lt;</code
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span> <span class="o">=</span> <span class="n">define</span><span class="p">()</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="c1"># Defining priors</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">&lt;&lt;</span> <span class="n">Exponential</span><span class="p">(</span><span class="n">scale</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        <span class="c1"># Defining likelihood</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    <span class="n">SimpleNormalModel</span><span class="p">,</span>
-<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]),</span>
-<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="n">mu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(()),</span>
-<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    <span class="n">sigma</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(())</span>
-<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="p">)</span>
-<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">DiagAffine</span><span class="p">()])</span>
-<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="c1"># ...</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">SimpleNormalModel</span><span class="p">,</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]),</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="n">mu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(()),</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="n">sigma</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(())</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="p">)</span>
 </code></pre></div>
 <p>When we pass (named) arguments to <code>Posterior</code>, it uses them to initialize a "toy" model with the correct structure for the variational approximation (so we can figure out the size of the parameter space).
 These arguments are the shapes for the nodes (so we can perform shape-checks on inputs and/or automatically generate parameter nodes with the correct structure for you), and in some sense the actual nodes themselves: we can pass a toy array with the shape we want and internally this will be used to generate a node with the same shape.</p>
 <h3 id="nodes-can-be-anything">Nodes Can Be <em>Anything</em><a class="headerlink" href="#nodes-can-be-anything" title="Permanent link">&para;</a></h3>
-<p>Well not exactly anything, but they can be a lot more than just arrays.</p>
+<p>Well not exactly anything, but they can be a lot more than just arrays.
+In Stan, the data types you can use include scalars, vectors, matrices, arrays, and most recently tuples.
+These types have fixed functionality, and you cannot create a new type of object out of these primitive types.
+In Bayinx, a node is anything a <a href="https://docs.jax.dev/en/latest/pytrees.html">PyTree</a> can be.</p>
+<details class="info">
+<summary>Curious: What is a PyTree?</summary>
+<blockquote>
+<p>A pytree is a container-like structure built out of container-like Python objects...
+This definition ends up being very useful, as by default it includes nested collections of dictionaries, lists, tuples, etc, and you can register a user-defined Python object as a PyTree if it <a href="https://docs.jax.dev/en/latest/custom_pytrees.html">implements certain functionality</a>.</p>
+</blockquote>
+</details>
 <p>For example, we can work with objects as simple as a list of arrays:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">mu</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">()</span>
@@ -1202,7 +1202,7 @@ These arguments are the shapes for the nodes (so we can perform shape-checks on 
 <a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="c1"># Define model</span>
 <a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="k">class</span><span class="w"> </span><span class="nc">NeuralNetworkModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
 <a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>    <span class="n">nn</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span>
-<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>        <span class="n">init</span> <span class="o">=</span> <span class="n">MyNeuralNetwork</span><span class="p">()</span> <span class="c1"># if a node is known at &quot;definition&quot;-time we can pass it here</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>        <span class="n">init</span> <span class="o">=</span> <span class="n">MyNeuralNetwork</span><span class="p">()</span> <span class="c1"># remember if a node is known at &quot;definition&quot;-time we can pass it here</span>
 <a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>    <span class="p">)</span>
 <a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
 <a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a>
@@ -1254,7 +1254,7 @@ Thankfully, XLA automatically scales the number of threads used with the size of
 and both pre-allocates the memory used for an entire program as well as aggressively optimizes memory usage to avoid unnecessary copies (like <a href="https://discourse.mc-stan.org/t/reduce-sum-results-in-much-slower-run-times-even-for-large-datasets/26827/3">duplicating shared arguments amongst threads</a>).
 Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading on your CPU or export your model to the GPU.</p>
 <p>Unfortunately, this also means you are left to the whims of the XLA compiler to parallelize your program efficiently, which may not always be optimal (this is particularly relevant when targeting the CPU).
-I expect the XLA compiler will continue to improve over time, and as a PPL built purely on JAX, Bayinx will also benefit from all performance improvements in the compiler.</p>
+I expect the XLA compiler will continue to improve over time, and as a PPL built on JAX, Bayinx will also benefit from all performance improvements in the compiler.</p>
 
 
 

@@ -1049,10 +1049,12 @@ But since these two formulations are equivalent, we will use the first.</p>
 <p>Notice the attributes of the class are used to define <em>model nodes</em>, which are all the objects available to the model and represent data or parameters.
 Model nodes have their type specified by their type annotations (e.g., <code>beta: byn.Continuous</code> specifies <code>beta</code> as a continuous parameter) and are further defined using <code>bayinx.define</code>, which is used to provide shapes, default values, or constraints the node must satisfy:</p>
 <h3 id="shape-specification">Shape Specification<a class="headerlink" href="#shape-specification" title="Permanent link">&para;</a></h3>
-<p>The <code>shape</code> argument of <code>define</code> does two things:
-- if the node is stochastic (e.g., <code>Continuous</code> inherits from <code>Stochastic</code>, so it is stochastic and represents a parameter), then an (JAX) array is automatically constructed with the correct shape based on the shapes passed during posterior initialization (elaborated on later).
-- if the node is passed explicitly during posterior initialization, the shape of the argument is checked against the shape specification.
-If the two disagree, an error will be thrown.</p>
+<p>The <code>shape</code> argument of <code>define</code> does two things:</p>
+<ul>
+<li>if the node is stochastic (e.g., <code>Continuous</code> inherits from <code>Stochastic</code>, so it is stochastic and represents a parameter), then an (JAX) array is automatically constructed with the correct shape based on the shapes passed during posterior initialization (elaborated on later).</li>
+<li>if the node is passed explicitly during posterior initialization, the shape of the argument is checked against the shape specification.
+If the two disagree, an error will be thrown.</li>
+</ul>
 <p>This avoids some boilerplate for many models that involve parameters defined as arrays, and peace of mind knowing that all model nodes have the correct shape.</p>
 <p>However, note that you do not NEED to specify the shape parameter!
 It is always fine to leave the <code>shape</code> argument for an <code>Observed</code> node blank, and as long as you specify the structure for a stochastic either with <code>init</code> or during posterior initialization, the same is true for any <code>Stochastic</code> node.</p>
@@ -1085,19 +1087,21 @@ For example, a Bernoulli distribution involves a single parameter <code>p</code>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">byd</span><span class="o">.</span><span class="n">Bernoulli</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">post</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">Posterior</span><span class="p">(</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">)</span>
 </code></pre></div>
 <h2 id="fitting-a-model">Fitting a Model<a class="headerlink" href="#fitting-a-model" title="Permanent link">&para;</a></h2>
-<p>Once the model is defined and the posterior is initialized, Bayinx uses normalizing flows variational inference to optimize a variational approximation.
-The architecture is specified using the <code>.configure</code> method of <code>Posterior</code> using the flows offered in the <code>bayinx.flows</code> module.
+<p>Once the model is defined we can proceed with fitting an approximation to the posterior distribution.
+To initialize the posterior approximation, we pass all the necessary arguments to the <code>bayinx.Posterior</code> class constructor including all observed nodes, any shapes used in <code>define</code> statements, and lastly any stochastic nodes whose structure was not specified using <code>shape</code> or <code>init</code>.
+The architecture of the normalizing flow is specified with the <code>.configure</code> method of <code>Posterior</code> using the flows offered in the <code>bayinx.flows</code> module.
 The approximation can then optimized using the <code>.fit</code> method.
 Continuing with the <code>LinearModel</code> example, a full affine flow can be used to accurately approximate the posterior:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Configure and optimize posterior</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">byf</span><span class="o">.</span><span class="n">FullAffine</span><span class="p">()])</span> <span class="c1"># equivalent to full-rank ADVI</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Initialize posterior</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">post</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># Configure and optimize posterior</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">byf</span><span class="o">.</span><span class="n">FullAffine</span><span class="p">()])</span> <span class="c1"># equivalent to full-rank ADVI</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Fitting Variational Approximation: 100%|███████████████| 100000/100000 [00:01&lt;00:00, 55788.50it/s]
 </code></pre></div></p>
