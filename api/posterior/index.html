@@ -154,6 +154,48 @@
     
     
     
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
     
       <div class="md-header__source">
         <a href="https://github.com/toddpocuca/bayinx" title="Go to repository" class="md-source" data-md-component="source">
@@ -366,6 +408,34 @@
     
   
     Basic Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/adv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Feautres
   
 
     
@@ -1461,7 +1531,7 @@
 <a id="__codelineno-0-55" name="__codelineno-0-55"></a>            <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">dim</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span>
 <a id="__codelineno-0-56" name="__codelineno-0-56"></a>            <span class="s2">&quot;tolerance&quot;</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span>
 <a id="__codelineno-0-57" name="__codelineno-0-57"></a>            <span class="s2">&quot;grad_draws&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>            <span class="s2">&quot;max_batch_size&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>            <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">4</span>
 <a id="__codelineno-0-59" name="__codelineno-0-59"></a>        <span class="p">}</span>
 <a id="__codelineno-0-60" name="__codelineno-0-60"></a>
 <a id="__codelineno-0-61" name="__codelineno-0-61"></a>
@@ -1471,7 +1541,7 @@
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a>    <span class="p">):</span>
 <a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">        Configure the variational approximation.</span>
@@ -1481,7 +1551,7 @@
 <a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">            learning_rate: The initial learning rate for the optimizer.</span>
 <a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">            tolerance: The tolerance for the ELBO used for early stopping.</span>
 <a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">            grad_draws: The number of draws used to compute the ELBO gradient.</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">            batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
 <a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-80" name="__codelineno-0-80"></a>        <span class="c1"># Append new NF architecture</span>
 <a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="k">if</span> <span class="n">flowspecs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1504,8 +1574,8 @@
 <a id="__codelineno-0-98" name="__codelineno-0-98"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tolerance</span>
 <a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="k">if</span> <span class="n">grad_draws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-100" name="__codelineno-0-100"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grad_draws&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad_draws</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-103" name="__codelineno-0-103"></a>
 <a id="__codelineno-0-104" name="__codelineno-0-104"></a>
 <a id="__codelineno-0-105" name="__codelineno-0-105"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
@@ -1514,7 +1584,7 @@
 <a id="__codelineno-0-108" name="__codelineno-0-108"></a>        <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-110" name="__codelineno-0-110"></a>        <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-112" name="__codelineno-0-112"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
 <a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="n">print_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span>
@@ -1527,7 +1597,7 @@
 <a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="sd">            learning_rate: The initial learning rate for the optimizer.</span>
 <a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="sd">            tolerance: The tolerance for the ELBO used for early stopping.</span>
 <a id="__codelineno-0-123" name="__codelineno-0-123"></a><span class="sd">            grad_draws: The number of draws used to compute the ELBO gradient.</span>
-<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
+<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">            batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
 <a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="sd">            verbose: Whether to print a progress bar.</span>
 <a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="sd">            print_rate: The number of iterations between updates for the progress bar.</span>
 <a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">        &quot;&quot;&quot;</span>
@@ -1538,8 +1608,8 @@
 <a id="__codelineno-0-132" name="__codelineno-0-132"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tolerance</span>
 <a id="__codelineno-0-133" name="__codelineno-0-133"></a>        <span class="k">if</span> <span class="n">grad_draws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-134" name="__codelineno-0-134"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grad_draws&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad_draws</span>
-<a id="__codelineno-0-135" name="__codelineno-0-135"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-136" name="__codelineno-0-136"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-135" name="__codelineno-0-135"></a>        <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-136" name="__codelineno-0-136"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-137" name="__codelineno-0-137"></a>
 <a id="__codelineno-0-138" name="__codelineno-0-138"></a>        <span class="c1"># Optimize variational approximation with user-specified flows</span>
 <a id="__codelineno-0-139" name="__codelineno-0-139"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">vari</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
@@ -1547,7 +1617,7 @@
 <a id="__codelineno-0-141" name="__codelineno-0-141"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-142" name="__codelineno-0-142"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-143" name="__codelineno-0-143"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grad_draws&quot;</span><span class="p">],</span>
-<a id="__codelineno-0-144" name="__codelineno-0-144"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_batch_size&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-144" name="__codelineno-0-144"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-145" name="__codelineno-0-145"></a>            <span class="n">key</span><span class="p">,</span>
 <a id="__codelineno-0-146" name="__codelineno-0-146"></a>            <span class="n">verbose</span><span class="p">,</span>
 <a id="__codelineno-0-147" name="__codelineno-0-147"></a>            <span class="n">print_rate</span>
@@ -1704,7 +1774,7 @@
 <a id="__codelineno-0-298" name="__codelineno-0-298"></a>        <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-299" name="__codelineno-0-299"></a>        <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <a id="__codelineno-0-300" name="__codelineno-0-300"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <a id="__codelineno-0-302" name="__codelineno-0-302"></a>        <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-303" name="__codelineno-0-303"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <a id="__codelineno-0-304" name="__codelineno-0-304"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
@@ -1714,14 +1784,14 @@
 <a id="__codelineno-0-308" name="__codelineno-0-308"></a><span class="sd">        Parameters:</span>
 <a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">            node: The name of the node.</span>
 <a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">            n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">            batch_size: The maximum number of draws ever in memory.</span>
 <a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">            sir: Whether to use sampling-importance-resampling.</span>
 <a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">            key: The PRNG key used to generate samples.</span>
 <a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-315" name="__codelineno-0-315"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>        <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
 <a id="__codelineno-0-316" name="__codelineno-0-316"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
 <a id="__codelineno-0-317" name="__codelineno-0-317"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-318" name="__codelineno-0-318"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-319" name="__codelineno-0-319"></a>
 <a id="__codelineno-0-320" name="__codelineno-0-320"></a>        <span class="c1"># Construct callable to extract node</span>
 <a id="__codelineno-0-321" name="__codelineno-0-321"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -1739,7 +1809,7 @@
 <a id="__codelineno-0-333" name="__codelineno-0-333"></a>        <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-334" name="__codelineno-0-334"></a>        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
 <a id="__codelineno-0-335" name="__codelineno-0-335"></a>        <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-336" name="__codelineno-0-336"></a>        <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a>        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-337" name="__codelineno-0-337"></a>        <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-338" name="__codelineno-0-338"></a>        <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <a id="__codelineno-0-339" name="__codelineno-0-339"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
@@ -1749,14 +1819,14 @@
 <a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">        Parameters:</span>
 <a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">            func: A function that maps the model and a PRNG key to a predictive.</span>
 <a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">            n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">            max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">            batch_size: The maximum number of draws ever in memory.</span>
 <a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">            sir: Whether to use sampling-importance-resampling.</span>
 <a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">            key: The PRNG key used to generate samples.</span>
 <a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
 <a id="__codelineno-0-351" name="__codelineno-0-351"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
 <a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-354" name="__codelineno-0-354"></a>
 <a id="__codelineno-0-355" name="__codelineno-0-355"></a>        <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
 <a id="__codelineno-0-356" name="__codelineno-0-356"></a>            <span class="c1"># Do sampling-importance-resampling</span>
@@ -1896,7 +1966,7 @@
 <a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">dim</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span>
 <a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="s2">&quot;tolerance&quot;</span><span class="p">:</span> <span class="mf">1e-4</span><span class="p">,</span>
 <a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="s2">&quot;grad_draws&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="s2">&quot;max_batch_size&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">4</span>
 <a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -1908,7 +1978,7 @@
 
 
 <h3 id="bayinx.posterior.Posterior.configure" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">configure</span><span class="p">(</span><span class="n">flowspecs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FlowSpec</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">configure</span><span class="p">(</span><span class="n">flowspecs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">FlowSpec</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#bayinx.posterior.Posterior.configure" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -1995,7 +2065,7 @@
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>max_batch_size</code>
+                <code>batch_size</code>
             </td>
             <td>
                   <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
@@ -2061,7 +2131,7 @@
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="p">):</span>
 <a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    Configure the variational approximation.</span>
@@ -2071,7 +2141,7 @@
 <a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">        learning_rate: The initial learning rate for the optimizer.</span>
 <a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">        tolerance: The tolerance for the ELBO used for early stopping.</span>
 <a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">        grad_draws: The number of draws used to compute the ELBO gradient.</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
 <a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-80" name="__codelineno-0-80"></a>    <span class="c1"># Append new NF architecture</span>
 <a id="__codelineno-0-81" name="__codelineno-0-81"></a>    <span class="k">if</span> <span class="n">flowspecs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2094,8 +2164,8 @@
 <a id="__codelineno-0-98" name="__codelineno-0-98"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tolerance</span>
 <a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="k">if</span> <span class="n">grad_draws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grad_draws&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad_draws</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a>    <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_size</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2106,7 +2176,7 @@
 
 
 <h3 id="bayinx.posterior.Posterior.fit" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">fit</span><span class="p">(</span><span class="n">max_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">print_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">fit</span><span class="p">(</span><span class="n">max_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">print_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">)</span></code>
 
 <a href="#bayinx.posterior.Posterior.fit" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -2193,7 +2263,7 @@
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>max_batch_size</code>
+                <code>batch_size</code>
             </td>
             <td>
                   <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
@@ -2294,7 +2364,7 @@
 <a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">learning_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-109" name="__codelineno-0-109"></a>    <span class="n">tolerance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-110" name="__codelineno-0-110"></a>    <span class="n">grad_draws</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-112" name="__codelineno-0-112"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
 <a id="__codelineno-0-113" name="__codelineno-0-113"></a>    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-114" name="__codelineno-0-114"></a>    <span class="n">print_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span>
@@ -2307,7 +2377,7 @@
 <a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="sd">        learning_rate: The initial learning rate for the optimizer.</span>
 <a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="sd">        tolerance: The tolerance for the ELBO used for early stopping.</span>
 <a id="__codelineno-0-123" name="__codelineno-0-123"></a><span class="sd">        grad_draws: The number of draws used to compute the ELBO gradient.</span>
-<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
+<a id="__codelineno-0-124" name="__codelineno-0-124"></a><span class="sd">        batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.</span>
 <a id="__codelineno-0-125" name="__codelineno-0-125"></a><span class="sd">        verbose: Whether to print a progress bar.</span>
 <a id="__codelineno-0-126" name="__codelineno-0-126"></a><span class="sd">        print_rate: The number of iterations between updates for the progress bar.</span>
 <a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -2318,8 +2388,8 @@
 <a id="__codelineno-0-132" name="__codelineno-0-132"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tolerance</span>
 <a id="__codelineno-0-133" name="__codelineno-0-133"></a>    <span class="k">if</span> <span class="n">grad_draws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-134" name="__codelineno-0-134"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grad_draws&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad_draws</span>
-<a id="__codelineno-0-135" name="__codelineno-0-135"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-136" name="__codelineno-0-136"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-135" name="__codelineno-0-135"></a>    <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-136" name="__codelineno-0-136"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-137" name="__codelineno-0-137"></a>
 <a id="__codelineno-0-138" name="__codelineno-0-138"></a>    <span class="c1"># Optimize variational approximation with user-specified flows</span>
 <a id="__codelineno-0-139" name="__codelineno-0-139"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">vari</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vari</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
@@ -2327,7 +2397,7 @@
 <a id="__codelineno-0-141" name="__codelineno-0-141"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-142" name="__codelineno-0-142"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-143" name="__codelineno-0-143"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;grad_draws&quot;</span><span class="p">],</span>
-<a id="__codelineno-0-144" name="__codelineno-0-144"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;max_batch_size&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-144" name="__codelineno-0-144"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">],</span>
 <a id="__codelineno-0-145" name="__codelineno-0-145"></a>        <span class="n">key</span><span class="p">,</span>
 <a id="__codelineno-0-146" name="__codelineno-0-146"></a>        <span class="n">verbose</span><span class="p">,</span>
 <a id="__codelineno-0-147" name="__codelineno-0-147"></a>        <span class="n">print_rate</span>
@@ -2342,7 +2412,7 @@
 
 
 <h3 id="bayinx.posterior.Posterior.predictive" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">predictive</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span> <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Array</span></code>
+            <code class="highlight language-python"><span class="n">predictive</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span> <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Array</span></code>
 
 <a href="#bayinx.posterior.Posterior.predictive" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -2397,7 +2467,7 @@
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>max_batch_size</code>
+                <code>batch_size</code>
             </td>
             <td>
                   <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
@@ -2481,7 +2551,7 @@
 <a id="__codelineno-0-333" name="__codelineno-0-333"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-334" name="__codelineno-0-334"></a>    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">M</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">|</span> <span class="n">Array</span><span class="p">],</span>
 <a id="__codelineno-0-335" name="__codelineno-0-335"></a>    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-336" name="__codelineno-0-336"></a>    <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-337" name="__codelineno-0-337"></a>    <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <a id="__codelineno-0-338" name="__codelineno-0-338"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <a id="__codelineno-0-339" name="__codelineno-0-339"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
@@ -2491,14 +2561,14 @@
 <a id="__codelineno-0-343" name="__codelineno-0-343"></a><span class="sd">    Parameters:</span>
 <a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="sd">        func: A function that maps the model and a PRNG key to a predictive.</span>
 <a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="sd">        n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="sd">        batch_size: The maximum number of draws ever in memory.</span>
 <a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">        sir: Whether to use sampling-importance-resampling.</span>
 <a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">        key: The PRNG key used to generate samples.</span>
 <a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>    <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
 <a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
 <a id="__codelineno-0-352" name="__codelineno-0-352"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-354" name="__codelineno-0-354"></a>
 <a id="__codelineno-0-355" name="__codelineno-0-355"></a>    <span class="k">if</span> <span class="n">sir</span><span class="p">:</span>
 <a id="__codelineno-0-356" name="__codelineno-0-356"></a>        <span class="c1"># Do sampling-importance-resampling</span>
@@ -2516,7 +2586,7 @@
 
 
 <h3 id="bayinx.posterior.Posterior.sample" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">sample</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Array</span></code>
+            <code class="highlight language-python"><span class="n">sample</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Array</span></code>
 
 <a href="#bayinx.posterior.Posterior.sample" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -2571,7 +2641,7 @@
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>max_batch_size</code>
+                <code>batch_size</code>
             </td>
             <td>
                   <code><span title="typing.Optional">Optional</span>[<span title="int">int</span>]</code>
@@ -2659,7 +2729,7 @@
 <a id="__codelineno-0-298" name="__codelineno-0-298"></a>    <span class="bp">self</span><span class="p">,</span>
 <a id="__codelineno-0-299" name="__codelineno-0-299"></a>    <span class="n">node</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <a id="__codelineno-0-300" name="__codelineno-0-300"></a>    <span class="n">n_draws</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-0-301" name="__codelineno-0-301"></a>    <span class="n">max_batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301"></a>    <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
 <a id="__codelineno-0-302" name="__codelineno-0-302"></a>    <span class="n">sir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <a id="__codelineno-0-303" name="__codelineno-0-303"></a>    <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <a id="__codelineno-0-304" name="__codelineno-0-304"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
@@ -2669,14 +2739,14 @@
 <a id="__codelineno-0-308" name="__codelineno-0-308"></a><span class="sd">    Parameters:</span>
 <a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">        node: The name of the node.</span>
 <a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">        n_draws: The number of draws to sample from the posterior.</span>
-<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">        max_batch_size: The maximum number of draws ever in memory.</span>
+<a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">        batch_size: The maximum number of draws ever in memory.</span>
 <a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">        sir: Whether to use sampling-importance-resampling.</span>
 <a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="sd">        key: The PRNG key used to generate samples.</span>
 <a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-315" name="__codelineno-0-315"></a>    <span class="k">if</span> <span class="n">max_batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
+<a id="__codelineno-0-315" name="__codelineno-0-315"></a>    <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">batch_size</span> <span class="o">&gt;</span> <span class="n">n_draws</span><span class="p">:</span>
 <a id="__codelineno-0-316" name="__codelineno-0-316"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">n_draws</span>
 <a id="__codelineno-0-317" name="__codelineno-0-317"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-318" name="__codelineno-0-318"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">max_batch_size</span>
+<a id="__codelineno-0-318" name="__codelineno-0-318"></a>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 <a id="__codelineno-0-319" name="__codelineno-0-319"></a>
 <a id="__codelineno-0-320" name="__codelineno-0-320"></a>    <span class="c1"># Construct callable to extract node</span>
 <a id="__codelineno-0-321" name="__codelineno-0-321"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>

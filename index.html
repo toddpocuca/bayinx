@@ -154,6 +154,48 @@
     
     
     
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
     
       <div class="md-header__source">
         <a href="https://github.com/toddpocuca/bayinx" title="Go to repository" class="md-source" data-md-component="source">
@@ -474,6 +516,34 @@
     
   
     Basic Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/adv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Feautres
   
 
     
@@ -972,12 +1042,12 @@
 
 <h1 id="getting-started-with-bayinx">Getting Started with Bayinx<a class="headerlink" href="#getting-started-with-bayinx" title="Permanent link">&para;</a></h1>
 <p>Welcome to Bayinx (Bayesian inference with JAX), a probabilistic programming language embedded in Python.
-This guide will help you install the package and quickly overview how Bayinx works, but if you would like a more thorough tutorial check out <a href="https://toddpocuca.github.io/bayinx/tutorials/basic/">Basic Usage</a> for those of you unfamiliar to probabilistic programming or <a href="https://toddpocuca.github.io/bayinx/tutorials/stan/">Coming From Stan</a> for Stan users.
+This guide will help you install the package and quickly overview how Bayinx works, but if you would like a more thorough tutorial check out <a href="tutorials/basic/">Basic Usage</a> for those of you unfamiliar to probabilistic programming or <a href="tutorials/stan/">Coming From Stan</a> for Stan users.
 If you are unfamiliar with Python check out the <a href="https://docs.python.org/3/tutorial/index.html">official Python tutorial</a> or another resource to get up to speed with programming in Python.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>Bayinx requires JAX and a few extra libraries in the JAX ecosystem.
 The easiest way to get started is by installing from PyPi using your favourite python package manager:</p>
-<h3 id="uv"><code>uv</code><a class="headerlink" href="#uv" title="Permanent link">&para;</a></h3>
+<h3 id="uv"><a href="https://docs.astral.sh/uv/"><code>uv</code></a><a class="headerlink" href="#uv" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Ensure you are in your project environment</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>add<span class="w"> </span>bayinx
 </code></pre></div>
@@ -985,7 +1055,7 @@ The easiest way to get started is by installing from PyPi using your favourite p
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Ensure you are in your project environment</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s1">&#39;bayinx[cuda]&#39;</span><span class="w"> </span><span class="c1"># Installs Bayinx with CUDA support</span>
 </code></pre></div></p>
-<h3 id="pip"><code>pip</code><a class="headerlink" href="#pip" title="Permanent link">&para;</a></h3>
+<h3 id="pip"><a href="https://pypi.org/project/pip/"><code>pip</code></a><a class="headerlink" href="#pip" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Ensure you are in your project environment</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pip<span class="w"> </span>install<span class="w"> </span>bayinx
 </code></pre></div>
@@ -1015,7 +1085,7 @@ For example, we can define a simple model that describes a collection of observa
 <p>Parameters are attributes annotated with the <code>Continuous</code> class while any data is annotated with <code>Observed</code>, where both are thin wrappers around an internal type that can be type hinted (e.g., <code>Continuous[T]</code> or <code>Observed[T]</code>).
 You can then define additional metadata for a node with the <code>define</code> function, for example by assigning shapes <code>define(shape = ...)</code> and bounds <code>define(lower = ..., upper = ...)</code>.</p>
 <h2 id="fitting-models-with-bayinx">Fitting Models With Bayinx<a class="headerlink" href="#fitting-models-with-bayinx" title="Permanent link">&para;</a></h2>
-<p>Bayinx uses variational inference with normalizing flows (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
+<p>Bayinx uses variational inference with <a href="nf/">normalizing flows</a> (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
 We'll simulate some data for demonstration:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jr</span>
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>

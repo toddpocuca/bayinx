@@ -156,6 +156,48 @@
     
     
     
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
     
       <div class="md-header__source">
         <a href="https://github.com/toddpocuca/bayinx" title="Go to repository" class="md-source" data-md-component="source">
@@ -262,6 +304,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalizing Flows
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -278,6 +338,75 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#normalizing-flows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalizing Flows
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-the-right-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing the Right Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Choosing the Right Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#affine-flows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Affine Flows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-linear-flows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-Linear Flows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -378,6 +507,34 @@
     
   
     Basic Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/adv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Advanced Feautres
   
 
     
@@ -875,6 +1032,35 @@
 
 
 <h1 id="normalizing-flows-variational-inference">Normalizing Flows Variational Inference<a class="headerlink" href="#normalizing-flows-variational-inference" title="Permanent link">&para;</a></h1>
+<p>Variational inference (VI) methods have improved the scalability of Bayesian inference for practioners across domains, but the restricted family of approximations considered by current implementations limit their use-cases (e.g., ADVI can only approximate gaussian-like posteriors).
+Normalizing flows (NFs) are a relatively recent effort to improve the ability of VI methods to approximate more complicated posterior densities.</p>
+<h2 id="normalizing-flows">Normalizing Flows<a class="headerlink" href="#normalizing-flows" title="Permanent link">&para;</a></h2>
+<p>Formally, a NF is defined as an indexed collection of invertible transformations--- called flows ---that map a base density <span class="arithmatex">\(Z(\mathbf{\theta})\)</span> to the
+final variational distribution <span class="arithmatex">\(Q_(\mathbf{\phi})(\mathbf{\theta})\)</span>.
+In practice, a finite number of continuously parameterized flows <span class="arithmatex">\(T_i : \mathbf{\Theta} \rightarrow \mathbf{\Theta}\)</span> are used to construct the NF:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+    \mathbf{\theta} &amp;= T_n \circ \dots \circ T_1(\mathbf{\theta}_0) \\
+    \ln Q_{\mathbf{\phi}}(\mathbf{\theta}) = \ln \tilde{Q}_{\mathbf{\phi}}(\mathbf{\theta}_0) &amp;= \ln Z(\mathbf{\theta}_0) - \sum_{i=1}^n \ln \left| \det \frac{d}{d \mathbf{\theta}_{i-1}} [T_i](\mathbf{\theta}_{i-1}) \right|
+\end{aligned}
+\]</div>
+<p>where since we have reparameterized a fixed base distribution <span class="arithmatex">\(Q_0\)</span> through a deterministic and differentiable mapping, the reparameterized gradient estimator can be used.</p>
+<p>To keep this computationally efficient, Bayinx uses flows with triangular Jacobians.
+This means the determinant used when evaluating the variational density can be simplified to the product of <span class="arithmatex">\(D\)</span> diagonal elements,
+ensuring that even models with thousands of parameters remain fast.</p>
+<h2 id="choosing-the-right-architecture">Choosing the Right Architecture<a class="headerlink" href="#choosing-the-right-architecture" title="Permanent link">&para;</a></h2>
+<p>Since the default base distribution in Bayinx is a standard Student's T distribution (with learnable degrees of freedom), affine transformations will likely work for most models.
+However, Bayinx also offers nonlinear flows to account for more complex posterior distributions.</p>
+<h3 id="affine-flows">Affine Flows<a class="headerlink" href="#affine-flows" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../api/flows/#bayinx.flows.DiagAffine">Diagonal Affine</a>: Equivalent to <a href="https://mc-stan.org/docs/cmdstan-guide/variational_config.html">mean-field ADVI</a> with a standard normal base distribution.
+It scales and shifts each parameter independently, meaning it is cheap to compute but underestimates dispersion in the posterior when correlations are present.</li>
+<li><a href="../api/flows/#bayinx.flows.FullAffine">Full Affine</a>: Equivalent to <a href="https://mc-stan.org/docs/cmdstan-guide/variational_config.html">full-rank ADVI</a> with a standard normal base distribution.
+It improves the diagonal affine flow by using a lower-triangular matrix to capture every possible correlation between parameters, meaning it is highly expressive for Gaussian-like shapes, but memory-intensive.</li>
+<li><a href="../api/flows/#bayinx.flows.LowRankAffine">Low-rank Affine</a>: A middle ground that captures major correlations using a low-rank update, making it suitable for high-dimensional models where <code>FullAffine</code> would not fit in memory.</li>
+</ul>
+<h3 id="non-linear-flows">Non-Linear Flows<a class="headerlink" href="#non-linear-flows" title="Permanent link">&para;</a></h3>
+<p>If your posterior isn't just a "tilted ellipse" and has complex non-linear dependencies, stacking a series of <a href="">Sylvester flows</a> will work for basically all cases.</p>
 
 
 
