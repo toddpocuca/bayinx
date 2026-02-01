@@ -30,6 +30,8 @@ class Observed[T: PyTree](Node[T]):
                 pytree=filter_spec,
                 replace=jt.map(eqx.is_array_like, obj),
             )
+        else:
+            filter_spec = jt.broadcast(filter_spec, obj)
 
         self._byx__obj = obj
         self._byx__filter_spec = filter_spec

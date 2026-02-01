@@ -57,6 +57,8 @@ class Continuous[T: PyTree](Stochastic[T]):
                 pytree=filter_spec,
                 replace=jt.map(is_float_like, obj),
             )
+        else:
+            filter_spec = jt.broadcast(filter_spec, obj)
 
         self._byx__obj = obj
         self._byx__filter_spec = filter_spec

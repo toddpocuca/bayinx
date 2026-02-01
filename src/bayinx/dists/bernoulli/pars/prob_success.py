@@ -2,18 +2,19 @@ from typing import Tuple
 
 import jax.numpy as jnp
 import jax.random as jr
-from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 
 def _prob(
-    x: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    p: ArrayLike
+) -> Array:
     # Cast to Array
     x, p = jnp.asarray(x), jnp.asarray(p)
 
@@ -21,9 +22,9 @@ def _prob(
 
 
 def _logprob(
-    x: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    p: ArrayLike
+) -> Array:
     # Cast to Array
     x, p = jnp.asarray(x), jnp.asarray(p)
 
@@ -31,9 +32,9 @@ def _logprob(
 
 
 def _cdf(
-    x: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    p: ArrayLike
+) -> Array:
     # Cast to Array
     x, p = jnp.asarray(x), jnp.asarray(p)
 
@@ -45,9 +46,9 @@ def _cdf(
 
 
 def _logcdf(
-    x: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    p: ArrayLike
+) -> Array:
     # Cast to Array
     x, p = jnp.asarray(x), jnp.asarray(p)
 
@@ -59,9 +60,9 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    p: ArrayLike
+) -> Array:
     # Cast to Array
     x, p = jnp.asarray(x), jnp.asarray(p)
 
@@ -73,9 +74,9 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    p: ArrayLike
+) -> Array:
     # Cast to Array
     x, p = jnp.asarray(x), jnp.asarray(p)
 
@@ -91,18 +92,21 @@ class ProbSuccessBernoulli(Parameterization):
     A probability-of-success parameterization of the Bernoulli distribution.
     """
 
-    p: Node[Real[Array, "..."]]
+    p: Node[Array]
 
     def __init__(
         self,
-        p: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
+        p: ArrayObject,
     ):
-        # Initialize probability of success
-        if isinstance(p, Node):
-            if isinstance(byo.obj(p), ArrayLike):
-                self.p = p # type: ignore
-        else:
-            self.p = Observed(jnp.asarray(p))
+        for name, val in [("p", p)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
+
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract probability of success

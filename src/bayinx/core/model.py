@@ -12,7 +12,7 @@ import jax.numpy as jnp
 import jax.tree as jt
 from jaxtyping import PyTree, Scalar
 
-from bayinx.constraints import Identity, Interval, Lower, Upper
+from bayinx.constraints import Identity, Interval, LogSimplex, Lower, Simplex, Upper
 from bayinx.core.context import Target, _model_context, model_context
 from bayinx.core.node import Node
 from bayinx.core.types import HasConstraint
@@ -24,7 +24,9 @@ def define(
     shape: Optional[int | str | tuple[int | str, ...]] = None,
     init: Optional[PyTree] = None,
     lower: Optional[float] = None,
-    upper: Optional[float] = None
+    upper: Optional[float] = None,
+    simplex: Optional[float | bool] = None,
+    logsimplex: Optional[float | bool] = None
 ):
     """
     Define a node.
@@ -34,6 +36,8 @@ def define(
         init: Specify the node in the definition.
         lower: Enforce a lower bound.
         upper: Enforce an upper bound.
+        simplex: Enforce a simplex constraint.
+        logsimplex: Enforce a log-simplex constraint.
 
     Example:
         ```py
@@ -55,14 +59,18 @@ def define(
     if init is not None:
         metadata["init"] = init
 
-    match (lower, upper):
-        case (float() | int(), None):
+    match (lower, upper, simplex, logsimplex):
+        case (float() | int(), None, None, None):
             metadata["constraint"] = Lower(lower) # type: ignore
-        case (None, float() | int()):
+        case (None, float() | int(), None, None):
             metadata["constraint"] = Upper(upper) # type: ignore
-        case (float() | int(), float() | int()):
+        case (float() | int(), float() | int(), None, None):
             metadata["constraint"] = Interval(lower, upper) # type: ignore
-        case (None, None):
+        case (None, None, float() | bool(), None):
+            metadata["constraint"] = Simplex(float(simplex)) # type: ignore
+        case (None, None, None, float() | bool()):
+            metadata["constraint"] = LogSimplex(float(logsimplex)) # type: ignore
+        case (None, None, None, None):
             metadata["constraint"] = Identity()
         case (_):
             raise TypeError("TODO.")
@@ -146,7 +154,11 @@ class Model(eqx.Module):
             elif "init" in node_defn.metadata: # Initialized in model definition
                 obj = node_defn.metadata["init"]
             elif issubclass(node_type, Stochastic) and shape is not None: # Shape for stochastic node defined in model definition
-                obj = jnp.zeros(shape) # TODO: will change later for discrete objects
+                # Decrement shape for constrained objects
+                if isinstance(node_defn.metadata["constraint"], Simplex | LogSimplex):
+                    shape = shape[:-1] + (shape[-1] - 1,)
+
+                obj = jnp.zeros(shape)
             else:
                 raise ValueError(f"Node '{node_defn.name}' not initialized or defined.")
 
@@ -262,7 +274,7 @@ class Model(eqx.Module):
 
     @eqx.filter_jit
     def __call__(self) -> Scalar:
-        with model_context():
+        with model_context(): # Initialize model context
             target = _model_context.target
 
             # Constrain the model and accumulate Jacobian adjustments

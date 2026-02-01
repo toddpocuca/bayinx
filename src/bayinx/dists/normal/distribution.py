@@ -1,9 +1,7 @@
 from typing import Optional
 
-from jaxtyping import Array, ArrayLike, Real
-
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 
 from .pars import LocPrecisionNormal, LocScaleNormal, LocVarNormal
 
@@ -24,10 +22,10 @@ class Normal(Distribution):
 
     def __init__(
         self,
-        loc: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        scale: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        var: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        prec: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None
+        loc: Optional[ArrayObject] = None,
+        scale: Optional[ArrayObject] = None,
+        var: Optional[ArrayObject] = None,
+        prec: Optional[ArrayObject] = None
     ):
         if loc is not None and scale is not None:
             self.par = LocScaleNormal(loc, scale)

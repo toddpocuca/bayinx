@@ -23,7 +23,7 @@ class Node[T: PyTree](eqx.Module):
 
     def __init__(self, obj, filter_spec):
         self._byx__obj = obj
-        self._byx__filter_spec = filter_spec
+        self._byx__filter_spec = jt.broadcast(filter_spec, obj)
 
     @property
     def filter_spec(self) -> Self:

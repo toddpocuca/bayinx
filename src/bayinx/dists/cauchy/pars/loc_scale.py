@@ -1,21 +1,20 @@
-from typing import Tuple
-
 import jax.numpy as jnp
 import jax.random as jr
-from jaxtyping import Array, ArrayLike, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 PI = 3.141592653589793
 
 def _prob(
-    x: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike,
+) -> Array:
     # Cast to Array
     x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
@@ -23,10 +22,10 @@ def _prob(
 
 
 def _logprob(
-    x: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike
+) -> Array:
     # Cast to Array
     x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
@@ -34,10 +33,10 @@ def _logprob(
 
 
 def _cdf(
-    x: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike
+) -> Array:
     # Cast to Array
     x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
@@ -45,18 +44,18 @@ def _cdf(
 
 
 def _logcdf(
-    x: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike
+) -> Array:
     return jnp.log(_cdf(x, loc, scale))
 
 
 def _ccdf(
-    x: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike
+) -> Array:
     # Cast to Array
     x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
@@ -64,10 +63,10 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Real[ArrayLike, "..."],
-    loc: Real[ArrayLike, "..."],
-    scale: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    loc: ArrayLike,
+    scale: ArrayLike
+) -> Array:
     return jnp.log(_ccdf(x, loc, scale))
 
 
@@ -76,27 +75,23 @@ class LocationScaleCauchy(Parameterization):
     A location-scale parameterization of the Cauchy distribution.
     """
 
-    loc: Node[Real[Array, "..."]]
-    scale: Node[Real[Array, "..."]]
+    loc: Node[Array]
+    scale: Node[Array]
 
     def __init__(
         self,
-        loc: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        scale: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        loc: ArrayObject,
+        scale: ArrayObject
     ):
-        # Initialize location parameter
-        if isinstance(loc, Node):
-            if isinstance(loc._byx__obj, ArrayLike):
-                self.loc: Node[Real[Array, "..."]] = loc
-        else:
-            self.loc = Observed(jnp.asarray(loc))
+        for name, val in [("loc", loc), ("scale", scale)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
 
-        # Initialize scale parameter
-        if isinstance(scale, Node):
-            if isinstance(scale._byx__obj, ArrayLike):
-                self.scale: Node[Real[Array, "..."]] = scale
-        else:
-            self.scale = Observed(jnp.asarray(scale))
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
@@ -105,7 +100,7 @@ class LocationScaleCauchy(Parameterization):
 
         return _logprob(x, loc, scale)
 
-    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
+    def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
         loc = byo.obj(self.loc)
         scale = byo.obj(self.scale)

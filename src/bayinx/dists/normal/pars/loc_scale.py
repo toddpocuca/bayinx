@@ -15,93 +15,93 @@ PI = 3.141592653589793
 
 def _prob(
     x: ArrayLike,
-    mean: ArrayLike,
+    loc: ArrayLike,
     scale: ArrayLike,
 ) -> Array:
     # Cast to Array
-    x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
+    x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
-    return 1 / (scale * jnp.sqrt(2.0 * PI)) * jnp.exp(-0.5 * jnp.square((x - mean) / scale))
+    return 1 / (scale * jnp.sqrt(2.0 * PI)) * jnp.exp(-0.5 * jnp.square((x - loc) / scale))
 
 
 def _logprob(
     x: ArrayLike,
-    mean: ArrayLike,
+    loc: ArrayLike,
     scale: ArrayLike,
 ) -> Array:
     # Cast to Array
-    x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
+    x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
     # Compute variance
     var = jnp.square(scale)
 
-    return -0.5 * (jnp.log(2.0 * PI * var) + jnp.square(x - mean) / var)
+    return -0.5 * (jnp.log(2.0 * PI * var) + jnp.square(x - loc) / var)
 
 
 def _cdf(
     x: ArrayLike,
-    mean: ArrayLike,
+    loc: ArrayLike,
     scale: ArrayLike,
 ) -> Array:
     # Cast to Array
-    x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
+    x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
-    return jsp.ndtr((x - mean) / scale)
+    return jsp.ndtr((x - loc) / scale)
 
 
 def _logcdf(
     x: ArrayLike,
-    mean: ArrayLike,
+    loc: ArrayLike,
     scale: ArrayLike,
 ) -> Array:
     # Cast to Array
-    x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
+    x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
-    return jsp.log_ndtr((x - mean) / scale)
+    return jsp.log_ndtr((x - loc) / scale)
 
 
 def _ccdf(
     x: ArrayLike,
-    mean: ArrayLike,
+    loc: ArrayLike,
     scale: ArrayLike,
 ) -> Array:
     # Cast to Array
-    x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
+    x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
-    return jsp.ndtr((mean - x) / scale)
+    return jsp.ndtr((loc - x) / scale)
 
 
 def _logccdf(
     x: ArrayLike,
-    mean: ArrayLike,
+    loc: ArrayLike,
     scale: ArrayLike,
 ) -> Array:
     # Cast to Array
-    x, mean, scale = jnp.asarray(x), jnp.asarray(mean), jnp.asarray(scale)
+    x, loc, scale = jnp.asarray(x), jnp.asarray(loc), jnp.asarray(scale)
 
-    return jsp.log_ndtr((mean - x) / scale)
+    return jsp.log_ndtr((loc - x) / scale)
 
 
 
 class LocScaleNormal(Parameterization):
     """
-    A mean-scale parameterization of the normal distribution.
+    A loc-scale parameterization of the normal distribution.
     """
 
-    mean: Node[Array]
+    loc: Node[Array]
     scale: Node[Array]
 
     def __init__(
         self,
-        mean: ArrayObject,
+        loc: ArrayObject,
         scale: ArrayObject
     ):
-        # Initialize mean parameter
-        if isinstance(mean, Node):
-            if isinstance(mean._byx__obj, ArrayLike):
-                self.mean = mean # type: ignore
+        # Initialize loc parameter
+        if isinstance(loc, Node):
+            if isinstance(loc._byx__obj, ArrayLike):
+                self.loc = loc # type: ignore
         else:
-            self.mean = Observed(jnp.asarray(mean))
+            self.loc = Observed(jnp.asarray(loc))
 
         # Initialize scale parameter
         if isinstance(scale, Node):
@@ -112,14 +112,14 @@ class LocScaleNormal(Parameterization):
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        mean = byo.obj(self.mean)
+        loc = byo.obj(self.loc)
         scale = byo.obj(self.scale)
 
-        return _logprob(x, mean, scale)
+        return _logprob(x, loc, scale)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        mean = byo.obj(self.mean)
+        loc = byo.obj(self.loc)
         scale = byo.obj(self.scale)
 
-        return jr.normal(key, shape) * scale + mean
+        return jr.normal(key, shape) * scale + loc

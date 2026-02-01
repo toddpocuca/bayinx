@@ -1,9 +1,7 @@
 from typing import Optional
 
-from jaxtyping import Array, ArrayLike, Real
-
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 
 from .pars import (
     LogitProbFailureBinomial,
@@ -16,13 +14,6 @@ from .pars import (
 class Binomial(Distribution):
     """
     A Binomial distribution.
-
-    Parameters:
-        n: Parameterizes a Binomial distribution by the total number of trials.
-        p: Parameterizes a Binomial distribution by its probability of success.
-        q: Parameterizes a Binomial distribution by its probability of failure.
-        logit_p: Parameterizes a Binomial distribution by the logit probability of success.
-        logit_q: Parameterizes a Binomial distribution by the logit probability of failure.
     """
 
     par: Parameterization
@@ -30,19 +21,29 @@ class Binomial(Distribution):
 
     def __init__(
         self,
-        n: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        p: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        q: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        logit_p: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        logit_q: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None
+        n: ArrayObject,
+        p: Optional[ArrayObject] = None,
+        q: Optional[ArrayObject] = None,
+        logit_p: Optional[ArrayObject] = None,
+        logit_q: Optional[ArrayObject] = None
     ):
-        if n is not None and p is not None:
+        """
+        Construct a Binomial distribution by selecting a parameterization.
+
+        Parameters:
+            n: Parameterize a Binomial distribution by its total number of trials.
+            p: Parameterize a Binomial distribution by its probability of success.
+            q: Parameterize a Binomial distribution by its probability of failure.
+            logit_p: Parameterize a Binomial distribution by its logit probability of success.
+            logit_q: Parameterize a Binomial distribution by its logit probability of failure.
+        """
+        if p is not None:
             self.par = ProbSuccessBinomial(n, p)
-        elif n is not None and q is not None:
+        elif q is not None:
             self.par = ProbFailureBinomial(n, q)
-        elif n is not None and logit_p is not None:
+        elif logit_p is not None:
             self.par = LogitProbSuccessBinomial(n, logit_p)
-        elif n is not None and logit_q is not None:
+        elif logit_q is not None:
             self.par = LogitProbFailureBinomial(n, logit_q)
         else:
-            raise TypeError(f"Expected n: {n} and at least one of p: {p}, q: {q} to be not None.")
+            raise TypeError("Expected at least one of 'p', 'q', 'logit_p', 'logit_q' to be not None.")

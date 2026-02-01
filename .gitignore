@@ -15,3 +15,4 @@ wheels/
 .ruff_cache
 uv.lock
 site/
+uv.toml

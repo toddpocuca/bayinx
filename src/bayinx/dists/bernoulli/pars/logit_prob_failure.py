@@ -8,6 +8,7 @@ from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 
@@ -96,14 +97,17 @@ class LogitProbFailureBernoulli(Parameterization):
 
     def __init__(
         self,
-        logit_q: ArrayLike | Node[Array],
+        logit_q: ArrayObject,
     ):
-        # Initialize probability of success
-        if isinstance(logit_q, Node):
-            if isinstance(byo.obj(logit_q), ArrayLike):
-                self.logit_q = logit_q # type: ignore
-        else:
-            self.logit_q = Observed(jnp.asarray(logit_q))
+        for name, val in [("logit_q", logit_q)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
+
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract logit probability of failure

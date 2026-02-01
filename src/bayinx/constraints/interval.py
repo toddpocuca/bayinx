@@ -1,5 +1,6 @@
 from typing import Any, Tuple
 
+import jax.nn as jnn
 import jax.numpy as jnp
 import jax.tree as jt
 from jaxtyping import PyTree, Scalar
@@ -28,7 +29,7 @@ class Interval(Constraint):
 
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
-        Applies the scaled Sigmoid transformation to the leaves of a `PyTree` and
+        Applies the scaled sigmoid transformation to the leaves of a `PyTree` and
         computes the log-Jacobian adjustment.
 
         # Parameters
@@ -36,7 +37,7 @@ class Interval(Constraint):
 
         # Returns
         A tuple containing:
-            - A `PyTree` with its values `y` now satisfying lb < y < ub.
+            - A `PyTree` with each leaf `x` now satisfying `lb < x < ub`.
             - A scalar `Array` containing the log-absolute-Jacobian of the
               transformation.
         """
@@ -46,12 +47,14 @@ class Interval(Constraint):
             nonlocal log_jac  # Reference outer variable
 
             if filter:
-                # Apply transformation
-                constrained = self.lb + (self.ub - self.lb) * jnp.exp(leaf) / (1.0 + jnp.exp(leaf))
+                # Apply transformation ----
+                constrained = self.lb + (self.ub - self.lb) * jnn.sigmoid(-leaf)
 
+                # Accumulate log-Jacobian adjustment ----
                 log_jac = log_jac + (jnp.log(constrained - self.lb) +
                     jnp.log(self.ub - constrained) -
-                    jnp.log(self.ub - self.lb)).sum()
+                    jnp.log(self.ub - self.lb)
+                ).sum()
 
                 return constrained
             else:

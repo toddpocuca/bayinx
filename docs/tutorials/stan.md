@@ -1,7 +1,7 @@
 # Coming From Stan to Bayinx
 
 I have been an avid Stan user for a few years now and got inspired to write my own probabilistic programming language, Bayinx.
-If you are experienced with Stan then this will be a useful tutorial for understanding Bayinx.
+If you are experienced with Stan and have at least some familiarity with Python then this will be a useful tutorial for understanding Bayinx.
 
 ## Defining Models In Stan and Bayinx
 
@@ -40,10 +40,15 @@ model {
 We would then either use `cmdstan` or our favourite library (`CmdStanR`, `CmdStanPy`, etc) to pass in our data and fit the model with Stan.
 
 ### Bayinx Implementation
-In Bayinx, we create a new class that inherits from `bayinx.Model`, and use attribute annotations & the `define` function to construct the nodes for our model.
+In Bayinx, we create a new class that inherits from `bayinx.Model`,
+annotate attributes with a "node type" (e.g., `Continuous` for continuous parameters, `Observed` for observed data),
+and assign them the `define` function to further specify metadata about _model nodes_.
+
+??? info "Confused: Model Nodes"
+    Objects available to the model are described as "model nodes", borrowing from BUGS/JAGS terminology.
+    In a probabilistic graphical model, a node represents a random variable or constant data.
 
 ```py
-from typing import List
 from jaxtyping import Array
 
 from bayinx.dists import Normal, Exponential
@@ -51,10 +56,10 @@ from bayinx.nodes import Continuous, Observed
 from bayinx import Model, define
 
 class SimpleNormalModel(Model):
-    mu: Continuous[List[Array]] = define(shape=()) # You can add type-hints if you like
-    sigma: Continuous[List[Array]] = define(shape=(), lower=0)
+    mu: Continuous[Array] = define(shape=()) # Nodes are generic and support further type-hinting
+    sigma: Continuous = define(shape=(), lower=0) # But this is not required
 
-    x: Observed[List[Array]] = define(shape='n_obs')
+    x: Observed[Array] = define(shape='n_obs')
 
     def model(self, target):
         # Defining priors
@@ -64,15 +69,26 @@ class SimpleNormalModel(Model):
         # Defining likelihood
         self.x << Normal(self.mu, self.sigma)
 ```
+??? info "Confused: Type-Hinting & Field Metadata"
+    Type-hinting/annotations were introduced in Python 3.5 to provide a way for developers to indicate the expected data types of variables.
+    While Python doesn't enforce these at runtime, they are useful for documentation and static analysis tools.
+    Further functionality was introduced in Python 3.7 with "dataclasses," where attributes (called _fields_ when annotated) could be imbued with metadata with `dataclasses.field(metadata = ...)`.
+    Internally, `bayinx.define` uses this metadata pattern to automatically handle shapes, initialization, and constraints (like `lower=0`) during class creation,
+    effectively replacing the `parameters` and `data` blocks in Stan.
 
 The `data` and `parameters` blocks are essentially merged into one "block"; defining an object as data or parameter is done by defining a new attribute.
 
-The `model` block in Stan is equivalent to the `model` method of our new class, which takes in `self` and the accumulator for the log-probability evaluations `target`, and returns it.
-Just like in Stan, you often do not need to work with `target` explicitly, instead using distribution statements with `<<` (as opposed to `~` in Stan).
+The `model` block in Stan is equivalent to the `model` method of our new class, which takes in `self` and the accumulator `target` that stores the (unnormalized) posterior log-density.
+Just like in Stan, you do not need to work with `target` explicitly for most cases, instead just using distribution statements with `<<` (as opposed to `~` in Stan).
 
-Similar to Stan, distribution statements are broadcasted (even across [PyTrees](https://docs.jax.dev/en/latest/pytrees.html)!) & vectorized.
+??? info "Curious: Why `<<` instead of `~`?"
+    Although much of Bayinx is modelled after Stan, the `~` in Python is _unary_, meaning it only accepts a single argument on its right-hand side.
+    However, since distribution statements need access to a distribution and an object to compute a log-probability mass/density, we need a suitable binary operator that is unlikely to be used in the context of statistical modelling.
+    The best choice I could find was the bitwise shift operator `<<`, which is overloaded to implicitly accumulate a log-probability mass/density.
 
-Fitting the model is done by passing the model definition and shapes/data to `Posterior`, constructing a specification for the normalizing flow architecture, and the optimizing the variational approximation:
+Similar to Stan, distribution statements are broadcasted & vectorized.
+
+Fitting the model is done by passing the model definition and shapes/data to `Posterior`, constructing a specification for the normalizing flow architecture, and then optimizing the variational approximation:
 ```py
 from bayinx import Posterior
 from bayinx.flows import DiagAffine
@@ -87,7 +103,15 @@ post.configure([DiagAffine()])
 post.fit()
 ```
 
-This highlights most of the important similarities between Stan and Bayinx, but there are some important differences the two.
+??? info "Curious: What is `DiagAffine`?"
+    A [diagonal affine flow layer](../api/flows.md#bayinx.flows.DiagAffine) applies an element-wise scale and shift to the output of the previous layer.
+    With a standard normal base distribution, it is equivalent to [meanfield ADVI](https://mc-stan.org/docs/cmdstan-guide/variational_config.html#variational-inference-using-advi).
+
+    ??? info "Confused: What is a normalizing flow?"
+        Take a look at the overview on normalizing flows available [here](../nf.md).
+
+
+This highlights most of the important similarities between Stan and Bayinx, but there are some important differences between the two.
 
 ## Differences Between Bayinx & Stan
 
@@ -96,27 +120,17 @@ You don't technically *need* to define the shape of a node in Bayinx, it's offer
 
 ```py
 class SimpleNormalModel(Model):
-    mu: Continuous = define(shape=())
-    sigma: Continuous = define(shape=(), lower=0)
+    # ...
 
     x: Observed = define()
 
-    def model(self, target):
-        # Defining priors
-        self.mu << Normal(0, 10)
-        self.sigma << Exponential(scale = 10)
-
-        # Defining likelihood
-        self.x << Normal(self.mu, self.sigma)
+    # ...
 
 post = Posterior(
     SimpleNormalModel,
     x = jnp.array([-2.0, -1.0, 0.0, 1.0, 2.0]) # This can hold any shape!
 )
-post.configure([DiagAffine()])
-post.fit()
 ```
-
 
 In fact, we can even drop the shape definitions on *everything*:
 
@@ -127,13 +141,7 @@ class SimpleNormalModel(Model):
 
     x: Observed = define()
 
-    def model(self, target):
-        # Defining priors
-        self.mu << Normal(0, 10)
-        self.sigma << Exponential(scale = 10)
-
-        # Defining likelihood
-        self.x << Normal(self.mu, self.sigma)
+    # ...
 
 post = Posterior(
     SimpleNormalModel,
@@ -141,8 +149,6 @@ post = Posterior(
     mu = jnp.zeros(()),
     sigma = jnp.zeros(())
 )
-post.configure([DiagAffine()])
-post.fit()
 ```
 
 When we pass (named) arguments to `Posterior`, it uses them to initialize a "toy" model with the correct structure for the variational approximation (so we can figure out the size of the parameter space).
@@ -152,6 +158,13 @@ These arguments are the shapes for the nodes (so we can perform shape-checks on 
 ### Nodes Can Be *Anything*
 
 Well not exactly anything, but they can be a lot more than just arrays.
+In Stan, the data types you can use include scalars, vectors, matrices, arrays, and most recently tuples.
+These types have fixed functionality, and you cannot create a new type of object out of these primitive types.
+In Bayinx, a node is anything a [PyTree](https://docs.jax.dev/en/latest/pytrees.html) can be.
+
+??? info "Curious: What is a PyTree?"
+    > A pytree is a container-like structure built out of container-like Python objects...
+    This definition ends up being very useful, as by default it includes nested collections of dictionaries, lists, tuples, etc, and you can register a user-defined Python object as a PyTree if it [implements certain functionality](https://docs.jax.dev/en/latest/custom_pytrees.html).
 
 For example, we can work with objects as simple as a list of arrays:
 
@@ -210,7 +223,7 @@ class MyNeuralNetwork(eqx.Module):
 # Define model
 class NeuralNetworkModel(Model):
     nn: Continuous = define(
-        init = MyNeuralNetwork() # if a node is known at "definition"-time we can pass it here
+        init = MyNeuralNetwork() # remember if a node is known at "definition"-time we can pass it here
     )
     sigma: Continuous = define(shape = (), lower = 0.0)
 
@@ -251,7 +264,7 @@ print(f"Ground-truth For New Data: {y_new}")
 print(f"Posterior Predictive Mean For New Data: {y_newhat.mean(0)}")
 print(f"Difference: {y_new - y_newhat.mean(0)}")
 ```
-```bash
+```sh
 Ground-truth For New Data: [ 8.742278e-08 -1.000000e+00  0.000000e+00  1.000000e+00 -8.742278e-08]
 Posterior Predictive Mean For New Data: [-0.03101175 -0.98273844 -0.00559028  0.9660495   0.06396807]
 Difference: [ 0.03101183 -0.01726156  0.00559028  0.03395051 -0.06396816]
@@ -266,4 +279,4 @@ and both pre-allocates the memory used for an entire program as well as aggressi
 Meaning you don't have to modify your Bayinx model at all to take advantage of multi-threading on your CPU or export your model to the GPU.
 
 Unfortunately, this also means you are left to the whims of the XLA compiler to parallelize your program efficiently, which may not always be optimal (this is particularly relevant when targeting the CPU).
-I expect the XLA compiler will continue to improve over time, and as a PPL built purely on JAX, Bayinx will also benefit from all performance improvements in the compiler.
+I expect the XLA compiler will continue to improve over time, and as a PPL built on JAX, Bayinx will also benefit from all performance improvements in the compiler.

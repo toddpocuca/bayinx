@@ -4,11 +4,12 @@ import jax.nn as jnn
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
-from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 
@@ -18,10 +19,10 @@ def _log_binom_coeff(n: ArrayLike, x: ArrayLike) -> Array:
 
 
 def _prob(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    logit_q: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    logit_q: ArrayLike,
+) -> Array:
     """Probability mass function, P(X=x | n, logit_q)."""
     # Cast to Array
     x, n, logit_q = jnp.asarray(x), jnp.asarray(n), jnp.asarray(logit_q)
@@ -30,10 +31,10 @@ def _prob(
 
 
 def _logprob(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    logit_q: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    logit_q: ArrayLike,
+) -> Array:
     # Cast to Array
     k, n, logit_q = jnp.asarray(x), jnp.asarray(n), jnp.asarray(logit_q)
 
@@ -41,10 +42,10 @@ def _logprob(
 
 
 def _cdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    logit_q: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    logit_q: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, logit_q = jnp.asarray(x), jnp.asarray(n), jnp.asarray(logit_q)
 
@@ -52,10 +53,10 @@ def _cdf(
 
 
 def _logcdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    logit_q: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    logit_q: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, logit_q = jnp.asarray(x), jnp.asarray(n), jnp.asarray(logit_q)
 
@@ -63,10 +64,10 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    logit_q: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    logit_q: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, logit_q = jnp.asarray(x), jnp.asarray(n), jnp.asarray(logit_q)
 
@@ -74,10 +75,10 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    logit_q: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    logit_q: ArrayLike,
+) -> Array:
     x, n, logit_q = jnp.asarray(x), jnp.asarray(n), jnp.asarray(logit_q)
 
     return jnp.log(_ccdf(x, n, logit_q)) # TODO
@@ -88,27 +89,23 @@ class LogitProbFailureBinomial(Parameterization):
     A logit-of-probability-of-failure parameterization of the Binomial distribution.
     """
 
-    n: Node[Integer[Array, "..."]]
-    logit_q: Node[Real[Array, "..."]]
+    n: Node[Array]
+    logit_q: Node[Array]
 
     def __init__(
         self,
-        n: Integer[ArrayLike, "..."] | Node[Integer[Array, "..."]],
-        logit_q: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        n: ArrayObject,
+        logit_q: ArrayObject
     ):
-        # Initialize number of trials
-        if isinstance(n, Node):
-            if isinstance(byo.obj(n), ArrayLike):
-                self.n = n # type: ignore
-        else:
-            self.n = Observed(jnp.asarray(n))
+        for name, val in [("n", n), ("logit_q", logit_q)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
 
-        # Initialize logit of probability of failure
-        if isinstance(logit_q, Node):
-            if isinstance(byo.obj(logit_q), ArrayLike):
-                self.logit_q = logit_q # type: ignore
-        else:
-            self.logit_q = Observed(jnp.asarray(logit_q))
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters

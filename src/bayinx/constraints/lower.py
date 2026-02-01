@@ -9,24 +9,10 @@ from bayinx.core.constraint import Constraint
 
 class Lower(Constraint):
     """
-    Enforces a lower bound on the parameter.
+    Enforces a lower bound on a node.
 
     # Attributes
     - `lb`: The lower bound.
-
-    Definition:
-        The constraint is defined as:
-
-            $$
-            y = \\exp(x) + \\text{lb}
-            $$
-
-        Which has a log-Jacobian adjustment of:
-
-            $$
-            \\log |\\frac{dy}{dx}| = \\log |\\exp(x)| = \\log \\exp(x) = x
-            $$
-
     """
 
     lb: Scalar
@@ -37,8 +23,7 @@ class Lower(Constraint):
 
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
-        Applies the exponential transformation to the leaves of a `PyTree` and
-        computes the log-Jacobian adjustment of the transformation.\\
+        Applies the exponential transformation to the leaves of a `PyTree` and computes the log-Jacobian adjustment of the transformation.
 
         # Parameters
         - `x`: The unconstrained `PyTree`.
@@ -55,10 +40,10 @@ class Lower(Constraint):
             nonlocal log_jac  # Reference outer variable
 
             if filter:
-                # Accumulate Jacobian adjustment
+                # Accumulate log-Jacobian adjustment ----
                 log_jac = log_jac + jnp.sum(leaf)
 
-                # Apply transformation
+                # Apply transformation ----
                 constrained = jnp.exp(leaf) + self.lb
 
                 return constrained

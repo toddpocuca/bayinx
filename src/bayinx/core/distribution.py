@@ -63,7 +63,7 @@ class Distribution(Protocol):
 
         return self.par.sample(shape, key)
 
-    def __rlshift__(self, node: Node):
+    def __rlshift__[T: PyTree](self, node: Node[T] | T):
         """
         Implicitly accumulate the log probability into the current model context.
         """
@@ -77,6 +77,6 @@ class Distribution(Protocol):
             _model_context.target += log_prob
         else:
             raise RuntimeError(
-                "Model context doesn't exist. Make sure you're calling "
-                + "this within the 'model' method."
+                "Model context target doesn't exist. "
+                "Make sure you're calling this within the 'model' method."
             )

@@ -21,7 +21,8 @@ $$
     y_i = \mathbf{x}_i^\top \mathbf{\beta} + \epsilon_i
 $$
 
-where $\epsilon_i \sim \text{Normal}(0, \sigma)$. But since these two formulations are equivalent, we will use the first.
+where $\epsilon_i \sim \text{Normal}(0, \sigma)$.
+But since these two formulations are equivalent, we will use the first.
 
 ## Translating to Bayinx
 
@@ -37,10 +38,10 @@ import bayinx.nodes as byn
 
 # Define model
 class LinearModel(byx.Model):
-    beta: byn.Continuous = byx.define(shape = 'n_predictors')
+    beta: byn.Continuous = byx.define(shape = 'n_pred')
     sigma: byn.Continuous = byx.define(shape = (), lower = 0)
 
-    X: byn.Observed = byx.define(shape = ('n_obs', 'n_predictors'))
+    X: byn.Observed = byx.define(shape = ('n_obs', 'n_pred'))
     y: byn.Observed = byx.define(shape = 'n_obs')
 
     def model(self, target):
@@ -53,20 +54,23 @@ class LinearModel(byx.Model):
 # Initialize posterior approximation
 post = byx.Posterior(
     LinearModel,
-    n_predictors = 2,
+    n_pred = 2,
     n_obs = 4,
     X = jnp.array([[1., 0.], [1., 1.], [1., 2.], [1., 3.]]),
     y = jnp.array([6.0, 13., 20., 27.])
 )
 ```
 
-Notice the attributes of the subclass are used to define _model nodes_, which are all the objects available to the model and represent data or parameters.
-Model nodes are defined using `bayinx.define`, which is used to define shapes, default values, or constraints the node must satisfy:
+Notice the attributes of the class are used to define _model nodes_, which are all the objects available to the model and represent data or parameters.
+Model nodes have their type specified by their type annotations (e.g., `beta: byn.Continuous` specifies `beta` as a continuous parameter) and are further defined using `bayinx.define`, which is used to provide shapes, default values, or constraints the node must satisfy:
 
 ### Shape Specification
-The `shape` argument of `define` does two things:
-- if the node is stochastic (e.g., `Continuous` inherits from `Stochastic`, so it is stochastic and represents a parameter), then an (JAX) array is automatically constructed with the correct shape based on the shapes passed during posterior initialization (elaborated on later).
-- if the node is passed explicitly during posterior initialization, the shape of the argument is checked against the shape specification. If the two disagree, an error will be thrown.
+The `shape` argument of `define` accepts a string, integer, or a tuple of strings and integers representing the shape of an array.
+Depending on the type of the node it does two things:
+
+- if the node is stochastic (e.g., `Continuous` inherits from `Stochastic`, so it is stochastic and represents a parameter), then an array is automatically constructed with the correct shape based on the shapes passed during posterior initialization (elaborated on later).
+- if the node is passed explicitly during posterior initialization, the shape of the argument is checked against the shape specification.
+If the two disagree, an error will be thrown.
 
 This avoids some boilerplate for many models that involve parameters defined as arrays, and peace of mind knowing that all model nodes have the correct shape.
 
@@ -111,21 +115,23 @@ class BernoulliModel(byx.Model):
 
     def model(self, target):
         self.x << byd.Bernoulli(self.p)
-
-post = byx.Posterior(
-    x = jnp.array([0, 0, 0, 1])
-)
 ```
 
 
 ## Fitting a Model
 
-Once the model is defined and the posterior is initialized, Bayinx uses Normalizing Flows Variational Inference to optimize a variational approximation.
-The architecture is specified using the `.configure` method of `Posterior` using the flows offered in the `bayinx.flows` module.
+Once the model is defined we can proceed with fitting an approximation to the posterior distribution.
+To initialize the posterior approximation, we pass all the necessary arguments to the `bayinx.Posterior` class constructor including all observed nodes, any shapes used in `define` statements, and lastly any stochastic nodes whose structure was not specified using `shape` or `init`.
+The architecture of the normalizing flow is specified with the `.configure` method of `Posterior` using the flows offered in the `bayinx.flows` module.
 The approximation can then optimized using the `.fit` method.
 Continuing with the `LinearModel` example, a full affine flow can be used to accurately approximate the posterior:
 
 ```python
+# Initialize posterior
+post = byx.Posterior(
+    x = jnp.array([0, 0, 0, 1])
+)
+
 # Configure and optimize posterior
 post.configure([byf.FullAffine()]) # equivalent to full-rank ADVI
 post.fit()

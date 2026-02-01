@@ -54,6 +54,7 @@ markdown_extensions:
 # 4. PLUGINS (Functionality: API generation)
 plugins:
   - meta
+  - search
   # Core plugin for automatic API documentation
   - mkdocstrings:
       handlers:
@@ -68,9 +69,11 @@ plugins:
 # Create the corresponding .md files in your 'docs' directory.
 nav:
   - Getting Started: index.md
+  - Normalizing Flows: nf.md
   - Tutorials:
       - Coming From Stan: tutorials/stan.md
       - Basic Usage: tutorials/basic.md
+      - Advanced Feautres: tutorials/adv.md
   - Examples:
       - Introductory:
           - Modelling Floating Leaf Discs: examples/intro/leaf_discs/index.md

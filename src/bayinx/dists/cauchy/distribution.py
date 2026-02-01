@@ -1,9 +1,7 @@
-from typing import Optional
 
-from jaxtyping import Array, ArrayLike, Real
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 
 from .pars import LocationScaleCauchy
 
@@ -11,10 +9,6 @@ from .pars import LocationScaleCauchy
 class Cauchy(Distribution):
     """
     A Cauchy distribution.
-
-    Parameters:
-        loc: Parameterizes a Cauchy distribution by its location.
-        scale: Parameterizes a Cauchy distribution by its scale.
     """
 
     par: Parameterization
@@ -22,10 +16,14 @@ class Cauchy(Distribution):
 
     def __init__(
         self,
-        loc: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        scale: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None
+        loc: ArrayObject,
+        scale: ArrayObject
     ):
-        if scale is not None:
-            self.par = LocationScaleCauchy(loc, scale)
-        else:
-            raise TypeError(f"Expected rate: {scale} to be not None.")
+        """
+        Construct a Cauchy distribution by selecting a parameterization.
+
+        Parameters:
+            loc: Parameterizes a Cauchy distribution by its location.
+            scale: Parameterizes a Cauchy distribution by its scale.
+        """
+        self.par = LocationScaleCauchy(loc, scale)

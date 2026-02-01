@@ -1,9 +1,7 @@
 from typing import Optional
 
-from jaxtyping import Array, ArrayLike, Real
-
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 
 from .pars import (
     LogitProbFailureBernoulli,
@@ -16,12 +14,6 @@ from .pars import (
 class Bernoulli(Distribution):
     """
     A Bernoulli distribution.
-
-    Parameters:
-        p: Parameterizes a Bernoulli distribution by its probability of success.
-        q: Parameterizes a Bernoulli distribution by its probability of failure.
-        logit_p: Parameterizes a Bernoulli distribution by its logit probability of success.
-        logit_q: Parameterizes a Bernoulli distribution by its logit probability of failure.
     """
 
     par: Parameterization
@@ -29,11 +21,20 @@ class Bernoulli(Distribution):
 
     def __init__(
         self,
-        p: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        q: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        logit_p: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        logit_q: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None
+        p: Optional[ArrayObject] = None,
+        q: Optional[ArrayObject] = None,
+        logit_p: Optional[ArrayObject] = None,
+        logit_q: Optional[ArrayObject] = None
     ):
+        """
+        Construct a Bernoulli distribution by selecting a parameterization.
+
+        Parameters:
+            p: Parameterize a Bernoulli distribution by its probability of success.
+            q: Parameterize a Bernoulli distribution by its probability of failure.
+            logit_p: Parameterize a Bernoulli distribution by its logit probability of success.
+            logit_q: Parameterize a Bernoulli distribution by its logit probability of failure.
+        """
         if p is not None:
             self.par = ProbSuccessBernoulli(p)
         elif q is not None:

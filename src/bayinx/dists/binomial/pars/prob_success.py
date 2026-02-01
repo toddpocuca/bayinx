@@ -3,11 +3,12 @@ from typing import Tuple
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
-from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 
@@ -17,10 +18,10 @@ def _log_binom_coeff(n: ArrayLike, x: ArrayLike) -> Array:
 
 
 def _prob(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    p: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
@@ -28,10 +29,10 @@ def _prob(
 
 
 def _logprob(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    p: ArrayLike,
+) -> Array:
     # Cast to Array
     k, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
@@ -39,10 +40,10 @@ def _logprob(
 
 
 def _cdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    p: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
@@ -50,10 +51,10 @@ def _cdf(
 
 
 def _logcdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    p: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
@@ -61,10 +62,10 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    p: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
@@ -72,10 +73,10 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Integer[ArrayLike, "..."],
-    n: Integer[ArrayLike, "..."],
-    p: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    n: ArrayLike,
+    p: ArrayLike,
+) -> Array:
     # Cast to Array
     x, n, p = jnp.asarray(x), jnp.asarray(n), jnp.asarray(p)
 
@@ -87,27 +88,23 @@ class ProbSuccessBinomial(Parameterization):
     A probability-of-success parameterization of the Binomial distribution.
     """
 
-    n: Node[Integer[Array, "..."]]
-    p: Node[Real[Array, "..."]]
+    n: Node[Array]
+    p: Node[Array]
 
     def __init__(
         self,
-        n: Integer[ArrayLike, "..."] | Node[Integer[Array, "..."]],
-        p: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        n: ArrayObject,
+        p: ArrayObject
     ):
-        # Initialize number of trials
-        if isinstance(n, Node):
-            if isinstance(n._byx__obj, ArrayLike):
-                self.n = n # type: ignore
-        else:
-            self.n = Observed(jnp.asarray(n))
+        for name, val in [("n", n), ("p", p)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
 
-        # Initialize probability of success
-        if isinstance(p, Node):
-            if isinstance(p._byx__obj, ArrayLike):
-                self.p = p # type: ignore
-        else:
-            self.p = Observed(jnp.asarray(p))
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters

@@ -3,18 +3,19 @@ from typing import Tuple
 import jax.nn as jnn
 import jax.numpy as jnp
 import jax.random as jr
-from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real
+from jaxtyping import Array, ArrayLike, PRNGKeyArray
 
 import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
 from bayinx.core.node import Node
+from bayinx.core.types import ArrayObject
 from bayinx.nodes import Observed
 
 
 def _prob(
-    x: Integer[ArrayLike, "..."],
-    logit_p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    logit_p: ArrayLike
+) -> Array:
     # Cast to Array
     x, logit_p = jnp.asarray(x), jnp.asarray(logit_p)
 
@@ -22,9 +23,9 @@ def _prob(
 
 
 def _logprob(
-    x: Integer[ArrayLike, "..."],
-    logit_p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    logit_p: ArrayLike
+) -> Array:
     # Cast to Array
     x, logit_p = jnp.asarray(x), jnp.asarray(logit_p)
 
@@ -32,9 +33,9 @@ def _logprob(
 
 
 def _cdf(
-    x: Integer[ArrayLike, "..."],
-    logit_p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    logit_p: ArrayLike
+) -> Array:
     # Cast to Array
     x, logit_p = jnp.asarray(x), jnp.asarray(logit_p)
 
@@ -46,9 +47,9 @@ def _cdf(
 
 
 def _logcdf(
-    x: Integer[ArrayLike, "..."],
-    logit_p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    logit_p: ArrayLike
+) -> Array:
     # Cast to Array
     x, logit_p = jnp.asarray(x), jnp.asarray(logit_p)
 
@@ -60,9 +61,9 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Integer[ArrayLike, "..."],
-    logit_p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    logit_p: ArrayLike
+) -> Array:
     # Cast to Array
     x, logit_p = jnp.asarray(x), jnp.asarray(logit_p)
 
@@ -74,9 +75,9 @@ def _ccdf(
 
 
 def _logccdf(
-    x: Integer[ArrayLike, "..."],
-    logit_p: Real[ArrayLike, "..."]
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    logit_p: ArrayLike
+) -> Array:
     # Cast to Array
     x, logit_p = jnp.asarray(x), jnp.asarray(logit_p)
 
@@ -92,18 +93,21 @@ class LogitProbSuccessBernoulli(Parameterization):
     A logit probability-of-success parameterization of the Bernoulli distribution.
     """
 
-    logit_p: Node[Real[Array, "..."]]
+    logit_p: Node[Array]
 
     def __init__(
         self,
-        logit_p: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
+        logit_p: ArrayObject,
     ):
-        # Initialize probability of success
-        if isinstance(logit_p, Node):
-            if isinstance(byo.obj(logit_p), ArrayLike):
-                self.logit_p = logit_p # type: ignore
-        else:
-            self.logit_p = Observed(jnp.asarray(logit_p))
+        for name, val in [("logit_p", logit_p)]:
+            if isinstance(val, Node):
+                if isinstance(byo.obj(val), ArrayLike):
+                    # Cast to array
+                    val = byo.asarray(val) # type: ignore
+
+                    setattr(self, name, val)
+            else:
+                setattr(self, name, Observed(jnp.asarray(val)))
 
     def logprob(self, x: ArrayLike) -> Array:
         # Extract logit probability of success

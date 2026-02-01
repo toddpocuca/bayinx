@@ -24,15 +24,14 @@ class Upper(Constraint):
 
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
-        Applies the negated exponential transformation to the leaves of a `PyTree` and
-        computes the log-Jacobian adjustment of the transformation.
+        Applies the negated exponential transformation to the leaves of a `PyTree` and computes the log-Jacobian adjustment of the transformation.
 
         # Parameters
-        - `x`: The unconstrained `PyTree`.
+        - `obj`: The unconstrained `PyTree`.
 
         # Returns
         A tuple containing:
-            - A `PyTree` with its values `x` now satisfying `x <= ub`.
+            - A `PyTree` with each leaf `x` now satisfying `x <= ub`.
             - A scalar `Array` containing the log-absolute-Jacobian of the
                 transformation.
         """

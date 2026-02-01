@@ -9,6 +9,7 @@ import jax.random as jr
 from jaxtyping import Array, Scalar
 
 import bayinx as byx
+import bayinx.ops as byo
 from bayinx import define
 from bayinx.dists import Poisson
 from bayinx.flows import FullAffine
@@ -17,23 +18,32 @@ from bayinx.nodes import Continuous, Observed
 
 # Define model
 class PoissonModel(byx.Model):
-    beta: Continuous[Scalar] = define(shape = 'n_predictors')
+    n_obs: Observed[int] = define()
+    beta: Continuous[Scalar] = define(shape = 'n_pred')
 
-    X: Observed[Array] = define(shape = ('n_obs', 'n_predictors'))
+    X: Observed[Array] = define(shape = ('n_obs', 'n_pred'))
     y: Observed[Array] = define(shape = 'n_obs', lower = 0)
 
     def model(self, target):
         # Accumulate likelihood
-        self.y << Poisson(log_rate = self.X @ self.beta)
+        byo.map(
+            lambda y_i, x_i: y_i << Poisson(log_rate = x_i @ self.beta),
+            self.y, self.X
+        )
+        #byo.fori_loop(
+        #    0, self.n_obs,
+        #    lambda i: self.y[i] << Poisson(log_rate = self.X[i] @ self.beta)
+        #)
+        #self.y << Poisson(log_rate = self.X @ self.beta)
 
         return target
 
 # Simulate sample
 n_obs = 2000
-n_predictors = 10
-X: Array = jr.normal(jr.key(0), (n_obs, n_predictors - 1))
+n_pred = 10
+X: Array = jr.normal(jr.key(0), (n_obs, n_pred - 1)) * 0.1
 X = jnp.column_stack((jnp.ones((n_obs,)), X))
-beta = jnp.array(range(n_predictors)) + 1
+beta = jnp.array(range(n_pred)) + 1
 
 y = jr.poisson(jr.key(0), jnp.exp(X @ beta), (n_obs, ))
 
@@ -41,7 +51,7 @@ def test_inference():
     # Define posterior
     posterior = byx.Posterior(PoissonModel,
         n_obs = n_obs,
-        n_predictors = n_predictors,
+        n_pred = n_pred,
         X = X,
         y = y
     )
@@ -51,4 +61,4 @@ def test_inference():
     posterior.fit()
 
     # Check fit
-    assert jnp.linalg.norm(posterior.sample('beta', int(1e6)).mean(0) - beta) < 0.1
+    assert jnp.linalg.norm(posterior.sample('beta', int(1e5)).mean(0) - beta) < 0.1

@@ -21,7 +21,7 @@ class NormalizingFlow[M: Model](Variational[M]):
         dim: The dimension of the support.
         base: A base variational distribution.
         flows: An ordered collection of continuously parameterized diffeomorphisms.
-        static_base: Whether the base distribution is learnable.
+        static_base: Whether the base distribution is fixed during optimization.
     """
     flows: list[FlowLayer]
     base: Variational[M]

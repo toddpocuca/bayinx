@@ -1,11 +1,15 @@
 # Getting Started with Bayinx
 
 Welcome to Bayinx (Bayesian inference with JAX), a probabilistic programming language embedded in Python.
-This guide will help you install the package and quickly overview how Bayinx works, but if you would like a more thorough tutorial check out [Basic Usage](https://toddpocuca.github.io/bayinx/tutorials/basic/) for those of you unfamiliar to probabilistic programming or [Coming From Stan](https://toddpocuca.github.io/bayinx/tutorials/stan/) for Stan users.
+This guide will help you install the package and quickly overview how Bayinx works, but if you would like a more thorough tutorial check out [Basic Usage](tutorials/basic.md) for those of you unfamiliar to probabilistic programming or [Coming From Stan](tutorials/stan.md) for Stan users.
+If you are unfamiliar with Python check out the [official Python tutorial](https://docs.python.org/3/tutorial/index.html) or another resource to get up to speed with programming in Python.
 
 ## Installation
 
-Bayinx requires JAX and a few extra libraries in the JAX ecosystem. The easiest way to get started is by installing from PyPi using your favourite python package manager. For example with `uv`:
+Bayinx requires JAX and a few extra libraries in the JAX ecosystem.
+The easiest way to get started is by installing from PyPi using your favourite python package manager:
+
+### [`uv`](https://docs.astral.sh/uv/)
 
 ```bash
 # Ensure you are in your project environment
@@ -18,11 +22,25 @@ This installs the bare-bones version of Bayinx, however if you need additional f
 uv add 'bayinx[cuda]' # Installs Bayinx with CUDA support
 ```
 
+### [`pip`](https://pypi.org/project/pip/)
+
+```bash
+# Ensure you are in your project environment
+pip install bayinx
+```
+
+This installs the bare-bones version of Bayinx, however if you need additional functionality like GPU support, there are a couple of dependency groups:
+```bash
+# Ensure you are in your project environment
+pip install 'bayinx[cuda]' # Installs Bayinx with CUDA support
+```
+
 ## Defining Models In Bayinx
 
 You can now get started!
 
-Models are defined by constructing a class that inherits from the `Model` base class. For example, we can define a simple model that describes a collection of observations derived from a Normal distribution:
+Models are defined by writing a class that inherits from the `Model` base class.
+For example, we can define a simple model that describes a collection of observations derived from a Normal distribution:
 
 ```py
 from bayinx.dists import Normal, Exponential
@@ -31,33 +49,35 @@ from bayinx import Model, define
 from jaxtyping import Array
 
 class SimpleNormalModel(Model):
-    mean: Continuous = define(shape = ())
-    std: Continuous[Array] = define(shape = (), lower = 0)
+    mu: Continuous = define(shape = ())
+    std: Continuous[Array] = define(shape = (), lower = 0) # nodes support type hinting
 
     x: Observed[Array] = define(shape = 'n_obs')
 
     def model(self, target):
         # Accumulate likelihood
-        self.x << Normal(self.mean, self.std)
+        self.x << Normal(self.mu, self.std)
 ```
 
-Parameters are attributes annotated with the `Continuous` class which is a thin wrapper around an internal type (where `Continuous[Array]` can be used for type hinting), while any data is annotated with `Observed`. You can then define additional metadata for a node with the `define` function, for example by assigning shapes `define(shape = ...)` and bounds `define(lower = ..., upper = ...)`.
+Parameters are attributes annotated with the `Continuous` class while any data is annotated with `Observed`, where both are thin wrappers around an internal type that can be type hinted (e.g., `Continuous[T]` or `Observed[T]`).
+You can then define additional metadata for a node with the `define` function, for example by assigning shapes `define(shape = ...)` and bounds `define(lower = ..., upper = ...)`.
 
 ## Fitting Models With Bayinx
-Bayinx uses Variational Inference with Normalizing Flows (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference. We'll simulate some data for demonstration:
+Bayinx uses variational inference with [normalizing flows](nf.md) (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
+We'll simulate some data for demonstration:
 
 ```py
 import jax.random as jr
 
 n_obs = 100
-true_mean = 10.0
+true_mu = 10.0
 true_std = 5.0
 
 # Simulate data
-x_data = jr.normal(jr.key(0), (n_obs, )) * true_std + true_mean
+x_data = jr.normal(jr.key(0), (n_obs, )) * true_std + true_mu
 ```
 
-The approximation to the posterior can then be created with the `Posterior` class and optimized further down the line:
+The approximation to the posterior can then be created with the `Posterior` class and optimized later:
 
 ```py
 from bayinx import Posterior
@@ -77,12 +97,12 @@ Once fitted, you can sample from the approximated posterior distribution to get 
 
 ```py
 # Sample the posterior distribution for 'mean'
-mean_draws = posterior.sample('mean', int(1e6))
+mu_draws = posterior.sample('mu', int(1e6))
 
-print(f"Analytic Posterior Mean for 'mean': {x_data.mean():.4f}")
-print(f"Posterior Mean Estimate for 'mean': {mean_draws.mean():.4f}")
+print(f"Analytic Posterior Mean for 'mu': {x_data.mean():.4f}")
+print(f"Posterior Mean Estimate for 'mu': {mu_draws.mean():.4f} ± {mu_draws.std()/1000:.4f}")
 ```
 ```
-Analytic Posterior Mean for 'mean': 10.5465
-Posterior Mean Estimate for 'mean': 10.5467
+Analytic Posterior Mean for 'mu': 10.5465
+Posterior Mean Estimate for 'mu': 10.5467 ± 0.0005
 ```
