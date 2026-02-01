@@ -73,7 +73,7 @@ nav:
   - Tutorials:
       - Coming From Stan: tutorials/stan.md
       - Basic Usage: tutorials/basic.md
-      - Advanced Feautres: tutorials/adv.md
+      - Advanced Features: tutorials/adv.md
   - Examples:
       - Introductory:
           - Modelling Floating Leaf Discs: examples/intro/leaf_discs/index.md
