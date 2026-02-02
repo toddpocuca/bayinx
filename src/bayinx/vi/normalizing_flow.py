@@ -139,34 +139,33 @@ class NormalizingFlow[M: Model](Variational[M]):
     def elbo(self, n: int, batch_size: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Scalar:
         dyn, static = eqx.partition(self, self.filter_spec)
 
+        # Define ELBO function
         def elbo(dyn: Self, n: int, key: PRNGKeyArray) -> Scalar:
             self = eqx.combine(dyn, static)
 
-            # Split keys
+            # Split key
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
-            def batched_elbo(carry: None, batch_key: PRNGKeyArray) -> tuple[None, Array]:
-                # Draw from (base) variational distribution
+            def batched_elbo(batch_key: PRNGKeyArray) -> Array:
+                # Draw from variational distribution
                 draws: Array = self.base.sample(batch_size, key = batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_post_evals, batched_vari_evals = self._eval(draws)
 
-                # Compute ELBO estimate
+                # Compute batched ELBO evals
                 batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
-                return None, batched_elbo_evals
+                return batched_elbo_evals
 
-            elbo_evals = lax.scan(
-                batched_elbo,
-                init=None,
-                xs=keys,
-                length=n // batch_size
-            )[1]
+            # Compute ELBO evals
+            elbo_evals = lax.map(batched_elbo, keys)
 
-            # Compute average of ELBO estimates
-            return jnp.mean(elbo_evals)
+            # Average ELBO estimates
+            elbo_est = jnp.mean(elbo_evals)
+
+            return elbo_est
 
         return elbo(dyn, n, key)
 
@@ -213,35 +212,33 @@ class NormalizingFlow[M: Model](Variational[M]):
     def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> tuple[Scalar, Self]:
         dyn, static = eqx.partition(self, self.filter_spec)
 
+        # Define ELBO function
         def elbo(dyn: Self, n: int, key: PRNGKeyArray) -> Scalar:
             self = eqx.combine(dyn, static)
 
-            # Split keys
+            # Split key
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
-            def batched_elbo(carry: None, batch_key: PRNGKeyArray) -> tuple[None, Array]:
+            def batched_elbo(batch_key: PRNGKeyArray) -> Array:
                 # Draw from variational distribution
                 draws: Array = self.base.sample(batch_size, key = batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_post_evals, batched_vari_evals = self._eval(draws)
 
-                # Compute ELBO estimate
+                # Compute batched ELBO evals
                 batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
-                return None, batched_elbo_evals
+                return batched_elbo_evals
 
             # Compute ELBO evals
-            elbo_evals = lax.scan(
-                batched_elbo,
-                init=None,
-                xs=keys,
-                length=n // batch_size
-            )[1].flatten()
+            elbo_evals = lax.map(batched_elbo, keys)
 
-            # Compute average of ELBO estimates
-            return jnp.mean(elbo_evals)
+            # Average ELBO estimates
+            elbo_est = jnp.mean(elbo_evals)
+
+            return elbo_est
 
         # Map to its value & gradient
         elbo_and_grad: Callable[

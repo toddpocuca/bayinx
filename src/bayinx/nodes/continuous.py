@@ -33,9 +33,9 @@ class Continuous[T: PyTree](Stochastic[T]):
 
 
     Attributes:
-        obj: An internal realization of the node.
-        _filter_spec: An internal filter specification for `obj`.
-        _constraint: A constraining transformation.
+        _byx__obj: An internal realization of the node.
+        _byx__filter_spec: An internal filter specification for `obj`.
+        _byx__constraint: A constraining transformation.
     """
 
     _byx__constraint: Constraint

@@ -12,6 +12,7 @@ import jax.numpy as jnp
 import jax.tree as jt
 from jaxtyping import PyTree, Scalar
 
+import bayinx.ops as byo
 from bayinx.constraints import Identity, Interval, LogSimplex, Lower, Simplex, Upper
 from bayinx.core.context import Target, _model_context, model_context
 from bayinx.core.node import Node
@@ -257,7 +258,7 @@ class Model(eqx.Module):
 
                 # Update values with constrained counterpart
                 model = eqx.tree_at(
-                    where=lambda model: getattr(model, f.name)._byx__obj,
+                    where=lambda model: byo.obj(getattr(model, f.name)),
                     pytree=model,
                     replace=obj,
                 )
