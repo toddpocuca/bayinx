@@ -9,7 +9,7 @@ from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 
 from bayinx.core.model import Model
 from bayinx.core.variational import Variational
-from bayinx.dists.normal.pars.mean_scale import _logprob
+from bayinx.dists.normal.pars.loc_scale import _logprob
 
 
 class StandardNormal[M: Model](Variational[M]):
@@ -49,7 +49,7 @@ class StandardNormal[M: Model](Variational[M]):
     def eval(self, draws: Array) -> Array:
         return _logprob(
             x=draws,
-            mean=0.0,
+            loc=0.0,
             scale=1.0,
         ).sum(axis=1)
 
