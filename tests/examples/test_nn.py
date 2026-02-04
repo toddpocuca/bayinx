@@ -56,7 +56,7 @@ class NeuralNetworkModel(byx.Model):
 
 
 # Simulate sample
-n_obs = 1000
+n_obs = 100000
 x: Array = jr.uniform(jr.key(0), (n_obs, ), minval = -4.0, maxval = 4.0)
 def f(x):
     return jnp.sin(x)
@@ -73,7 +73,7 @@ def test_inference():
 
     # Configure and fit
     posterior.configure(flowspecs = [DiagAffine()])
-    posterior.fit(max_iters = int(2e5))
+    posterior.fit(max_iters = int(1e4))
 
     # Test for good fit
     assert posterior.sample('sigma', 1000).mean() < 0.1

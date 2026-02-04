@@ -1,5 +1,6 @@
 from typing import Any, Tuple
 
+import equinox as eqx
 import jax.numpy as jnp
 import jax.tree as jt
 from jaxtyping import PyTree, Scalar
@@ -22,6 +23,7 @@ class Upper(Constraint):
 
         self.ub = jnp.asarray(ub)
 
+    @eqx.filter_jit(donate = 'all')
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the negated exponential transformation to the leaves of a `PyTree` and computes the log-Jacobian adjustment of the transformation.

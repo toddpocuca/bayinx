@@ -1,5 +1,6 @@
 from typing import Any, Tuple
 
+import equinox as eqx
 import jax.nn as jnn
 import jax.numpy as jnp
 import jax.tree as jt
@@ -21,6 +22,7 @@ class Simplex(Constraint):
     def __init__(self, total: bool | int | float | Scalar = 1.0):
         self.total = jnp.asarray(float(total))
 
+    @eqx.filter_jit
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the inverse isometric log-ratio transformation to the leaves of a `PyTree` and computes the log-Jacobian adjustment.

@@ -1,3 +1,4 @@
+import jax
 import jax.random as jr
 from jaxtyping import Array, Scalar
 
@@ -9,19 +10,24 @@ from bayinx.nodes import Continuous, Observed
 
 
 # Define model
-class SimpleBinomialModel(byx.Model):
+class SimpleBinomialModel(byx.Model, init = False):
     p: Continuous[Scalar] = define(shape = (), lower = 0, upper = 1)
 
     x: Observed[Array] = define(shape = 'n_obs', lower = 0)
     n: Observed[Array] = define(shape = (), lower = 1)
 
     def model(self, target):
-        self.x << Binomial(self.n, self.p)
+        target += Binomial(self.n, self.p).logprob(x).sum()
 
 # Simulate sample
-n_obs = 100
+n_obs = 10_000
 n = 1
 x: Array = jr.binomial(jr.key(0), n, 0.5, (n_obs, ))
+
+model = SimpleBinomialModel(n_obs = n_obs,n = n,x = x)
+
+with jax.profiler.trace("./test", create_perfetto_link=True):
+    model()
 
 def test_inference():
     # Define posterior
@@ -35,7 +41,7 @@ def test_inference():
     posterior.fit()
 
     # Get posterior
-    p_draws = posterior.sample('p', int(2e6))
+    p_draws = posterior.sample('p', int(1e6))
 
     # Confirm approximation is accurate
     # p | X ~ beta(alpha = x + 1, beta = n + 1 - x) ==> E[p | X] = mean(x)

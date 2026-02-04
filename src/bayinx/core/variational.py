@@ -140,12 +140,14 @@ class Variational[M: Model](eqx.Module):
             update_progress(loop_id, 0, max_iters, "Fitting Variational Approximation", print_rate)
 
         # Helper functions for optimization loop
+        @eqx.filter_jit(donate = 'all')
         def condition(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Bool[Array, ""]:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 
             return i < max_iters
 
+        @eqx.filter_jit(donate = 'all')
         def body(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Tuple[Self, OptState, Scalar, PRNGKeyArray]:
             # Unpack iteration state
             dyn, opt_state, i, key = state

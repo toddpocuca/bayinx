@@ -1,5 +1,6 @@
 from typing import Any, Tuple
 
+import equinox as eqx
 import jax.nn as jnn
 import jax.numpy as jnp
 import jax.tree as jt
@@ -27,6 +28,7 @@ class Interval(Constraint):
         self.lb = jnp.asarray(lb)
         self.ub = jnp.asarray(ub)
 
+    @eqx.filter_jit(donate = 'all')
     def constrain[T: PyTree](self, obj: T, filter_spec: PyTree) -> Tuple[T, Scalar]:
         """
         Applies the scaled sigmoid transformation to the leaves of a `PyTree` and

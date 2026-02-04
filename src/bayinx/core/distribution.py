@@ -1,4 +1,4 @@
-from typing import Protocol, Tuple
+from typing import Protocol
 
 import equinox as eqx
 import jax.numpy as jnp
@@ -17,7 +17,7 @@ class Parameterization(Protocol):
 
     def logprob(self, x: ArrayLike) -> Array: ...
 
-    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray) -> Array: ...
+    def sample(self, shape: tuple[int, ...], key: PRNGKeyArray) -> Array: ...
 
 
 class Distribution(Protocol):
@@ -56,7 +56,7 @@ class Distribution(Protocol):
 
         return obj
 
-    def sample(self, shape: int | Tuple[int, ...], key: PRNGKeyArray = jr.key(0)):
+    def sample(self, shape: int | tuple[int, ...], key: PRNGKeyArray = jr.key(0)):
         # Coerce to tuple
         if isinstance(shape, int):
             shape = (shape, )
