@@ -5,7 +5,6 @@ import jax
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
-import jax.scipy.special as jssp
 import jax.tree as jt
 import numpy as np
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
@@ -173,6 +172,56 @@ class Posterior[M: Model]():
 
         return post_draws
 
+    def __reg_sample2(
+        self,
+        func: Callable[[M, PRNGKeyArray], Node[PyTree[Array]] | PyTree[Array]],
+        n_draws: int,
+        batch_size: int,
+        key: PRNGKeyArray
+    ) -> Array:
+        vari = self.vari
+
+        # Split key for sampling & resampling
+        s_key, rs_key = jr.split(key)
+
+        # Split keys across batches
+        per_batch_keys = jr.split(s_key, n_draws // batch_size)
+
+        def safe_obj(x: Any) -> Any:
+            return byo.obj(x) if isinstance(x, Node) else x
+
+        @partial(jax.vmap, in_axes = (0, 0))
+        def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> PyTree[Array]:
+            model = vari.reconstruct_model(draw).constrain()[0]
+
+            # Evaluate callable
+            obj = func(model, key)
+
+            # Coerce from Node if needed
+            obj = jt.map(safe_obj, obj, is_leaf = lambda x: isinstance(x, Node))
+
+            return obj
+
+        # Sample in batches
+        def batched_sample(per_batch_key: PRNGKeyArray) -> PyTree[Array]:
+            # Sample draws
+            draws = vari.sample(batch_size, key = per_batch_key)
+
+            # Generate keys for each draw
+            within_batch_keys = jr.split(per_batch_key, batch_size)
+
+            return reconstruct_and_query(draws, within_batch_keys)
+
+        # Generate samples of the posterior/posterior predictive
+        post_draws: PyTree[Array] = lax.map(
+            batched_sample,
+            per_batch_keys
+        )
+
+        # Reshape to remove batch axis
+        post_draws = jt.map(lambda x: x.reshape(-1, *x.shape[2:]), post_draws, is_leaf = lambda x: isinstance(x, Array))
+
+        return post_draws
 
     def __sir_sample(
         self,
@@ -189,32 +238,23 @@ class Posterior[M: Model]():
         # Split keys across batches
         per_batch_keys = jr.split(s_key, n_draws // batch_size)
 
+        def safe_obj(x: Any) -> Any:
+            return byo.obj(x) if isinstance(x, Node) else x
+
         @partial(jax.vmap, in_axes = (0, 0))
-        def reconstruct_and_query(draw: Array, within_batch_key: PRNGKeyArray) -> Array:
-            """
-            Reconstruct model and evaluate query (either extract a node for 'sample' or compute a posterior predictive for 'predictive').
-            """
-            # Reconstruct model from variational draw
-            model = self.vari.reconstruct_model(draw).constrain()[0]
+        def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> PyTree[Array]:
+            model = vari.reconstruct_model(draw).constrain()[0]
 
             # Evaluate callable
-            obj = func(model, within_batch_key)
+            obj = func(model, key)
 
             # Coerce from Node if needed
-            if isinstance(obj, Node):
-                obj = byo.obj(obj)
+            obj = jt.map(safe_obj, obj, is_leaf = lambda x: isinstance(x, Node))
 
-                if isinstance(obj, Array):
-                    return obj
-                else:
-                    raise TypeError("Return type of 'node' argument for '.sample' & 'func' argument for '.predictive' must be 'Node[Array]' or 'Array'.")
-            elif isinstance(obj, Array):
-                return obj
-            else:
-                raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
+            return obj
 
         # Sample in batches
-        def batched_sample(per_batch_key: PRNGKeyArray) -> tuple[Array, Array]:
+        def batched_sample(per_batch_key: PRNGKeyArray) -> tuple[PyTree[Array], Array]:
             # Sample draws from the base distribution
             base_draws = vari.base.sample(batch_size, key = per_batch_key)
 
@@ -241,7 +281,6 @@ class Posterior[M: Model]():
 
             return (reconstruct_and_query(draws, within_batch_keys), log_uweight)
 
-
         # Get posterior samples with importance weights
         post_draws, log_uweights = lax.map(
             batched_sample,
@@ -249,20 +288,12 @@ class Posterior[M: Model]():
         )
 
         # Reshape to remove batch axis
-        post_draws = post_draws.reshape(-1, *post_draws.shape[2:])
+        post_draws = jt.map(lambda x: x.reshape(-1, *x.shape[2:]), post_draws, is_leaf = lambda x: isinstance(x, Array))
         log_uweights = log_uweights.reshape(-1, *log_uweights.shape[2:])
 
-        # Normalize and exponentiate to get importance weights
-        weights = jnp.exp(log_uweights - jssp.logsumexp(log_uweights))
-
-        # Re-sample draws
-        post_draws = jr.choice(
-            rs_key,
-            post_draws,
-            shape = (n_draws, ),
-            p = weights,
-            axis = 0
-        )
+        # Re-sample draws using the Gumbel-max trick
+        indices = jr.categorical(rs_key, log_uweights, shape=(n_draws,))
+        post_draws = jt.map(lambda leaf: leaf[indices], post_draws)
 
         return post_draws
 

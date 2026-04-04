@@ -28,7 +28,7 @@ def test_inference():
     posterior.fit(200_000, learning_rate = 1e-3, stl = True)
 
     # Get posterior samples
-    x_draws = posterior.sample('x', int(1e5))
+    x_draws = posterior.sample('x', int(3e4), sir = True)
 
     # Get ground-truth draws
     true_draws = jr.normal(jr.key(0), (int(1e5),)) * jnp.abs(jr.cauchy(jr.key(1), (int(1e5), )))
