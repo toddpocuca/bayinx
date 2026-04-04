@@ -1252,7 +1252,7 @@
 
 
 <h2 id="bayinx.ops.exp" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">exp</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+            <code class="highlight language-python"><span class="n">exp</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span></code>
 
 <a href="#bayinx.ops.exp" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1273,7 +1273,7 @@
 <span class="normal"><a href="#__codelineno-0-23">23</a></span>
 <span class="normal"><a href="#__codelineno-0-24">24</a></span>
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="k">def</span><span class="w"> </span><span class="nf">exp</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">PyTree</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]](</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="k">def</span><span class="w"> </span><span class="nf">exp</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">PyTree</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]](</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Apply the exponential transformation (jnp.exp) to a node.</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -1391,8 +1391,7 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/bayinx/ops.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-214">214</a></span>
-<span class="normal"><a href="#__codelineno-0-215">215</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-215">215</a></span>
 <span class="normal"><a href="#__codelineno-0-216">216</a></span>
 <span class="normal"><a href="#__codelineno-0-217">217</a></span>
 <span class="normal"><a href="#__codelineno-0-218">218</a></span>
@@ -1462,78 +1461,81 @@
 <span class="normal"><a href="#__codelineno-0-282">282</a></span>
 <span class="normal"><a href="#__codelineno-0-283">283</a></span>
 <span class="normal"><a href="#__codelineno-0-284">284</a></span>
-<span class="normal"><a href="#__codelineno-0-285">285</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="k">def</span><span class="w"> </span><span class="nf">fori_loop</span><span class="p">(</span>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a>    <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a>    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="n">PyTree</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">    Loop from `lower` to `upper` with a function `f`.</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">        lower: The starting index (inclusive).</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">        upper: The ending index (exclusive).</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        f: A function accepting an integer index `i`.</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">        A `Node[PyTree]` containing the stacked results of `f` (if any), or None.</span>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.core.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">_model_context</span>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a>    <span class="c1"># Unwrap nodes to get raw integer bounds</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a>        <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">obj</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">upper</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>        <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">obj</span><span class="p">(</span><span class="n">upper</span><span class="p">)</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a>    <span class="c1"># Create the sequence of indices to iterate over</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a>    <span class="n">idxs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>    <span class="c1"># Check for existing model context</span>
-<a id="__codelineno-0-242" name="__codelineno-0-242"></a>    <span class="n">within_context</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_model_context</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-243" name="__codelineno-0-243"></a>
-<a id="__codelineno-0-244" name="__codelineno-0-244"></a>    <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
-<a id="__codelineno-0-245" name="__codelineno-0-245"></a>        <span class="c1"># Reference the outer model context</span>
-<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="n">outer_target</span> <span class="o">=</span> <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span>
-<a id="__codelineno-0-247" name="__codelineno-0-247"></a>
-<a id="__codelineno-0-248" name="__codelineno-0-248"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">scanner</span><span class="p">(</span><span class="n">carry</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
-<a id="__codelineno-0-249" name="__codelineno-0-249"></a>        <span class="c1"># Shadow the outer model context in the local scope</span>
-<a id="__codelineno-0-250" name="__codelineno-0-250"></a>        <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
-<a id="__codelineno-0-251" name="__codelineno-0-251"></a>            <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">0.0</span><span class="p">))</span>
-<a id="__codelineno-0-252" name="__codelineno-0-252"></a>
-<a id="__codelineno-0-253" name="__codelineno-0-253"></a>        <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-0-254" name="__codelineno-0-254"></a>            <span class="c1"># Evaluate user callable with loop index</span>
-<a id="__codelineno-0-255" name="__codelineno-0-255"></a>            <span class="n">user_out</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-<a id="__codelineno-0-256" name="__codelineno-0-256"></a>
-<a id="__codelineno-0-257" name="__codelineno-0-257"></a>            <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
-<a id="__codelineno-0-258" name="__codelineno-0-258"></a>                <span class="c1"># Extract the local target density</span>
-<a id="__codelineno-0-259" name="__codelineno-0-259"></a>                <span class="n">local_lp</span> <span class="o">=</span> <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
-<a id="__codelineno-0-260" name="__codelineno-0-260"></a>            <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-261" name="__codelineno-0-261"></a>                <span class="n">local_lp</span> <span class="o">=</span> <span class="mf">0.0</span>
-<a id="__codelineno-0-262" name="__codelineno-0-262"></a>
-<a id="__codelineno-0-263" name="__codelineno-0-263"></a>        <span class="k">finally</span><span class="p">:</span>
-<a id="__codelineno-0-264" name="__codelineno-0-264"></a>            <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
-<a id="__codelineno-0-265" name="__codelineno-0-265"></a>                <span class="c1"># Restore model context to outer scope</span>
-<a id="__codelineno-0-266" name="__codelineno-0-266"></a>                <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">outer_target</span>
-<a id="__codelineno-0-267" name="__codelineno-0-267"></a>
-<a id="__codelineno-0-268" name="__codelineno-0-268"></a>        <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
-<a id="__codelineno-0-269" name="__codelineno-0-269"></a>            <span class="c1"># Accumulate local target density into carry</span>
-<a id="__codelineno-0-270" name="__codelineno-0-270"></a>            <span class="n">carry</span> <span class="o">=</span> <span class="n">carry</span> <span class="o">+</span> <span class="n">local_lp</span>
-<a id="__codelineno-0-271" name="__codelineno-0-271"></a>
-<a id="__codelineno-0-272" name="__codelineno-0-272"></a>        <span class="k">return</span> <span class="n">carry</span><span class="p">,</span> <span class="n">user_out</span>
+<span class="normal"><a href="#__codelineno-0-285">285</a></span>
+<span class="normal"><a href="#__codelineno-0-286">286</a></span>
+<span class="normal"><a href="#__codelineno-0-287">287</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="k">def</span><span class="w"> </span><span class="nf">fori_loop</span><span class="p">(</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a>    <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a>    <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a>    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="n">PyTree</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">    Loop from `lower` to `upper` with a function `f`.</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">        lower: The starting index (inclusive).</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        upper: The ending index (exclusive).</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="sd">        f: A function accepting an integer index `i`.</span>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">        A `Node[PyTree]` containing the stacked results of `f` (if any), or None.</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.core.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">_model_context</span>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a>    <span class="c1"># Unwrap nodes to get raw integer bounds</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a>        <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">obj</span><span class="p">(</span><span class="n">lower</span><span class="p">)</span>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">upper</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a>        <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">obj</span><span class="p">(</span><span class="n">upper</span><span class="p">)</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>    <span class="c1"># Create the sequence of indices to iterate over</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>    <span class="n">idxs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>    <span class="c1"># Check for existing model context</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>    <span class="n">within_context</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_model_context</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>    <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>        <span class="c1"># Reference the outer model context</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247"></a>        <span class="n">outer_target</span> <span class="o">=</span> <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span>
+<a id="__codelineno-0-248" name="__codelineno-0-248"></a>
+<a id="__codelineno-0-249" name="__codelineno-0-249"></a>    <span class="c1"># Scan to accumulate log-probabilities</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">scanner</span><span class="p">(</span><span class="n">carry</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<a id="__codelineno-0-251" name="__codelineno-0-251"></a>        <span class="c1"># Shadow the outer model context in the local scope</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252"></a>        <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
+<a id="__codelineno-0-253" name="__codelineno-0-253"></a>            <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">Target</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mf">0.0</span><span class="p">))</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254"></a>
+<a id="__codelineno-0-255" name="__codelineno-0-255"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256"></a>            <span class="c1"># Evaluate user callable with loop index</span>
+<a id="__codelineno-0-257" name="__codelineno-0-257"></a>            <span class="n">user_out</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258"></a>
+<a id="__codelineno-0-259" name="__codelineno-0-259"></a>            <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260"></a>                <span class="c1"># Extract the local target density</span>
+<a id="__codelineno-0-261" name="__codelineno-0-261"></a>                <span class="n">local_lp</span> <span class="o">=</span> <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262"></a>            <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-263" name="__codelineno-0-263"></a>                <span class="n">local_lp</span> <span class="o">=</span> <span class="mf">0.0</span>
+<a id="__codelineno-0-264" name="__codelineno-0-264"></a>
+<a id="__codelineno-0-265" name="__codelineno-0-265"></a>        <span class="k">finally</span><span class="p">:</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266"></a>            <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
+<a id="__codelineno-0-267" name="__codelineno-0-267"></a>                <span class="c1"># Restore model context to outer scope</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268"></a>                <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">outer_target</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269"></a>
+<a id="__codelineno-0-270" name="__codelineno-0-270"></a>        <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271"></a>            <span class="c1"># Accumulate local target density into carry</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272"></a>            <span class="n">carry</span> <span class="o">=</span> <span class="n">carry</span> <span class="o">+</span> <span class="n">local_lp</span>
 <a id="__codelineno-0-273" name="__codelineno-0-273"></a>
-<a id="__codelineno-0-274" name="__codelineno-0-274"></a>    <span class="c1"># Run scan</span>
-<a id="__codelineno-0-275" name="__codelineno-0-275"></a>    <span class="n">total_log_prob</span><span class="p">,</span> <span class="n">user_results</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="n">scanner</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">idxs</span><span class="p">)</span>
-<a id="__codelineno-0-276" name="__codelineno-0-276"></a>
-<a id="__codelineno-0-277" name="__codelineno-0-277"></a>    <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
-<a id="__codelineno-0-278" name="__codelineno-0-278"></a>        <span class="c1"># Update outer target with accumulated local target from the loop</span>
-<a id="__codelineno-0-279" name="__codelineno-0-279"></a>        <span class="n">outer_target</span> <span class="o">+=</span> <span class="n">total_log_prob</span>
-<a id="__codelineno-0-280" name="__codelineno-0-280"></a>
-<a id="__codelineno-0-281" name="__codelineno-0-281"></a>    <span class="c1"># Return unwrapped none when there are no user outputs</span>
-<a id="__codelineno-0-282" name="__codelineno-0-282"></a>    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">jt</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">user_results</span><span class="p">)):</span>
-<a id="__codelineno-0-283" name="__codelineno-0-283"></a>        <span class="k">return</span> <span class="kc">None</span>
-<a id="__codelineno-0-284" name="__codelineno-0-284"></a>
-<a id="__codelineno-0-285" name="__codelineno-0-285"></a>    <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">user_results</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274"></a>        <span class="k">return</span> <span class="n">carry</span><span class="p">,</span> <span class="n">user_out</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275"></a>
+<a id="__codelineno-0-276" name="__codelineno-0-276"></a>    <span class="c1"># Run scan</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277"></a>    <span class="n">total_log_prob</span><span class="p">,</span> <span class="n">user_results</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="n">scanner</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">idxs</span><span class="p">)</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278"></a>
+<a id="__codelineno-0-279" name="__codelineno-0-279"></a>    <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280"></a>        <span class="c1"># Update outer target with accumulated local target from the loop</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281"></a>        <span class="n">outer_target</span> <span class="o">+=</span> <span class="n">total_log_prob</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282"></a>
+<a id="__codelineno-0-283" name="__codelineno-0-283"></a>    <span class="c1"># Return unwrapped none when there are no user outputs</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284"></a>    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">jt</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">user_results</span><span class="p">)):</span>
+<a id="__codelineno-0-285" name="__codelineno-0-285"></a>        <span class="k">return</span> <span class="kc">None</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286"></a>
+<a id="__codelineno-0-287" name="__codelineno-0-287"></a>    <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">user_results</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1635,7 +1637,7 @@
 
 
 <h2 id="bayinx.ops.log" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">log</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span></code>
+            <code class="highlight language-python"><span class="n">log</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span></code>
 
 <a href="#bayinx.ops.log" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1656,7 +1658,7 @@
 <span class="normal"><a href="#__codelineno-0-35">35</a></span>
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">PyTree</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]](</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal"><a href="#__codelineno-0-38">38</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">PyTree</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]](</span><span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    Apply the natural logarithm transformation (jnp.log) to an object.</span>
 <a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>
@@ -1676,7 +1678,7 @@
 
 
 <h2 id="bayinx.ops.map" class="doc doc-heading">
-            <code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">PyTree</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span></code>
+            <code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">PyTree</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span></code>
 
 <a href="#bayinx.ops.map" class="headerlink" title="Permanent link">&para;</a></h2>
 
@@ -1718,7 +1720,7 @@
                 <code>args</code>
             </td>
             <td>
-                  <code>...</code>
+                  <code><span title="bayinx.core.node.Node">Node</span>[<span title="typing.Any">Any</span>] | <span title="typing.Any">Any</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1821,7 +1823,7 @@
 <span class="normal"><a href="#__codelineno-0-211">211</a></span>
 <span class="normal"><a href="#__codelineno-0-212">212</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span>
 <a id="__codelineno-0-152" name="__codelineno-0-152"></a>    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">PyTree</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
-<a id="__codelineno-0-153" name="__codelineno-0-153"></a>    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-0-153" name="__codelineno-0-153"></a>    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Node</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">Any</span>
 <a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">[</span><span class="n">PyTree</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">    Map a function over the leading axis of the arguments.</span>
@@ -1845,7 +1847,7 @@
 <a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="c1"># Reference the outer model context</span>
 <a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="n">outer_target</span> <span class="o">=</span> <span class="n">_model_context</span><span class="o">.</span><span class="n">target</span>
 <a id="__codelineno-0-176" name="__codelineno-0-176"></a>
-<a id="__codelineno-0-177" name="__codelineno-0-177"></a>    <span class="c1"># Wrap map with scan to handle log-probability accumulation</span>
+<a id="__codelineno-0-177" name="__codelineno-0-177"></a>    <span class="c1"># Scan to accumulate log-probabilities</span>
 <a id="__codelineno-0-178" name="__codelineno-0-178"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">scanner</span><span class="p">(</span><span class="n">carry</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <a id="__codelineno-0-179" name="__codelineno-0-179"></a>        <span class="k">if</span> <span class="n">within_context</span><span class="p">:</span>
 <a id="__codelineno-0-180" name="__codelineno-0-180"></a>            <span class="c1"># Shadow the outer model context in the local scope</span>
