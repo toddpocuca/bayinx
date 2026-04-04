@@ -36,6 +36,15 @@ class StandardNormal[M: Model](Variational[M]):
         # Store dimension of parameter space
         self.dim = jnp.size(params)
 
+    @property
+    def n_pars(self) -> int:
+        return 0
+
+    @property
+    def filter_spec(self):
+        filter_spec = jtu.tree_map(lambda _: False, self)
+
+        return filter_spec
 
     @eqx.filter_jit
     def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
@@ -52,12 +61,6 @@ class StandardNormal[M: Model](Variational[M]):
             loc=0.0,
             scale=1.0,
         ).sum(axis=1)
-
-    @property
-    def filter_spec(self):
-        filter_spec = jtu.tree_map(lambda _: False, self)
-
-        return filter_spec
 
     @eqx.filter_jit
     def elbo(self, n: int, batch_size: int, key: PRNGKeyArray) -> Scalar:
@@ -86,7 +89,7 @@ class StandardNormal[M: Model](Variational[M]):
         raise RuntimeError("Do not use the 'elbo_grad' method for a Standard variational approximation. It has no variational parameters.")
         return self
 
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, PyTree]:
+    def elbo_and_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> Tuple[Scalar, PyTree]:
         """
         Evaluate the ELBO and its gradient.
         """

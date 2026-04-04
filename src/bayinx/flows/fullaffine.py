@@ -1,9 +1,10 @@
 from typing import Callable, Dict, Tuple
 
 import equinox as eqx
+import jax.lax.linalg as jlla
 import jax.numpy as jnp
 import jax.random as jr
-from jaxtyping import Array, Float, PRNGKeyArray, Scalar
+from jaxtyping import Array, Float, PRNGKeyArray
 
 from bayinx.core.flow import FlowLayer, FlowSpec
 
@@ -21,6 +22,7 @@ class FullAffineLayer(FlowLayer):
     params: Dict[str, Array]
     constraints: Dict[str, Callable[[Array], Array]]
     static: bool
+    dim: int
 
 
     def __init__(self, dim: int, key: PRNGKeyArray):
@@ -31,6 +33,7 @@ class FullAffineLayer(FlowLayer):
         - `dim`: The dimension of the parameter space.
         """
         self.static = False
+        self.dim = dim
 
         # Split key
         k1, k2 = jr.split(key)
@@ -68,28 +71,43 @@ class FullAffineLayer(FlowLayer):
 
         return draws
 
-    def __adjust(self, draw: Float[Array, " n_dim"]) -> Float[Array, " n_dim"]:
+    @eqx.filter_jit
+    def reverse(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        # Get constrained parameters
         params = self.transform_params()
 
-        # Extract relevant parameters
+        # Extract parameters
+        shift: Float[Array, " n_dim"] = params["shift"]
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
-        # Compute log-Jacobian adjustment
-        log_jac: Scalar = -jnp.log(jnp.diag(scale)).sum()
+        # Compute reverse transformation
+        draws = draws - shift
+        draws = jlla.triangular_solve(scale, draws, lower=True)
 
-        assert log_jac.shape == ()
-
-        return log_jac
+        return draws
 
     @eqx.filter_jit
-    def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, " n_draws"]:
+    def forward_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, " n_draws"]:
         # Get constrained parameters
         params = self.transform_params()
 
         # Extract relevant parameters
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
-        # Compute log-Jacobian adjustment
+        # Compute log-Jacobian adjustments
+        log_jacs = jnp.full((draws.shape[0]), jnp.log(jnp.diag(scale)).sum())
+
+        return log_jacs
+
+    @eqx.filter_jit
+    def reverse_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, " n_draws"]:
+        # Get constrained parameters
+        params = self.transform_params()
+
+        # Extract relevant parameters
+        scale: Float[Array, "n_dim n_dim"] = params["scale"]
+
+        # Compute log-Jacobian adjustments
         log_jacs = jnp.full((draws.shape[0]), -jnp.log(jnp.diag(scale)).sum())
 
         return log_jacs
@@ -103,11 +121,29 @@ class FullAffineLayer(FlowLayer):
         shift: Float[Array, " n_dim"] = params["shift"]
         scale: Float[Array, "n_dim n_dim"] = params["scale"]
 
-        # Compute log-Jacobian adjustment
-        log_jacs = jnp.full((draws.shape[0]), -jnp.log(jnp.diag(scale)).sum())
+        # Compute log-Jacobian adjustments
+        log_jacs = jnp.full((draws.shape[0]), jnp.log(jnp.diag(scale)).sum())
 
         # Compute forward transformation
         draws = draws @ scale + shift
+
+        return draws, log_jacs
+
+    @eqx.filter_jit
+    def reverse_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Float[Array, " n_draws"]]:
+        # Get constrained parameters
+        params = self.transform_params()
+
+        # Extract parameters
+        shift: Float[Array, " n_dim"] = params["shift"]
+        scale: Float[Array, "n_dim n_dim"] = params["scale"]
+
+        # Compute log-Jacobian adjustments
+        log_jacs = jnp.full((draws.shape[0]), -jnp.log(jnp.diag(scale)).sum())
+
+        # Compute reverse transformation
+        draws = draws - shift
+        draws = jlla.triangular_solve(scale, draws, lower=True)
 
         return draws, log_jacs
 

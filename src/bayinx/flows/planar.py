@@ -50,9 +50,7 @@ class PlanarLayer(FlowLayer):
 
         self.constraints = {}
 
-    def __forward(self, draw: Float[Array, " n_dim"]) -> Float[Array, " n_dim"]:
-        params = self.transform_params()
-
+    def __forward(self, draw: Float[Array, " n_dim"], params: dict[str, Array]) -> Float[Array, " n_dim"]:
         # Extract parameters
         w: Float[Array, " n_dim"] = params["w"]
         u: Float[Array, " n_dim"] = params["u"]
@@ -71,12 +69,13 @@ class PlanarLayer(FlowLayer):
 
     @eqx.filter_jit
     def forward(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        f = jax.vmap(self.__forward, 0)
-        return f(draws)
+        f = jax.vmap(self.__forward, (0, None))
+        return f(draws, self.transform_params())
 
-    def __adjust(self, draw: Float[Array, "n_dim"]) -> Scalar: # noqa
-        params = self.transform_params()
+    def reverse(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        raise RuntimeError("There is no analytic expression for the reverse transformation of the Planar flow.")
 
+    def __forward_adjust(self, draw: Float[Array, " n_dim"], params: dict[str, Array]) -> Scalar:
         # Extract parameters
         w: Float[Array, " n_dim"] = params["w"]
         u: Float[Array, " n_dim"] = params["u"]
@@ -86,19 +85,20 @@ class PlanarLayer(FlowLayer):
         a = draw.dot(w) + b
 
         # Compute log-Jacobian adjustment from the forward transformation
-        log_jac: Scalar = -jnp.log(1.0 + u.dot(_dh(a) * w))
+        log_jac: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
 
         assert log_jac.shape == ()
         return log_jac
 
     @eqx.filter_jit
-    def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        f = jax.vmap(self.__adjust, 0)
-        return f(draws)
+    def forward_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        f = jax.vmap(self.__forward_adjust, (0, None))
+        return f(draws, self.transform_params())
 
-    def __forward_and_adjust(self, draw: Float[Array, " n_dim"]) -> Tuple[Float[Array, " n_dim"], Scalar]:
-        params = self.transform_params()
+    def reverse_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        raise RuntimeError("There is no analytic expression for the reverse transformation of the Planar flow.")
 
+    def __forward_and_adjust(self, draw: Float[Array, " n_dim"], params: dict[str, Array]) -> Tuple[Float[Array, " n_dim"], Scalar]:
         # Extract parameters
         w: Float[Array, " n_dim"] = params["w"]
         u: Float[Array, " n_dim"] = params["u"]
@@ -111,7 +111,7 @@ class PlanarLayer(FlowLayer):
         draw = draw + u * _h(a)
 
         # Compute log-Jacobian adjustment from the forward transformation
-        log_jac: Scalar = -jnp.log(1.0 + u.dot(_dh(a) * w))
+        log_jac: Scalar = jnp.log(1.0 + u.dot(_dh(a) * w))
 
         assert len(draw.shape) == 1
         assert log_jac.shape == ()
@@ -120,9 +120,11 @@ class PlanarLayer(FlowLayer):
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
-        f = jax.vmap(self.__forward_and_adjust, 0)
-        return f(draws)
+        f = jax.vmap(self.__forward_and_adjust, (0, None))
+        return f(draws, self.transform_params())
 
+    def reverse_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
+        raise RuntimeError("There is no analytic expression for the reverse transformation of the Sylvester flow.")
 
     def transform_params(self) -> Dict[str, Array]:
         """

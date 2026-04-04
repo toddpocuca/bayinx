@@ -69,9 +69,9 @@ We'll simulate some data for demonstration:
 ```py
 import jax.random as jr
 
-n_obs = 100
+n_obs = 30
 true_mu = 10.0
-true_std = 5.0
+true_std = 3.0
 
 # Simulate data
 x_data = jr.normal(jr.key(0), (n_obs, )) * true_std + true_mu
@@ -90,17 +90,17 @@ posterior = Posterior(
     x = x_data
 )
 posterior.configure(flowspecs = [DiagAffine()]) # Configure the NF architecture
-posterior.fit() # Optimize the approximation
+posterior.fit(stl = True) # Optimize the approximation
 ```
 
 Once fitted, you can sample from the approximated posterior distribution to get Monte Carlo estimates for your parameters:
 
 ```py
 # Sample the posterior distribution for 'mean'
-mu_draws = posterior.sample('mu', int(1e6))
+mu_draws = posterior.sample('mu', int(5e6), batch_size = int(1e4))
 
 print(f"Analytic Posterior Mean for 'mu': {x_data.mean():.4f}")
-print(f"Posterior Mean Estimate for 'mu': {mu_draws.mean():.4f} ± {mu_draws.std()/1000:.4f}")
+print(f"Posterior Mean Estimate for 'mu': {mu_draws.mean():.4f} ± {mu_draws.std() / 5e6**0.5:.4f}")
 ```
 ```
 Analytic Posterior Mean for 'mu': 10.5465

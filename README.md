@@ -23,6 +23,5 @@ Documentation is available at: https://toddpocuca.github.io/bayinx.
 
 ## Roadmap
 - [ ] Allow shape definitions to include expressions (e.g., shape = 'n_obs + 1' will evaluate to the correct specification).
-- [ ] Find a nice way to track the ELBO trajectory to implement early stopping (tolerance currently does nothing).
-- [ ] Nodes carry bounds for their support (i.e., node.obj ∈ [node._lb, node._ub]) which are used to check if inputs to distributions are valid (e.g., a node inputted as the scale of a normal dist must have `node._lb >= 0`)
-- [ ] Refactor NF implementation to support forward and reverse flows (reverse defaults to a differentiable root-solver) to support STL estimator.
+- [ ] Implement SALSA https://arxiv.org/abs/2002.10597.
+- [ ] Nodes carry bounds for their support (i.e., node.obj ∈ [node._lb, node._ub]) which are used to check if inputs to distributions are valid (e.g., a node inputted as the scale of a normal dist must have `node._lb >= 0`).

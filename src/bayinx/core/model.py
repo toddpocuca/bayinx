@@ -1,11 +1,6 @@
 from abc import abstractmethod
 from dataclasses import field, fields
-from typing import (
-    Optional,
-    Self,
-    get_origin,
-    get_type_hints,
-)
+from typing import Optional, Self, get_origin, get_type_hints
 
 import equinox as eqx
 import jax.numpy as jnp
@@ -37,8 +32,8 @@ def define(
         init: Specify the node in the definition.
         lower: Enforce a lower bound.
         upper: Enforce an upper bound.
-        simplex: Enforce a simplex constraint.
-        logsimplex: Enforce a log-simplex constraint.
+        simplex: Enforce a simplex constraint where the values sum to `simplex`.
+        logsimplex: Enforce a log-simplex constraint where the exponentiated values sum to `logsimplex`.
 
     Example:
         ```py
@@ -74,7 +69,7 @@ def define(
         case (None, None, None, None):
             metadata["constraint"] = Identity()
         case (_):
-            raise TypeError("TODO.")
+            raise TypeError("Unclear definition.")
 
     return field(metadata=metadata)
 

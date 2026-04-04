@@ -14,7 +14,7 @@ from bayinx.core.utils import _extract_obj
 # Public
 __all__ = ["exp", "log", "sin", "cos", "tanh", "sigmoid"]
 
-def exp[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
+def exp[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node:
     """
     Apply the exponential transformation (jnp.exp) to a node.
     """
@@ -26,7 +26,7 @@ def exp[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
     return Node(new_obj, filter_spec)
 
 
-def log[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node[T]:
+def log[T: PyTree[ArrayLike]](node: Node[T] | T) -> Node:
     """
     Apply the natural logarithm transformation (jnp.log) to an object.
     """
@@ -150,7 +150,7 @@ def obj[T: PyTree](node: Node[T]) -> T:
 
 def map(
     f: Callable[..., PyTree | None],
-    *args: ...
+    *args: Node[Any] | Any
 ) -> Node[PyTree] | None:
     """
     Map a function over the leading axis of the arguments.
@@ -174,7 +174,7 @@ def map(
         # Reference the outer model context
         outer_target = _model_context.target
 
-    # Wrap map with scan to handle log-probability accumulation
+    # Scan to accumulate log-probabilities
     def scanner(carry, x):
         if within_context:
             # Shadow the outer model context in the local scope
@@ -211,6 +211,7 @@ def map(
 
     return Node(user_results, True)
 
+
 def fori_loop(
     lower: int | Node[int],
     upper: int | Node[int],
@@ -245,6 +246,7 @@ def fori_loop(
         # Reference the outer model context
         outer_target = _model_context.target
 
+    # Scan to accumulate log-probabilities
     def scanner(carry, i):
         # Shadow the outer model context in the local scope
         if within_context:

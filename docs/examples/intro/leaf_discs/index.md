@@ -1,7 +1,9 @@
 # Modelling Floating Leaf Discs
 
 ## A Trip Back In Time
-I was originally a molecular biology student in undergrad and in my second year I took a course on plant biology. We had many labs but in one we were to poke holes out of leaves, drop them in a beaker of water, and shine grow lights on them until they floated to the surface. My lab partner and I took measurements every minute to get the following data:
+I was originally a molecular biology student in undergrad and in my second year I took a course on plant biology.
+We had many labs but in one we were to poke holes out of leaves, drop them in a beaker of water, and shine grow lights on them until they floated to the surface.
+My lab partner and I took measurements every minute to get the following data:
 
 ```
 time = [0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]

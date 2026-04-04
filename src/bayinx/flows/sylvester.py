@@ -54,6 +54,7 @@ class SylvesterLayer(FlowLayer):
     - `params`: Dictionary containing raw parameters.
     - `constraints`: Dictionary of constraining transformations.
     - `static`: Whether the flow layer is frozen.
+    - `dim`: The dimension of the parameter space.
     - `rank`: The rank (M) of the transformation.
     """
 
@@ -61,6 +62,7 @@ class SylvesterLayer(FlowLayer):
     params: Dict[str, Array]
     constraints: Dict[str, Callable[[Array], Array]]
     static: bool
+    dim: int
 
     def __init__(self, dim: int, rank: int, key: PRNGKeyArray = jr.key(0)):
         """
@@ -72,6 +74,7 @@ class SylvesterLayer(FlowLayer):
         """
         self.static = False
         self.rank = rank
+        self.dim = dim
 
         # Split key
         k1, k2, k3, k4 = jr.split(key, 4)
@@ -130,13 +133,13 @@ class SylvesterLayer(FlowLayer):
 
     @eqx.filter_jit
     def forward(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        # Extract constrained parameters
-        params = self.transform_params()
-
         f = jax.vmap(self.__forward, (0, None))
-        return f(draws, params)
+        return f(draws, self.transform_params())
 
-    def __adjust(self, draw: Float[Array, " n_dim"], params: Dict[str, Array]) -> Scalar:
+    def reverse(self, draws: Float[Array, "n_draws n_dim"]):
+        raise RuntimeError("There is no analytic expression for the reverse transformation of the Sylvester flow.")
+
+    def __forward_adjust(self, draw: Float[Array, " n_dim"], params: Dict[str, Array]) -> Scalar:
         # Extract parameters
         Q: Float[Array, "dim rank"] = params["Q"]
         R1: Float[Array, "rank rank"] = params["R1"]
@@ -153,19 +156,19 @@ class SylvesterLayer(FlowLayer):
 
         # Compute log-Jacobian adjustment
         derivs = 1 + dh_term * R2_diag * R1_diag
-        log_jac = -jnp.sum(jnp.log(jnp.abs(derivs)))
+        log_jac = jnp.sum(jnp.log(jnp.abs(derivs)))
 
         assert log_jac.shape == ()
 
         return log_jac
 
     @eqx.filter_jit
-    def adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
-        # Extract constrained parameters
-        params = self.transform_params()
+    def forward_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        f = jax.vmap(self.__forward_adjust, (0, None))
+        return f(draws, self.transform_params())
 
-        f = jax.vmap(self.__adjust, (0, None))
-        return f(draws, params)
+    def reverse_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Float[Array, "n_draws n_dim"]:
+        raise RuntimeError("There is no analytic expression for the reverse transformation of the Sylvester flow.")
 
     def __forward_and_adjust(self, draw: Float[Array, " n_dim"], params: Dict[str, Array]) -> Tuple[Float[Array, " n_dim"], Scalar]:
         # Extract parameters
@@ -187,7 +190,7 @@ class SylvesterLayer(FlowLayer):
 
         # Compute log-Jacobian adjustment
         derivs = 1 + dh_term * R2_diag * R1_diag
-        log_jac = -jnp.sum(jnp.log(jnp.abs(derivs)))
+        log_jac = jnp.sum(jnp.log(jnp.abs(derivs)))
 
         # Compute forward transform
         draw = draw + Q @ R1 @ (scale * _h(shared_term))
@@ -199,11 +202,12 @@ class SylvesterLayer(FlowLayer):
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
-        # Extract constrained parameters
-        params = self.transform_params()
-
         f = jax.vmap(self.__forward_and_adjust, (0, None))
-        return f(draws, params)
+        return f(draws, self.transform_params())
+
+    def reverse_and_adjust(self, draws: Float[Array, "n_draws n_dim"]) -> Tuple[Float[Array, "n_draws n_dim"], Scalar]:
+        raise RuntimeError("There is no analytic expression for the reverse transformation of the Sylvester flow.")
+
 
 class Sylvester(FlowSpec):
     """

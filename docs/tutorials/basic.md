@@ -50,15 +50,6 @@ class LinearModel(byx.Model):
 
         # Define likelihood
         self.y << byd.Normal(mu, self.sigma)
-
-# Initialize posterior approximation
-post = byx.Posterior(
-    LinearModel,
-    n_pred = 2,
-    n_obs = 4,
-    X = jnp.array([[1., 0.], [1., 1.], [1., 2.], [1., 3.]]),
-    y = jnp.array([6.0, 13., 20., 27.])
-)
 ```
 
 Notice the attributes of the class are used to define _model nodes_, which are all the objects available to the model and represent data or parameters.
@@ -127,9 +118,13 @@ The approximation can then optimized using the `.fit` method.
 Continuing with the `LinearModel` example, a full affine flow can be used to accurately approximate the posterior:
 
 ```python
-# Initialize posterior
+# Initialize posterior approximation
 post = byx.Posterior(
-    x = jnp.array([0, 0, 0, 1])
+    LinearModel,
+    n_pred = 2,
+    n_obs = 4,
+    X = jnp.array([[1., 0.], [1., 1.], [1., 2.], [1., 3.]]),
+    y = jnp.array([6.0, 13., 20., 27.])
 )
 
 # Configure and optimize posterior
@@ -137,7 +132,7 @@ post.configure([byf.FullAffine()]) # equivalent to full-rank ADVI
 post.fit()
 ```
 ```
-Fitting Variational Approximation: 100%|███████████████| 100000/100000 [00:01<00:00, 55788.50it/s]
+Fitting Variational Approximation: 100%|███████████████| 100000/100000 [00:00<00:00, 167666.26it/s]
 ```
 
 ## Generating Posterior Samples

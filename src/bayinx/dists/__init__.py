@@ -4,6 +4,7 @@ from .cauchy.distribution import Cauchy as Cauchy
 from .exponential.distribution import Exponential as Exponential
 from .gamma.distribution import Gamma as Gamma
 from .multinoulli.distribution import Multinoulli as Multinoulli
+from .negbinom.distribution import NegBinom as NegBinom
 from .normal.distribution import Normal as Normal
 from .poisson.distribution import Poisson as Poisson
 from .studentst.distribution import StudentsT as StudentsT

@@ -1,12 +1,15 @@
 from functools import partial
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Literal, Optional, Sequence, Type
 
 import jax
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jssp
-from jaxtyping import Array, PRNGKeyArray
+import jax.tree as jt
+import numpy as np
+from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
+from scipy.stats import genpareto
 
 import bayinx.ops as byo
 from bayinx.core.flow import FlowSpec
@@ -27,7 +30,6 @@ class Posterior[M: Model]():
         config: The configuration for the posterior.
     """
     vari: NormalizingFlow[M]
-    config: Dict[str, Any]
 
     def __init__(self, model_def: Type[M], **kwargs: Any):
         """
@@ -50,32 +52,17 @@ class Posterior[M: Model]():
             model = model
         )
 
-        # Include default attributes
-        self.config = {
-            "learning_rate": 0.1 / self.vari.dim**0.5,
-            "tolerance": 1e-4,
-            "grad_draws": 4,
-            "batch_size": 4
-        }
-
-
     def configure(
         self,
-        flowspecs: Optional[List[FlowSpec]] = None,
-        learning_rate: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        grad_draws: Optional[int] = None,
-        batch_size: Optional[int] = None
+        flowspecs: Sequence[FlowSpec],
+        insert: Literal['prepend', 'append'] = 'append'
     ):
         """
         Configure the variational approximation.
 
         Parameters:
             flowspecs: The specification for a sequence of flows.
-            learning_rate: The initial learning rate for the optimizer.
-            tolerance: The tolerance for the ELBO used for early stopping.
-            grad_draws: The number of draws used to compute the ELBO gradient.
-            batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.
+            insert: Whether to insert the collection of flows before
         """
         # Append new NF architecture
         if flowspecs is not None:
@@ -89,26 +76,20 @@ class Posterior[M: Model]():
                 object.__setattr__(flow, 'static', True) # kind of illegal but I need to avoid copies
 
             # Append new flows
-            self.vari.flows.extend(flows)
-
-        # Include other settings
-        if learning_rate is not None:
-            self.config["learning_rate"] = learning_rate
-        if tolerance is not None:
-            self.config["tolerance"] = tolerance
-        if grad_draws is not None:
-            self.config["grad_draws"] = grad_draws
-        if batch_size is not None:
-            self.config["batch_size"] = batch_size
+            if insert == 'append':
+                self.vari.flows.extend(flows)
+            elif insert == 'prepend':
+                object.__setattr__(self.vari, 'flows', flows + self.vari.flows) # i know i know...
 
 
     def fit(
         self,
         max_iters: int = 100_000,
-        learning_rate: Optional[float] = None,
-        tolerance: Optional[float] = None,
-        grad_draws: Optional[int] = None,
-        batch_size: Optional[int] = None,
+        learning_rate: None | float = None,
+        tolerance: None | float = None,
+        grad_draws: int = 1,
+        batch_size: int = 1,
+        stl = False,
         key: PRNGKeyArray = jr.key(0),
         verbose: bool = True,
         print_rate: int = 5000
@@ -122,26 +103,23 @@ class Posterior[M: Model]():
             tolerance: The tolerance for the ELBO used for early stopping.
             grad_draws: The number of draws used to compute the ELBO gradient.
             batch_size: The maximum number of draws ever in memory used to compute the ELBO gradient.
+            stl: Whether to use the Stick-the-Landing estimator.
+            key: The PRNG key used during optimization.
             verbose: Whether to print a progress bar.
             print_rate: The number of iterations between updates for the progress bar.
         """
         # Include settings
-        if learning_rate is not None:
-            self.config["learning_rate"] = learning_rate
-        if tolerance is not None:
-            self.config["tolerance"] = tolerance
-        if grad_draws is not None:
-            self.config["grad_draws"] = grad_draws
-        if batch_size is not None:
-            self.config["batch_size"] = batch_size
+        if learning_rate is None:
+            learning_rate = 0.1 / self.vari.n_pars**0.5
 
         # Optimize variational approximation with user-specified flows
         self.vari = self.vari.fit(
             max_iters,
-            self.config["learning_rate"],
-            self.config["tolerance"],
-            self.config["grad_draws"],
-            self.config["batch_size"],
+            learning_rate,
+            tolerance,
+            grad_draws,
+            batch_size,
+            stl,
             key,
             verbose,
             print_rate
@@ -149,7 +127,7 @@ class Posterior[M: Model]():
 
     def __reg_sample(
         self,
-        func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
+        func: Callable[[M, PRNGKeyArray], Node[PyTree[Array]] | PyTree[Array]],
         n_draws: int,
         batch_size: int,
         key: PRNGKeyArray
@@ -159,28 +137,23 @@ class Posterior[M: Model]():
         # Split keys
         per_batch_keys = jr.split(key, n_draws // batch_size)
 
+        def safe_obj(x: Any) -> Any:
+            return byo.obj(x) if isinstance(x, Node) else x
+
         @partial(jax.vmap, in_axes = (0, 0))
-        def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> Array:
+        def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> PyTree[Array]:
             model = vari.reconstruct_model(draw).constrain()[0]
 
             # Evaluate callable
             obj = func(model, key)
 
             # Coerce from Node if needed
-            if isinstance(obj, Node):
-                obj = byo.obj(obj)
+            obj = jt.map(safe_obj, obj, is_leaf = lambda x: isinstance(x, Node))
 
-                if isinstance(obj, Array):
-                    return obj
-                else:
-                    raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
-            elif isinstance(obj, Array):
-                return obj
-            else:
-                raise TypeError("Return type of 'sample' & 'predictive' must be 'Node[Array]' or 'Array'.")
+            return obj
 
         # Sample in batches
-        def batched_sample(per_batch_key: PRNGKeyArray) -> Array:
+        def batched_sample(per_batch_key: PRNGKeyArray) -> PyTree[Array]:
             # Sample draws
             draws = vari.sample(batch_size, key = per_batch_key)
 
@@ -190,13 +163,13 @@ class Posterior[M: Model]():
             return reconstruct_and_query(draws, within_batch_keys)
 
         # Generate samples of the posterior/posterior predictive
-        post_draws: Array = lax.map(
+        post_draws: PyTree[Array] = lax.map(
             batched_sample,
             per_batch_keys
         )
 
         # Reshape to remove batch axis
-        post_draws = post_draws.reshape(-1, *post_draws.shape[2:])
+        post_draws = jt.map(lambda x: x.reshape(-1, *x.shape[2:]), post_draws, is_leaf = lambda x: isinstance(x, Array))
 
         return post_draws
 
@@ -308,7 +281,7 @@ class Posterior[M: Model]():
         Parameters:
             node: The name of the node.
             n_draws: The number of draws to sample from the posterior.
-            batch_size: The maximum number of draws ever in memory.
+            batch_size: The maximum number of full draws (essentially full instances of a model) ever in memory.
             sir: Whether to use sampling-importance-resampling.
             key: The PRNG key used to generate samples.
         """
@@ -319,7 +292,7 @@ class Posterior[M: Model]():
 
         # Construct callable to extract node
         def func(model, key):
-            return byo.obj(getattr(model, node))
+            return getattr(model, node)
 
         if sir:
             # Do sampling-importance-resampling
@@ -333,24 +306,22 @@ class Posterior[M: Model]():
         self,
         func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
         n_draws: int,
-        batch_size: Optional[int] = None,
-        sir: bool = True,
+        batch_size: None | int = None,
+        sir: bool = False,
         key: PRNGKeyArray = jr.key(0)
     ) -> Array:
         """
         Generate predictives from the posterior distribution.
 
         Parameters:
-            func: A function that maps the model and a PRNG key to a predictive.
+            func: A function that maps the model and a PRNG key to some output.
             n_draws: The number of draws to sample from the posterior.
-            batch_size: The maximum number of draws ever in memory.
+            batch_size: The maximum number of full draws (essentially full instances of a model) ever in memory.
             sir: Whether to use sampling-importance-resampling.
             key: The PRNG key used to generate samples.
         """
         if batch_size is None or batch_size > n_draws:
             batch_size = n_draws
-        else:
-            batch_size = batch_size
 
         if sir:
             # Do sampling-importance-resampling
@@ -358,3 +329,128 @@ class Posterior[M: Model]():
         else:
             # Do regular sampling
             return self.__reg_sample(func, n_draws, batch_size, key)
+
+
+    def prop_ess(
+        self,
+        n_draws: int = 10_000,
+        batch_size: None | int = 1,
+        key = jr.key(0)
+    ) -> Scalar:
+        # Extract approximation
+        vari = self.vari
+
+        # Clip batch size if needed
+        if batch_size is None or batch_size > n_draws:
+            batch_size = n_draws
+
+        # Split keys across batches
+        per_batch_keys = jr.split(key, n_draws // batch_size)
+
+        def batched_sample_and_compute(per_batch_key: PRNGKeyArray) -> Array:
+            # Sample draws from the base distribution
+            base_draws = vari.base.sample(batch_size, key = per_batch_key)
+
+            # Compute posterior and variational densities together
+            post_evals, vari_evals = vari._eval(base_draws)
+
+            # Compute unnormalized importance weights
+            log_uweights = post_evals - vari_evals
+
+            return log_uweights
+
+        # Compute unnormalized importance weights
+        log_uweights: Array = lax.map(
+            batched_sample_and_compute,
+            per_batch_keys
+        ).flatten()
+
+        # Normalize importance weights
+        log_weights: Array = log_uweights - jax.nn.logsumexp(log_uweights)
+
+        # Compute log-ESS
+        log_ess = -jax.nn.logsumexp(2.0 * log_weights)
+
+        return jnp.exp(log_ess - jnp.log(n_draws))
+
+    def pareto_k(
+        self,
+        n_draws: int = 10_000,
+        batch_size: None | int = 1,
+        key: PRNGKeyArray = jr.key(0)
+    ) -> float:
+        """
+        Compute the Pareto k diagnostic for variational inference.
+
+        The Pareto-smoothed importance sampling (PSIS) diagnostic gives a goodness of fit
+        measurement for joint distributions. The estimated continuous hat_k value
+        identifies the discrepancy between the approximate and true distribution[cite: 34].
+
+        Interpretation of k[cite: 104, 109, 111]:
+        - k < 0.5: Fast convergence rate; the variational approximation is close to the true density.
+        - 0.5 <= k < 0.7: Useful finite sample convergence rates; the approximation is acceptable.
+        - k >= 0.7: Convergence rate becomes impractically slow; the approximation is unreliable.
+
+        Parameters:
+            n_draws: The number of draws to sample from the base distribution.
+            batch_size: The maximum number of full draws ever in memory.
+            key: The PRNG key used to generate samples.
+
+        Returns:
+            The estimated shape parameter k of the generalized Pareto distribution.
+        """
+        # Extract approximation
+        vari = self.vari
+
+        # Clip batch size if needed
+        if batch_size is None or batch_size > n_draws:
+            batch_size = n_draws
+
+        # Split keys across batches
+        per_batch_keys = jr.split(key, n_draws // batch_size)
+
+        def batched_sample_and_compute(per_batch_key: PRNGKeyArray) -> Array:
+            # Sample draws from the base distribution
+            base_draws = vari.base.sample(batch_size, key=per_batch_key)
+
+            # Compute posterior and variational densities together
+            post_evals, vari_evals = vari._eval(base_draws)
+
+            # Compute unnormalized log importance weights
+            log_uweights = post_evals - vari_evals
+
+            return log_uweights
+
+        # Compute unnormalized log importance weights
+        log_uweights: Array = lax.map(
+            batched_sample_and_compute,
+            per_batch_keys
+        ).flatten()
+
+        # Shift log weights for numerical stability and convert to importance ratios
+        # r_s = p(theta_s, y) / q(theta_s) [cite: 49]
+        # Since hat_k is invariant under constant multiplication, shifting by the max is safe [cite: 89]
+        log_weights_shifted = log_uweights - jnp.max(log_uweights)
+        r = jnp.exp(log_weights_shifted)
+
+        # Sort the importance ratios
+        r_sorted = jnp.sort(r)
+
+        # M is empirically set as min(S/5, 3 * sqrt(S))
+        M = int(min(n_draws / 5.0, 3.0 * n_draws**0.5))
+
+        # Fit generalized Pareto distribution to the M largest r_s
+        tail_r = r_sorted[-M:]
+
+        # Convert to numpy for scipy's genpareto fit (CPU bound)
+        tail_r_np = np.asarray(tail_r)
+
+        # Shift the tail by the threshold (smallest value in the tail)
+        threshold = tail_r_np[0]
+        tail_shifted = tail_r_np - threshold
+
+        # Report the shape parameter k
+        # In scipy.stats.genpareto, the shape parameter 'c' corresponds to 'k'
+        k, loc, scale = genpareto.fit(tail_shifted, floc=0)
+
+        return float(k)

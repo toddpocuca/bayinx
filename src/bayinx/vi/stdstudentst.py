@@ -19,13 +19,7 @@ class StandardStudentsT[M: Model](Variational[M]):
     """
     log_df: Float[Array, " n_dims"]
 
-
-    @property
-    def df(self) -> Float[Array, " n_dims"]:
-        # Constrain degrees of freedom
-        return jnp.exp(self.log_df) + 1.0
-
-    def __init__(self, model: M, initial_df: float = 10.0):
+    def __init__(self, model: M, initial_df: float = 30.0):
         """
         Constructs a standard Student's T approximation to a posterior distribution.
 
@@ -44,6 +38,15 @@ class StandardStudentsT[M: Model](Variational[M]):
 
         # Initialize degrees of freedom
         self.log_df = jnp.full(self.dim, jnp.log(initial_df))
+
+    @property
+    def df(self) -> Float[Array, " n_dims"]:
+        # Constrain degrees of freedom
+        return jnp.exp(self.log_df) + 1.0
+
+    @property
+    def n_pars(self) -> int:
+        return self.log_df.size
 
     @eqx.filter_jit
     def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
@@ -122,7 +125,7 @@ class StandardStudentsT[M: Model](Variational[M]):
         return elbo(dyn, n, key)
 
     @eqx.filter_jit
-    def elbo_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Self:
+    def elbo_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> Self: # TODO: stl
         dyn, static = eqx.partition(self, self.filter_spec)
 
         # Define ELBO function
@@ -165,7 +168,7 @@ class StandardStudentsT[M: Model](Variational[M]):
         return elbo_grad(dyn, n, key)
 
     @eqx.filter_jit
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, Self]:
+    def elbo_and_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> Tuple[Scalar, Self]: # TODO: stl
         dyn, static = eqx.partition(self, self.filter_spec)
 
         # Define ELBO function

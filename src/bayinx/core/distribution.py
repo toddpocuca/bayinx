@@ -43,7 +43,7 @@ class Distribution(Protocol):
 
     def logprob[T: PyTree](self, node: Node[T] | T) -> T:
         """
-        Compute log-probability across a PyTree.
+        Compute log-probabilities across a PyTree.
         """
         obj, filter_spec = _extract_obj(node)
         par = self.par
@@ -56,7 +56,7 @@ class Distribution(Protocol):
 
         return obj
 
-    def sample(self, shape: int | tuple[int, ...], key: PRNGKeyArray = jr.key(0)):
+    def sample(self, shape: int | tuple[int, ...], key: PRNGKeyArray = jr.key(0)) -> Array:
         # Coerce to tuple
         if isinstance(shape, int):
             shape = (shape, )

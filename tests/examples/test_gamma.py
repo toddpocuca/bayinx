@@ -10,17 +10,17 @@ from bayinx.nodes import Continuous, Observed
 
 # Define model
 class SimpleGammaModel(byx.Model):
-    mean: Continuous[Scalar] = define(shape = (), lower = 0)
+    rate: Continuous[Scalar] = define(shape = (), lower = 0)
     shape: Continuous[Scalar] = define(shape = (), lower = 0)
 
     x: Observed[Array] = define(lower = 0)
 
     def model(self, target):
-        self.x << Gamma(mean = self.mean, shape = self.shape)
+        self.x << Gamma(rate = self.rate, shape = self.shape)
 
 
 # Simulate sample
-n_obs = 1000
+n_obs = 100
 x: Array = jr.gamma(jr.key(0), 2, (n_obs, ))
 
 def test_inference():

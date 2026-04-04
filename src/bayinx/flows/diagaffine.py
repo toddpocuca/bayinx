@@ -10,7 +10,7 @@ from bayinx.core.flow import FlowLayer, FlowSpec
 
 class DiagAffineLayer(FlowLayer):
     """
-    A diagonal (element-wise) affine flow.
+    A diagonal (element-wise) affine flow layer.
 
     # Attributes
     - `params`: The parameters of the diagonal affine flow.
@@ -21,6 +21,7 @@ class DiagAffineLayer(FlowLayer):
     params: Dict[str, Array]
     constraints: Dict[str, Callable[[Array], Array]]
     static: bool
+    dim: int
 
     def __init__(self, dim: int, key: PRNGKeyArray):
         """
@@ -30,6 +31,8 @@ class DiagAffineLayer(FlowLayer):
         - `dim`: The dimension of the parameter space.
         """
         self.static = False
+        self.dim = dim
+
         # Split key
         k1, k2 = jr.split(key)
 
@@ -57,17 +60,15 @@ class DiagAffineLayer(FlowLayer):
         return draws
 
     @eqx.filter_jit
-    def adjust(self, draws: Float[Array, "n_draws n_dims"]) -> Float[Array, "n_draws n_dims"]:
+    def reverse(self, draws: Float[Array, "n_draws n_dims"]) -> Float[Array, "n_draws n_dims"]:
         # Get constrained parameters
         params = self.transform_params()
 
         # Extract relevant parameters
+        shift: Float[Array, " n_dims"] = params["shift"]
         scale: Float[Array, " n_dims"] = params["scale"]
 
-        # Compute log-Jacobian adjustments
-        log_jacs: Array = jnp.full(draws.shape[0], -jnp.log(scale).sum())
-
-        return log_jacs
+        return (draws - shift) / scale
 
     @eqx.filter_jit
     def forward_and_adjust(self, draws: Float[Array, "n_draws n_dims"]) -> Tuple[Float[Array, "n_draws n_dims"], Scalar]:
@@ -79,7 +80,7 @@ class DiagAffineLayer(FlowLayer):
         scale: Float[Array, " n_dims"] = params["scale"]
 
         # Compute log-Jacobian adjustments
-        log_jacs: Array = jnp.full(draws.shape[0], -jnp.log(scale).sum())
+        log_jacs: Array = jnp.full(draws.shape[0], jnp.log(scale).sum())
 
         # Compute forward transformation
         draws = draws * scale + shift
@@ -90,6 +91,22 @@ class DiagAffineLayer(FlowLayer):
 
         return draws, log_jacs
 
+    @eqx.filter_jit
+    def reverse_and_adjust(self, draws: Float[Array, "n_draws n_dims"]) -> Tuple[Float[Array, "n_draws n_dims"], Float[Array, " n_draws"]]:
+        # Get constrained parameters
+        params = self.transform_params()
+
+        # Extract relevant parameters
+        shift: Float[Array, " n_dims"] = params["shift"]
+        scale: Float[Array, " n_dims"] = params["scale"]
+
+        # Compute log-Jacobian adjustments
+        log_jacs: Array = jnp.full(draws.shape[0], -jnp.log(scale).sum())
+
+        # Compute reverse transformation
+        draws = (draws - shift) / scale
+
+        return draws, log_jacs
 
 class DiagAffine(FlowSpec):
     """
@@ -105,22 +122,7 @@ class DiagAffine(FlowSpec):
     """
     key: PRNGKeyArray
     def __init__(self, key: PRNGKeyArray = jr.key(0)):
-        """
-        Initializes the specification for a diagonal affine flow.
-
-        Parameters:
-            key: A PRNG key used to generate the diagonal affine flow.
-        """
         self.key = key
 
     def construct(self, dim: int) -> DiagAffineLayer:
-        """
-        Constructs a diagonal affine flow layer.
-
-        Parameters:
-            dim: The dimension of the parameter space.
-
-        Returns:
-            A DiagonalAffineLayer of dimension `dim`.
-        """
         return DiagAffineLayer(dim, self.key)

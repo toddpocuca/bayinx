@@ -1,33 +1,30 @@
-import jax
 import jax.random as jr
 from jaxtyping import Array, Scalar
 
 import bayinx as byx
 from bayinx import define
-from bayinx.dists import Binomial
-from bayinx.flows import DiagAffine
+from bayinx.dists import NegBinom
+from bayinx.flows import DiagAffine, LinearRationalSpline
 from bayinx.nodes import Continuous, Observed
 
 
 # Define model
 class SimpleBinomialModel(byx.Model, init = False):
-    p: Continuous[Scalar] = define(shape = (), lower = 0, upper = 1)
+    mu: Continuous[Scalar] = define(shape = (), lower = 0)
+    theta: Continuous[Scalar] = define(shape = (), lower = 0)
 
     x: Observed[Array] = define(shape = 'n_obs', lower = 0)
-    n: Observed[Array] = define(shape = (), lower = 1)
 
     def model(self, target):
-        target += Binomial(self.n, self.p).logprob(x).sum()
+        self.x << NegBinom(self.mu, self.theta)
 
 # Simulate sample
-n_obs = 10_000
+n_obs = 100
 n = 1
-x: Array = jr.binomial(jr.key(0), n, 0.5, (n_obs, ))
+x: Array = jr.poisson(jr.key(0), 5, (n_obs, ))
 
 model = SimpleBinomialModel(n_obs = n_obs,n = n,x = x)
 
-with jax.profiler.trace("./test", create_perfetto_link=True):
-    model()
 
 def test_inference():
     # Define posterior
@@ -38,7 +35,9 @@ def test_inference():
         x = x
     )
     posterior.configure([DiagAffine()])
-    posterior.fit()
+    posterior.fit(stl = True)
+    posterior.configure([LinearRationalSpline()] * 3, insert = 'prepend')
+    posterior.fit(500_000, stl = True)
 
     # Get posterior
     p_draws = posterior.sample('p', int(1e6))

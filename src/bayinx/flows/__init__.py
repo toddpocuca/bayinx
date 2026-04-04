@@ -1,8 +1,12 @@
-from bayinx.flows.diagaffine import DiagAffine as DiagAffine
-from bayinx.flows.fullaffine import FullAffine as FullAffine
-from bayinx.flows.lowrankaffine import LowRankAffine as LowRankAffine
-from bayinx.flows.planar import Planar as Planar
-from bayinx.flows.sylvester import Sylvester as Sylvester
+from bayinx.flows.cneural_affine import CNeuralAffine
+from bayinx.flows.cneural_affine import CNeuralAffine as RealNVP
+from bayinx.flows.diagaffine import DiagAffine
+from bayinx.flows.fullaffine import FullAffine
 
-# Public
-__all__ = ["DiagAffine", "FullAffine", "LowRankAffine", "Planar", "Sylvester"]
+#from bayinx.flows.lowrankaffine import LowRankAffine as LowRankAffine
+from bayinx.flows.lrs import LinearRationalSpline
+
+#from bayinx.flows.planar import Planar as Planar
+#from bayinx.flows.sylvester import Sylvester as Sylvester
+
+__all__ = ['CNeuralAffine', 'RealNVP', 'DiagAffine', 'FullAffine', 'LinearRationalSpline']

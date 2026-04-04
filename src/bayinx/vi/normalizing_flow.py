@@ -62,6 +62,26 @@ class NormalizingFlow[M: Model](Variational[M]):
         self.static_base = static_base
 
     @property
+    def n_pars(self) -> int:
+        """
+        Calculates the total number of variational parameters across all layers and the base.
+        """
+        # Count parameters in the flow layers
+        total_flow_pars = 0
+        for layer in self.flows:
+            params = eqx.filter(layer, layer.filter_spec).params
+
+            # Sum the number of elements of all leaves in the tree
+            total_flow_pars += sum(
+                x.size for x in jtu.tree_leaves(params) if isinstance(x, Array)
+            )
+
+        # Count parameters in base distribution if learnable
+        base_pars = 0 if self.static_base else self.base.n_pars
+
+        return total_flow_pars + base_pars
+
+    @property
     def filter_spec(self) -> Self:
         # Generate empty specification
         filter_spec: Self = jtu.tree_map(lambda _: False, self)
@@ -102,8 +122,29 @@ class NormalizingFlow[M: Model](Variational[M]):
 
     @eqx.filter_jit
     def eval(self, draws: Array) -> Array:
-        raise RuntimeError("Computing the variational density efficiently requires access to an analytic reverse flow, which many useful flows do not have.")
-        return jnp.full(draws.shape[0], jnp.nan) # dont use this method
+        """
+        Evaluate the variational density at `draws`.
+
+        # Parameters
+        - `draws`: Draws of the variational distribution.
+
+        # Returns
+            The variational density at `draws`.
+        """
+        # Allocate an object for the variational density evals
+        variational_evals: Array = jnp.zeros(draws.shape[0])
+
+        for map in reversed(self.flows):
+            # Apply reverse transformation and accumulate the log-Jacobian adjustments
+            draws, log_jacs = map.reverse_and_adjust(draws)
+
+            # Adjust variational density: P_X (x) = P_Y (y) / |det d/dy[f^-1](y)| ==> P_Y (y) = P_X (x) * |det d/dy[f^-1](y)|
+            variational_evals += log_jacs
+
+        # Accumulate base density
+        variational_evals += self.base.eval(draws)
+
+        return variational_evals
 
     @eqx.filter_jit
     def _eval(self, base_draws: Array, return_draws: bool = False) -> tuple[Array, Array] | tuple[Array, Array, Array]:
@@ -124,8 +165,8 @@ class NormalizingFlow[M: Model](Variational[M]):
             # Apply transformation
             draws, log_jacs = map.forward_and_adjust(draws)
 
-            # Adjust variational density
-            variational_evals = variational_evals + log_jacs
+            # Adjust variational density: P_Y (y) = P_X (x) / |det d/dx[f](x)|
+            variational_evals -= log_jacs
 
         # Evaluate posterior at the variational draws
         posterior_evals = self.eval_model(draws)
@@ -170,26 +211,41 @@ class NormalizingFlow[M: Model](Variational[M]):
         return elbo(dyn, n, key)
 
     @eqx.filter_jit
-    def elbo_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Self:
+    def elbo_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> Self:
         dyn, static = eqx.partition(self, self.filter_spec)
+        stopped_dyn = lax.stop_gradient(dyn)
 
         # Define ELBO function
         def elbo(dyn: Self, n: int, key: PRNGKeyArray) -> Scalar:
             self = eqx.combine(dyn, static)
+            stopped_self = eqx.combine(stopped_dyn, static)
 
             # Split key
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
             def batched_elbo(batch_key: PRNGKeyArray) -> Array:
-                # Draw from variational distribution
-                draws: Array = self.base.sample(batch_size, key = batch_key)
+                if stl:
+                    # Draw from variational distribution
+                    draws: Array = self.sample(batch_size, key = batch_key)
 
-                # Evaluate posterior and variational densities
-                batched_post_evals, batched_vari_evals = self._eval(draws)
+                    # Evaluate posterior density
+                    batched_post_evals = self.eval_model(draws)
 
-                # Compute batched ELBO evals
-                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
+                    # Evaluate variational density
+                    batched_vari_evals = stopped_self.eval(draws) # STL estimator
+
+                    # Compute batched ELBO evals
+                    batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
+                else:
+                    # Draw from base distribution
+                    base_draws: Array = self.base.sample(batch_size, key = batch_key)
+
+                    # Evaluate posterior and variational densities together from base samples
+                    batched_post_evals, batched_vari_evals = self._eval(base_draws)
+
+                    # Compute batched ELBO evals
+                    batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
                 return batched_elbo_evals
 
@@ -209,26 +265,41 @@ class NormalizingFlow[M: Model](Variational[M]):
         return elbo_grad(dyn, n, key)
 
     @eqx.filter_jit
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> tuple[Scalar, Self]:
+    def elbo_and_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> tuple[Scalar, Self]:
         dyn, static = eqx.partition(self, self.filter_spec)
+        stopped_dyn = lax.stop_gradient(dyn)
 
         # Define ELBO function
         def elbo(dyn: Self, n: int, key: PRNGKeyArray) -> Scalar:
             self = eqx.combine(dyn, static)
+            stopped_self = eqx.combine(stopped_dyn, static)
 
             # Split key
             keys = jr.split(key, n // batch_size)
 
             # Split ELBO calculation into batches
             def batched_elbo(batch_key: PRNGKeyArray) -> Array:
-                # Draw from variational distribution
-                draws: Array = self.base.sample(batch_size, key = batch_key)
+                if stl:
+                    # Draw from variational distribution
+                    draws: Array = self.sample(batch_size, key = batch_key)
 
-                # Evaluate posterior and variational densities
-                batched_post_evals, batched_vari_evals = self._eval(draws)
+                    # Evaluate posterior density
+                    batched_post_evals = self.eval_model(draws)
 
-                # Compute batched ELBO evals
-                batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
+                    # Evaluate variational density
+                    batched_vari_evals = stopped_self.eval(draws) # STL estimator
+
+                    # Compute batched ELBO evals
+                    batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
+                else:
+                    # Draw from base distribution
+                    base_draws: Array = self.base.sample(batch_size, key = batch_key)
+
+                    # Evaluate posterior and variational densities together from base samples
+                    batched_post_evals, batched_vari_evals = self._eval(base_draws)
+
+                    # Compute batched ELBO evals
+                    batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
 
                 return batched_elbo_evals
 

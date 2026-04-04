@@ -1,6 +1,3 @@
-# pyright: reportUnusedExpression=false
-from typing import Dict, List
-
 import jax.numpy as jnp
 from jaxtyping import Array
 
@@ -14,8 +11,8 @@ class MyModel(Model, init=False):
     x: Continuous[Array] = define() # shows up in __init__ method, typed as 'Array'
     y: Observed[Array] = define() # shows up in __init__ method, typed as 'Array'
     misc_1: Observed[str] = define(init = "hi")
-    misc_2: Observed[List[str]] = define(init = ["ciao", "goodbye"])
-    misc_3: Observed[Dict[str, str]] = define(init = {'key': 'value'})
+    misc_2: Observed[list[str]] = define(init = ["ciao", "goodbye"])
+    misc_3: Observed[dict[str, str]] = define(init = {'key': 'value'})
 
     def model(self, target):
         self.y << Normal(self.x, 1.0)

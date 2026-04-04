@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Dict, Self, Tuple
 
 import equinox as eqx
+import jax.tree as jt
 import jax.tree_util as jtu
 from jaxtyping import Array, PyTree
 
@@ -11,14 +12,15 @@ class FlowLayer(eqx.Module):
     An abstract base class for a flow layer.
 
     Attributes:
-        params: The parameters of the diffeomorphism. # TODO FOR ALL FLOWS
-        constraints: The constraining transformations for parameters.
+        params: The parameters of the diffeomorphism.
+        constraints: The parameter-wise constraining transformations for each parameter.
         static: Whether the flow layer is frozen (parameters are not subject to further optimization).
     """
 
     params: dict[str, PyTree]
     constraints: dict[str, Callable[[PyTree], Array]]
     static: bool
+    dim: int
 
     @abstractmethod
     def forward(self, draws: Array) -> Array:
@@ -28,12 +30,9 @@ class FlowLayer(eqx.Module):
         pass
 
     @abstractmethod
-    def adjust(self, draws: Array) -> Array:
+    def reverse(self, draws: Array) -> Array:
         """
-        Computes the log-Jacobian adjustment for each draw in `draws`.
-
-        # Returns
-            An array of the log-Jacobian adjustments.
+        Computes the reverse transformation of `draws`.
         """
         pass
 
@@ -43,7 +42,17 @@ class FlowLayer(eqx.Module):
         Computes the log-Jacobian adjustment at `draws` and applies the forward transformation.
 
         # Returns
-            A tuple of JAX Arrays containing the transformed draws and log-absolute-Jacobians.
+            A tuple containing the transformed draws and log-Jacobian adjustments.
+        """
+        pass
+
+    @abstractmethod
+    def reverse_and_adjust(self, draws: Array) -> Tuple[Array, Array]:
+        """
+        Computes the log-Jacobian adjustment at `draws` and applies the reverse transformation.
+
+        # Returns
+            A tuple containing the transformed draws and log-Jacobian adjustments.
         """
         pass
 
@@ -61,7 +70,7 @@ class FlowLayer(eqx.Module):
             filter_spec = eqx.tree_at(
                 lambda flow: flow.params,
                 filter_spec,
-                replace=True,
+                replace=jt.map(eqx.is_inexact_array, self.params),
             )
 
         return filter_spec

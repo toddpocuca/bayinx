@@ -11,7 +11,7 @@ from jaxtyping import Array, Scalar
 import bayinx as byx
 from bayinx import define
 from bayinx.dists import Normal
-from bayinx.flows import DiagAffine
+from bayinx.flows import FullAffine
 from bayinx.nodes import Continuous, Observed
 
 
@@ -51,7 +51,7 @@ def test_inference():
     )
 
     # Configure and fit
-    posterior.configure(flowspecs = [DiagAffine()])
+    posterior.configure(flowspecs = [FullAffine()])
     posterior.fit()
 
     # Check fit

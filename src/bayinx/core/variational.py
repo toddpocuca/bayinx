@@ -30,6 +30,14 @@ class Variational[M: Model](eqx.Module):
 
     @property
     @abstractmethod
+    def n_pars(self) -> int:
+        """
+        Number of variational parameters.
+        """
+        pass
+
+    @property
+    @abstractmethod
     def filter_spec(self) -> Self:
         """
         Filter specification for dynamic and static components of the
@@ -59,14 +67,14 @@ class Variational[M: Model](eqx.Module):
         pass
 
     @abstractmethod
-    def elbo_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> M:
+    def elbo_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> M:
         """
         Evaluate the gradient of the ELBO.
         """
         pass
 
     @abstractmethod
-    def elbo_and_grad(self, n: int, batch_size: int, key: PRNGKeyArray) -> Tuple[Scalar, M]:
+    def elbo_and_grad(self, n: int, batch_size: int, stl: bool, key: PRNGKeyArray) -> Tuple[Scalar, M]:
         """
         Evaluate the ELBO and its gradient.
         """
@@ -104,34 +112,49 @@ class Variational[M: Model](eqx.Module):
         learning_rate: float,
         tolerance: float,
         grad_draws: int,
-        max_batch_size: int,
+        batch_size: int,
+        stl: bool = False,
         key: PRNGKeyArray = jr.key(0),
         verbose: bool = True,
         print_rate: int = 5000
     ) -> Self:
         """
         Optimize the variational distribution.
+
+        # Parameters:
+        - max_iters: The maximum number of iterations for optimization.
+        - `learning_rate`: The initial learning rate for the optimizer.
+        - `tolerance`: The tolerance for the ELBO used for early stopping.
+        - `grad_draws`: The number of draws used to compute the ELBO gradient.
+        - `batch_size`: The maximum number of draws ever in memory used to compute the ELBO gradient.
+        - `stl`: Whether to use the Stick-the-Landing estimator.
+        - `key`: The PRNG key used during optimization.
+        - `verbose`: Whether to print a progress bar.
+        - `print_rate`: The number of iterations between updates for the progress bar.
         """
         # Create unique identifier for optimization loop
         loop_id = jr.key_data(key).sum()
 
         # Determine actual batch size for ELBO & gradient computations
-        grad_batch_size = grad_draws if max_batch_size >= grad_draws else max_batch_size
+        grad_batch_size = grad_draws if batch_size >= grad_draws else batch_size
 
         # Partition variational
         dyn, static = eqx.partition(self, self.filter_spec)
 
         # Construct schedulers
-        lr_schedule: Callable = opx.cosine_decay_schedule(
+        lr_schedule: Callable = opx.warmup_cosine_decay_schedule(
+            jnp.finfo(jnp.array(0.0)).eps.item(),
             learning_rate,
-            max_iters,
+            int(max_iters * 0.1),
+            max_iters - int(max_iters * 0.1),
             jnp.finfo(jnp.array(0.0)).eps.item()
         )
 
         # Initialize optimizer
         optim: GradientTransformation = opx.chain(
-            opx.scale(-1.0),
-            opx.adamax(lr_schedule)
+            opx.zero_nans(), # hmm
+            opx.adamax(lr_schedule),
+            opx.scale(-1.0)
         )
         opt_state: OptState = optim.init(dyn)
 
@@ -139,16 +162,17 @@ class Variational[M: Model](eqx.Module):
         if verbose:
             update_progress(loop_id, 0, max_iters, "Fitting Variational Approximation", print_rate)
 
+        LoopState = tuple[Self, OptState, Scalar, PRNGKeyArray]
         # Helper functions for optimization loop
         @eqx.filter_jit(donate = 'all')
-        def condition(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Bool[Array, ""]:
+        def condition(state: LoopState) -> Bool[Array, ""]:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 
             return i < max_iters
 
         @eqx.filter_jit(donate = 'all')
-        def body(state: Tuple[Self, OptState, Scalar, PRNGKeyArray]) -> Tuple[Self, OptState, Scalar, PRNGKeyArray]:
+        def body(state: LoopState) -> LoopState:
             # Unpack iteration state
             dyn, opt_state, i, key = state
 
@@ -166,11 +190,11 @@ class Variational[M: Model](eqx.Module):
             vari: Self = eqx.combine(dyn, static)
 
             # Compute ELBO gradient
-            update: M = vari.elbo_grad(grad_draws, grad_batch_size, key)
+            update: M = vari.elbo_grad(grad_draws, grad_batch_size, stl, key)
 
             # Transform update through optimizer
             update, opt_state = optim.update( # type: ignore
-                update, opt_state, dyn # type: ignore
+                update, opt_state, dyn
             )
 
             # Update variational distribution
@@ -186,7 +210,8 @@ class Variational[M: Model](eqx.Module):
         )
 
         # Close progress bar
-        close_progress(loop_id, iter)
+        if verbose:
+            close_progress(loop_id, iter)
 
-        # Return optimized variational
+        # Return optimized variational approximation
         return eqx.combine(dyn, static)
