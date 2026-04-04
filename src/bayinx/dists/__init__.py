@@ -3,6 +3,7 @@ from .binomial.distribution import Binomial as Binomial
 from .cauchy.distribution import Cauchy as Cauchy
 from .exponential.distribution import Exponential as Exponential
 from .gamma.distribution import Gamma as Gamma
+from .lognormal.distribution import LogNormal as LogNormal
 from .multinoulli.distribution import Multinoulli as Multinoulli
 from .negbinom.distribution import NegBinom as NegBinom
 from .normal.distribution import Normal as Normal
