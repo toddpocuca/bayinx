@@ -154,6 +154,7 @@ class Variational[M: Model](eqx.Module):
         optim: GradientTransformation = opx.chain(
             opx.zero_nans(), # hmm
             opx.adamax(lr_schedule),
+            opx.ema(decay=0.999),
             opx.scale(-1.0)
         )
         opt_state: OptState = optim.init(dyn)

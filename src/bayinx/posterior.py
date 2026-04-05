@@ -109,7 +109,7 @@ class Posterior[M: Model]():
         """
         # Include settings
         if learning_rate is None:
-            learning_rate = 0.1 / self.vari.n_pars**0.5
+            learning_rate = 1.0 / self.vari.n_pars**0.5
 
         # Optimize variational approximation with user-specified flows
         self.vari = self.vari.fit(
