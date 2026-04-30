@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#bayesian-neural-networks" class="md-skip">
+        <a href="#deep-bayesian-neural-networks" class="md-skip">
           Skip to content
         </a>
       
@@ -664,6 +664,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deep Bayesian Neural Networks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -680,6 +698,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-bayesian-neural-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is a Bayesian Neural Network?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-deep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why "Deep"?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inference-via-variational-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inference via Variational Inference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-fitting-a-bnn-with-bayinx-and-equinox" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Fitting a BNN with Bayinx and Equinox
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -920,7 +1001,103 @@
   
 
 
-<h1 id="bayesian-neural-networks">Bayesian Neural Networks<a class="headerlink" href="#bayesian-neural-networks" title="Permanent link">&para;</a></h1>
+<h1 id="deep-bayesian-neural-networks">Deep Bayesian Neural Networks<a class="headerlink" href="#deep-bayesian-neural-networks" title="Permanent link">&para;</a></h1>
+<h2 id="what-is-a-bayesian-neural-network">What is a Bayesian Neural Network?<a class="headerlink" href="#what-is-a-bayesian-neural-network" title="Permanent link">&para;</a></h2>
+<p>A standard neural network is trained to find a single set of weights <span class="arithmatex">\(\mathbf{w}\)</span> that minimises some loss.
+This point estimate says nothing about how <em>certain</em> the network is in its predictions — a network can be confidently wrong, especially far from the training data.</p>
+<p>A <strong>Bayesian Neural Network (BNN)</strong> instead treats the weights as random variables and places a prior distribution over them:</p>
+<div class="arithmatex">\[p(\mathbf{w}) = \prod_i \mathcal{N}(w_i \mid 0, 1)\]</div>
+<p>After observing data <span class="arithmatex">\(\mathcal{D} = \{(\mathbf{x}_i, y_i)\}\)</span>, we seek the posterior:</p>
+<div class="arithmatex">\[p(\mathbf{w} \mid \mathcal{D}) \propto p(\mathcal{D} \mid \mathbf{w})\, p(\mathbf{w})\]</div>
+<p>Predictions are then made by integrating over all plausible weight configurations — a process called <strong>posterior predictive inference</strong>:</p>
+<div class="arithmatex">\[p(y^* \mid \mathbf{x}^*, \mathcal{D}) = \int p(y^* \mid \mathbf{x}^*, \mathbf{w})\, p(\mathbf{w} \mid \mathcal{D})\, d\mathbf{w}\]</div>
+<p>This gives us <strong>uncertainty-aware predictions</strong>: the model can express that it doesn't know the answer, not just what its best guess is.</p>
+<h2 id="why-deep">Why "Deep"?<a class="headerlink" href="#why-deep" title="Permanent link">&para;</a></h2>
+<p>A <em>deep</em> BNN simply uses a multi-layer (deep) neural network within the model logic, for example parameterizing the functional form of the effect of some predictors on a response variable.
+Each layer applies a linear transformation followed by a nonlinearity, building up increasingly abstract representations of the input.
+The posterior is then placed over the weights of all layers simultaneously. Depth brings expressive power; the Bayesian treatment brings calibrated uncertainty.</p>
+<h2 id="inference-via-variational-inference">Inference via Variational Inference<a class="headerlink" href="#inference-via-variational-inference" title="Permanent link">&para;</a></h2>
+<p>The exact posterior <span class="arithmatex">\(p(\mathbf{w} \mid \mathcal{D})\)</span> is intractable for any non-trivial network. Bayinx approximates it using <strong>variational inference with normalizing flows</strong>:
+we find a flexible distribution <span class="arithmatex">\(q_\phi(\mathbf{w})\)</span> that minimises the KL divergence to the true posterior by maximising the Evidence Lower Bound (ELBO).</p>
+<hr />
+<h2 id="example-fitting-a-bnn-with-bayinx-and-equinox">Example: Fitting a BNN with Bayinx and Equinox<a class="headerlink" href="#example-fitting-a-bnn-with-bayinx-and-equinox" title="Permanent link">&para;</a></h2>
+<p>Below is a complete example fitting a deep BNN to a 1-D regression problem.
+The network is defined with <a href="https://docs.kidger.site/equinox/">Equinox</a> and embedded inside a Bayinx <code>Model</code> as a <code>stochastic</code> node, so every weight and bias is automatically treated as a latent variable.</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jr</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">equinox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">eqx</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byx</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byd</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byf</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">PRNGKeyArray</span><span class="p">,</span> <span class="n">Scalar</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyNeuralNetwork</span><span class="p">(</span><span class="n">eqx</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">layers</span><span class="p">:</span> <span class="nb">list</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">PRNGKeyArray</span><span class="p">):</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span><span class="p">,</span> <span class="n">k3</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>            <span class="n">eqx</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">n_in</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">k1</span><span class="p">),</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>            <span class="n">eqx</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">k1</span><span class="p">),</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>            <span class="n">eqx</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span>   <span class="mi">1</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">k2</span><span class="p">),</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="p">]</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>            <span class="n">x</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">](</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">byx</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>    <span class="n">nn</span><span class="p">:</span> <span class="n">MyNeuralNetwork</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">stochastic</span><span class="p">(</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>        <span class="n">init</span><span class="o">=</span><span class="n">MyNeuralNetwork</span><span class="p">(</span><span class="n">n_in</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>    <span class="p">)</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">Scalar</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(),</span> <span class="n">lower</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>    <span class="n">X</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">observed</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;n_obs&quot;</span><span class="p">,</span> <span class="s2">&quot;n_in&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">observed</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s2">&quot;n_obs&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>        <span class="c1"># Priors</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">nn</span> <span class="o">&lt;&lt;</span> <span class="n">byd</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="c1"># constrain weights</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">&lt;&lt;</span> <span class="n">byd</span><span class="o">.</span><span class="n">Exponential</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>        <span class="c1"># Likelihood</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>        <span class="n">mu</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nn</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;&lt;</span> <span class="n">byd</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_in</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a><span class="n">X_data</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_in</span><span class="p">),</span> <span class="n">minval</span><span class="o">=-</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="n">y_data</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">X_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">jr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">n_obs</span><span class="p">,))</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a><span class="n">posterior</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>    <span class="n">MyModel</span><span class="p">,</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>    <span class="n">n_obs</span><span class="o">=</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_in</span><span class="o">=</span><span class="n">n_in</span><span class="p">,</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>    <span class="n">X</span><span class="o">=</span><span class="n">X_data</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>    <span class="n">nn</span><span class="o">=</span><span class="n">MyNeuralNetwork</span><span class="p">(</span><span class="n">n_in</span><span class="o">=</span><span class="n">n_in</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">99</span><span class="p">)),</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a><span class="p">)</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>
+<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a><span class="n">posterior</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">byf</span><span class="o">.</span><span class="n">DiagAffine</span><span class="p">()])</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a><span class="n">posterior</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">max_iters</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">,</span> <span class="n">stl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>
+<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a><span class="n">X_test</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">])[:,</span> <span class="kc">None</span><span class="p">]</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a><span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">jax</span><span class="o">.</span><span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>    <span class="n">mu</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">nn</span><span class="p">)(</span><span class="n">X_test</span><span class="p">)</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>    <span class="k">return</span> <span class="n">byd</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">mu</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>
+<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a><span class="n">ppred</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">predictive</span><span class="p">(</span><span class="n">predict</span><span class="p">,</span> <span class="n">n_draws</span><span class="o">=</span><span class="mi">1_000</span><span class="p">)</span>  <span class="c1"># shape (1_000, 100)</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>
+<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predictive mean:&quot;</span><span class="p">,</span> <span class="n">ppred</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predictive std: &quot;</span><span class="p">,</span> <span class="n">ppred</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Predictive mean: [-0.96822405 -0.00274488  0.9682781 ]
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Predictive std:  [0.20083815 0.20931077 0.20635626]
+</code></pre></div></p>
 
 
 
