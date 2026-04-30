@@ -18,7 +18,7 @@
         <link rel="prev" href="../basic/">
       
       
-        <link rel="next" href="../../examples/intro/leaf_discs/">
+        <link rel="next" href="../stan/">
       
       
         
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#advanced-features" class="md-skip">
+        <a href="#advanced-usage" class="md-skip">
           Skip to content
         </a>
       
@@ -376,34 +376,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../stan/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Coming From Stan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../basic/" class="md-nav__link">
         
   
@@ -492,10 +464,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#map" class="md-nav__link">
+  <a href="#importing-the-utilities" class="md-nav__link">
     <span class="md-ellipsis">
       
-        map
+        Importing the Utilities
       
     </span>
   </a>
@@ -503,10 +475,93 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#fori_loop" class="md-nav__link">
+  <a href="#map-mapping-over-data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        fori_loop
+        map — Mapping Over Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fori_loop-looping-over-indices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fori_loop — Looping Over Indices
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-a-glm-with-per-observation-likelihood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: A GLM With Per-Observation Likelihood
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example: A GLM With Per-Observation Likelihood">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using map
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-fori_loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using fori_loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fitting-and-sampling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fitting and Sampling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#collecting-return-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collecting Return Values
       
     </span>
   </a>
@@ -517,6 +572,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming From Stan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -873,34 +956,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/nodes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nodes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../api/ops/" class="md-nav__link">
         
   
@@ -1005,9 +1060,149 @@
   
 
 
-<h1 id="advanced-features">Advanced Features<a class="headerlink" href="#advanced-features" title="Permanent link">&para;</a></h1>
-<h2 id="map"><code>map</code><a class="headerlink" href="#map" title="Permanent link">&para;</a></h2>
-<h2 id="fori_loop"><code>fori_loop</code><a class="headerlink" href="#fori_loop" title="Permanent link">&para;</a></h2>
+<h1 id="advanced-usage">Advanced Usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h1>
+<p>This tutorial covers Bayinx's loop utilities — <code>map</code> and <code>fori_loop</code> — which let you process data element-by-element inside a model while still accumulating the log-density correctly and remaining fully compatible with JAX compilation.</p>
+<p>In many models you naturally want to iterate over observations — computing per-observation quantities, applying different transformations, or building up contributions to the likelihood one at a time.
+Python's built-in <code>for</code> loops work fine in Bayinx in general, but when those loops need to run inside a <code>jax.jit</code>-compiled function (which all fitted models do), the loop must be <em>static</em>, meaning the number of iterations is fixed at compile time and JAX unrolls every iteration into the computation graph.
+For small loops this is fine, but for large datasets it produces enormous, slow-to-compile graphs.</p>
+<p>JAX offers a variety of functions to keep the computation graph small by compiling the inner work of the loop once and iterating with <code>map</code>, <code>scan</code>, <code>fori_loop</code>, <code>while_loop</code>, etc.
+However we cannot use distribution statements natively with these functions, and so Bayinx offers alternatives with the same functionality.
+In other words, they are context-aware: when called inside a model's <code>model</code> method, they automatically accumulate each iteration's log-probability contribution into the running target density, so you never have to manage that bookkeeping yourself.</p>
+<h2 id="importing-the-utilities">Importing the Utilities<a class="headerlink" href="#importing-the-utilities" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.ops</span><span class="w"> </span><span class="kn">import</span> <span class="nb">map</span><span class="p">,</span> <span class="n">fori_loop</span>
+</code></pre></div>
+<h2 id="map-mapping-over-data"><code>map</code> — Mapping Over Data<a class="headerlink" href="#map-mapping-over-data" title="Permanent link">&para;</a></h2>
+<p><code>map</code> applies a function over the <em>leading axis</em> of one or more arrays, accumulating log-probability contributions along the way.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">xs</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li><code>f</code> is a callable that receives a single element (or a tuple of elements, one from each array in <code>xs</code>) and optionally returns a value.</li>
+<li><code>xs</code> are the arrays to map over. They are sliced along their leading axis and passed positionally to <code>f</code>.</li>
+<li>If <code>f</code> returns values, <code>map</code> stacks them and returns the result; if <code>f</code> returns nothing, <code>map</code> returns <code>None</code>.</li>
+</ul>
+<h2 id="fori_loop-looping-over-indices"><code>fori_loop</code> — Looping Over Indices<a class="headerlink" href="#fori_loop-looping-over-indices" title="Permanent link">&para;</a></h2>
+<p><code>fori_loop</code> is the index-based counterpart: it iterates an integer index from <code>lower</code> to <code>upper</code> (exclusive), calling <code>f(i)</code> at each step.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">fori_loop</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li><code>f</code> receives the current integer index <code>i</code>.</li>
+<li>Like <code>map</code>, it accumulates log-probability contributions inside a model context and stacks any returned values.</li>
+</ul>
+<h2 id="example-a-glm-with-per-observation-likelihood">Example: A GLM With Per-Observation Likelihood<a class="headerlink" href="#example-a-glm-with-per-observation-likelihood" title="Permanent link">&para;</a></h2>
+<p>To show both utilities in a realistic setting, consider a Poisson GLM where we process each observation individually.
+The model is:</p>
+<div class="arithmatex">\[
+\begin{aligned}
+    y_i &amp;\sim \text{Poisson}(\lambda_i) \\
+    \log(\lambda_i) &amp;= \mathbf{x}_i^\top \boldsymbol{\beta} \\
+    \boldsymbol{\beta} &amp;\sim \text{Normal}(\mathbf{0},\, 3)
+\end{aligned}
+\]</div>
+<h3 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jr</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Posterior</span><span class="p">,</span> <span class="n">stochastic</span><span class="p">,</span> <span class="n">observed</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Poisson</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.ops</span><span class="w"> </span><span class="kn">import</span> <span class="nb">map</span><span class="p">,</span> <span class="n">fori_loop</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1"># Simulate some data</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">key</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_pred</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="n">X</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="n">n_pred</span><span class="p">))</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="n">true_beta</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="n">lam_true</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">X</span> <span class="o">@</span> <span class="n">true_beta</span><span class="p">)</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="n">y</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">lam_true</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="using-map">Using <code>map</code><a class="headerlink" href="#using-map" title="Permanent link">&para;</a></h3>
+<p><code>map</code> is the most natural fit here: we have a fixed array of observations and want to apply the same likelihood function to each row.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">PoissonGLM_Map</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">beta</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s1">&#39;n_pred&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">X</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;n_obs&#39;</span><span class="p">,</span> <span class="s1">&#39;n_pred&#39;</span><span class="p">))</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="c1"># Prior on coefficients</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="c1"># Process each observation separately using map</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">observation_likelihood</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">):</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>            <span class="n">lam</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">xi</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>            <span class="n">yi</span> <span class="o">&lt;&lt;</span> <span class="n">Poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">)</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>        <span class="nb">map</span><span class="p">(</span><span class="n">observation_likelihood</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    <span class="n">PoissonGLM_Map</span><span class="p">,</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    <span class="n">n_obs</span><span class="o">=</span><span class="n">n_obs</span><span class="p">,</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="n">n_pred</span><span class="o">=</span><span class="n">n_pred</span><span class="p">,</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    <span class="n">y</span><span class="o">=</span><span class="n">y</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="p">)</span>
+</code></pre></div>
+<p><code>map</code> slices <code>self.X</code> and <code>self.y</code> along their leading axis, passing one row <code>xi</code> and one scalar <code>yi</code> to <code>observation_likelihood</code> per iteration.
+Each call to <code>yi &lt;&lt; Poisson(lam_i)</code> contributes to the log-density, and <code>map</code> accumulates all those contributions back into the outer model context.</p>
+<h3 id="using-fori_loop">Using <code>fori_loop</code><a class="headerlink" href="#using-fori_loop" title="Permanent link">&para;</a></h3>
+<p><code>fori_loop</code> is useful when you need explicit index access — for example, to index into arrays differently for each step, or when the loop bounds come from a shape rather than an array.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">PoissonGLM_Fori</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">beta</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s1">&#39;n_pred&#39;</span><span class="p">)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">X</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;n_obs&#39;</span><span class="p">,</span> <span class="s1">&#39;n_pred&#39;</span><span class="p">))</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="c1"># Prior on coefficients</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>        <span class="c1"># Process each observation separately using fori_loop</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">observation_likelihood</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>            <span class="n">lam</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="n">Poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">)</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>        <span class="n">fori_loop</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">observation_likelihood</span><span class="p">)</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    <span class="n">PoissonGLM_Fori</span><span class="p">,</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>    <span class="n">n_obs</span><span class="o">=</span><span class="n">n_obs</span><span class="p">,</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>    <span class="n">n_pred</span><span class="o">=</span><span class="n">n_pred</span><span class="p">,</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>    <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>    <span class="n">y</span><span class="o">=</span><span class="n">y</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="p">)</span>
+</code></pre></div>
+<p>The two approaches produce identical results — choose whichever reads more clearly for your model.</p>
+<h3 id="fitting-and-sampling">Fitting and Sampling<a class="headerlink" href="#fitting-and-sampling" title="Permanent link">&para;</a></h3>
+<p>Both model variants are fitted the same way as any other Bayinx model:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagAffine</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">DiagAffine</span><span class="p">()])</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">beta_draws</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True beta:            </span><span class="si">{</span><span class="n">true_beta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior mean (beta): </span><span class="si">{</span><span class="n">beta_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Fitting Variational Approximation: 100%|████████████████████████████████████████| 100000/100000 [00:01&lt;00:00, 67082.35it/s]
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>True beta:            [ 0.5 -1.   0.3]
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Posterior mean (beta): [ 0.53247786 -0.91966873  0.38757807]
+</code></pre></div></p>
+<h2 id="collecting-return-values">Collecting Return Values<a class="headerlink" href="#collecting-return-values" title="Permanent link">&para;</a></h2>
+<p>Both <code>map</code> and <code>fori_loop</code> can also collect values returned by <code>f</code>, which is useful for computing per-observation quantities you want to inspect after fitting.</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">compute_lambda</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">per_obs</span><span class="p">(</span><span class="n">xi</span><span class="p">):</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">xi</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">per_obs</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># returns shape (n_obs,) for each draw</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="n">lambda_draws</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">predictive</span><span class="p">(</span><span class="n">compute_lambda</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True lambda[0]:            </span><span class="si">{</span><span class="n">lam_true</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior mean of lambda[0]: </span><span class="si">{</span><span class="n">lambda_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>True lambda[0]:            0.26079463958740234
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Posterior mean of lambda[0]: 0.3157551884651184
+</code></pre></div></p>
+<p>When <code>f</code> returns a value, the results are stacked along a new leading axis, giving you an <code>(n_draws, ...)</code> array. When <code>f</code> returns nothing (as in the likelihood-only examples above), both utilities return <code>None</code>.</p>
 
 
 

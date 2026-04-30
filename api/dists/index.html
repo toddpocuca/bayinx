@@ -18,7 +18,7 @@
         <link rel="prev" href="../bayinx/">
       
       
-        <link rel="next" href="../nodes/">
+        <link rel="next" href="../ops/">
       
       
         
@@ -374,34 +374,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/stan/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Coming From Stan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../tutorials/basic/" class="md-nav__link">
         
   
@@ -438,6 +410,34 @@
     
   
     Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/stan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming From Stan
   
 
     
@@ -954,6 +954,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#bayinx.dists.LogNormal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LogNormal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#bayinx.dists.Multinoulli" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1017,34 +1028,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../nodes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nodes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1264,10 +1247,10 @@
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>
 <a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">logit_q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="p">):</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">        Construct a Bernoulli distribution by selecting a parameterization.</span>
@@ -1308,7 +1291,7 @@
 
 
 <h4 id="bayinx.dists.Bernoulli.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#bayinx.dists.Bernoulli.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -1334,7 +1317,7 @@
                 <code>p</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1350,7 +1333,7 @@
                 <code>q</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1366,7 +1349,7 @@
                 <code>logit_p</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1382,7 +1365,7 @@
                 <code>logit_q</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1426,10 +1409,10 @@
 <span class="normal"><a href="#__codelineno-0-46">46</a></span>
 <span class="normal"><a href="#__codelineno-0-47">47</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">logit_p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">logit_q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="p">):</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    Construct a Bernoulli distribution by selecting a parameterization.</span>
@@ -1535,11 +1518,11 @@
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>
 <a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">n</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">n</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">logit_p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="n">logit_q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="p">):</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">        Construct a Binomial distribution by selecting a parameterization.</span>
@@ -1581,7 +1564,7 @@
 
 
 <h4 id="bayinx.dists.Binomial.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">logit_q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#bayinx.dists.Binomial.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -1607,7 +1590,7 @@
                 <code>n</code>
             </td>
             <td>
-                  <code><span title="bayinx.core.types.ArrayObject">ArrayObject</span></code>
+                  <code><span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1623,7 +1606,7 @@
                 <code>p</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1639,7 +1622,7 @@
                 <code>q</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1655,7 +1638,7 @@
                 <code>logit_p</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1671,7 +1654,7 @@
                 <code>logit_q</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1717,11 +1700,11 @@
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
 <span class="normal"><a href="#__codelineno-0-49">49</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">n</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">logit_p</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">logit_q</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">n</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">logit_p</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">logit_q</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="p">):</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    Construct a Binomial distribution by selecting a parameterization.</span>
@@ -1783,7 +1766,8 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/bayinx/dists/cauchy/distribution.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
@@ -1802,28 +1786,27 @@
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">Cauchy</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    A Cauchy distribution.</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">Cauchy</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    A Cauchy distribution.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
 <a id="__codelineno-0-15" name="__codelineno-0-15"></a>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">,</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayObject</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="p">):</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        Construct a Cauchy distribution by selecting a parameterization.</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        Parameters:</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">            loc: Parameterizes a Cauchy distribution by its location.</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">            scale: Parameterizes a Cauchy distribution by its scale.</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">        &quot;&quot;&quot;</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocationScaleCauchy</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayLike</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="p">):</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        Construct a Cauchy distribution by selecting a parameterization.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        Parameters:</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">            loc: Parameterizes a Cauchy distribution by its location.</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">            scale: Parameterizes a Cauchy distribution by its scale.</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        &quot;&quot;&quot;</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocationScaleCauchy</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1844,7 +1827,7 @@
 
 
 <h4 id="bayinx.dists.Cauchy.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">loc</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">loc</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">)</span></code>
 
 <a href="#bayinx.dists.Cauchy.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -1870,7 +1853,7 @@
                 <code>loc</code>
             </td>
             <td>
-                  <code><span title="bayinx.core.types.ArrayObject">ArrayObject</span></code>
+                  <code><span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1886,7 +1869,7 @@
                 <code>scale</code>
             </td>
             <td>
-                  <code><span title="bayinx.core.types.ArrayObject">ArrayObject</span></code>
+                  <code><span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1903,7 +1886,8 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/bayinx/dists/cauchy/distribution.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-17">17</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
 <span class="normal"><a href="#__codelineno-0-18">18</a></span>
 <span class="normal"><a href="#__codelineno-0-19">19</a></span>
 <span class="normal"><a href="#__codelineno-0-20">20</a></span>
@@ -1914,20 +1898,19 @@
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">loc</span><span class="p">:</span> <span class="n">ArrayObject</span><span class="p">,</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayObject</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="p">):</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">    Construct a Cauchy distribution by selecting a parameterization.</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        loc: Parameterizes a Cauchy distribution by its location.</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">        scale: Parameterizes a Cauchy distribution by its scale.</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocationScaleCauchy</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">loc</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayLike</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="p">):</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">    Construct a Cauchy distribution by selecting a parameterization.</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        loc: Parameterizes a Cauchy distribution by its location.</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        scale: Parameterizes a Cauchy distribution by its scale.</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocationScaleCauchy</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1976,7 +1959,7 @@
                 <code>rate</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1992,7 +1975,7 @@
                 <code>scale</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2015,7 +1998,9 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/bayinx/dists/exponential/distribution.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
@@ -2035,31 +2020,29 @@
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">Exponential</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    An Exponential distribution.</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        rate: Parameterizes an Exponential distribution by its rate.</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        scale: Parameterizes an Exponential distribution by its scale.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">Exponential</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    An Exponential distribution.</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">        rate: Parameterizes an Exponential distribution by its rate.</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        scale: Parameterizes an Exponential distribution by its scale.</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="p">):</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">RateExponential</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">elif</span> <span class="n">scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ScaleExponential</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected rate: </span><span class="si">{</span><span class="n">rate</span><span class="si">}</span><span class="s2"> or scale: </span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">rate</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">scale</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="p">):</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">RateExponential</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">elif</span> <span class="n">scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ScaleExponential</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected rate: </span><span class="si">{</span><span class="n">rate</span><span class="si">}</span><span class="s2"> or scale: </span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2118,7 +2101,7 @@
                 <code>rate</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2134,7 +2117,7 @@
                 <code>shape</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2150,7 +2133,7 @@
                 <code>scale</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2166,7 +2149,7 @@
                 <code>mean</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2233,10 +2216,10 @@
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>
 <a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">mean</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">rate</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">shape</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">mean</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="p">):</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">RateShapeGamma</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
@@ -2246,6 +2229,142 @@
 <a id="__codelineno-0-34" name="__codelineno-0-34"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">MeanShapeGamma</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
 <a id="__codelineno-0-35" name="__codelineno-0-35"></a>        <span class="k">else</span><span class="p">:</span>
 <a id="__codelineno-0-36" name="__codelineno-0-36"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Must choose one parameterization out of &#39;rate&#39; &amp; &#39;shape&#39;, &#39;scale&#39; &amp; &#39;shape&#39; and &#39;mean&#39; &amp; &#39;shape&#39;.&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="bayinx.dists.LogNormal" class="doc doc-heading">
+            <code>LogNormal</code>
+
+
+<a href="#bayinx.dists.LogNormal" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A Log-Normal distribution.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>loc</code>
+            </td>
+            <td>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Log-Normal distribution by its location (mean of log X).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>scale</code>
+            </td>
+            <td>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameterizes a Log-Normal distribution by its scale (standard-deviation of log X).</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/bayinx/dists/lognormal/distribution.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#__codelineno-0-27">27</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">LogNormal</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">    A Log-Normal distribution.</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">        loc: Parameterizes a Log-Normal distribution by its location (mean of log X).</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">        scale: Parameterizes a Log-Normal distribution by its scale (standard-deviation of log X).</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>        <span class="n">loc</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="n">scale</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="p">):</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="k">if</span> <span class="n">loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocScaleLogNormal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected loc: </span><span class="si">{</span><span class="n">loc</span><span class="si">}</span><span class="s2">, and at least one of scale: </span><span class="si">{</span><span class="n">scale</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2304,7 +2423,7 @@
                 <code>probs</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2320,7 +2439,7 @@
                 <code>logprobs</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2377,8 +2496,8 @@
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="n">probs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">logprobs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="n">probs</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">logprobs</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="p">):</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="k">if</span> <span class="n">probs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">ProbsMultinoulli</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span>
@@ -2444,7 +2563,7 @@
                 <code>mu</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2460,7 +2579,7 @@
                 <code>theta</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2515,8 +2634,8 @@
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="n">mu</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">theta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="n">mu</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">theta</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="p">):</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="k">if</span> <span class="n">mu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">theta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">MeanInvOverdispNegBinom</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
@@ -2580,7 +2699,7 @@
                 <code>loc</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2596,7 +2715,7 @@
                 <code>scale</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2612,7 +2731,7 @@
                 <code>var</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2628,7 +2747,7 @@
                 <code>prec</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="bayinx.core.types.ArrayObject">ArrayObject</span>]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2695,10 +2814,10 @@
 <a id="__codelineno-0-22" name="__codelineno-0-22"></a>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="n">prec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayObject</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">loc</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">var</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="n">prec</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
 <a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="p">):</span>
 <a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">if</span> <span class="n">loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">scale</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocScaleNormal</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
@@ -2766,7 +2885,7 @@
                 <code>rate</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2782,7 +2901,7 @@
                 <code>log_rate</code>
             </td>
             <td>
-                  <code><span title="typing.Optional">Optional</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]]</code>
+                  <code>None | <span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2805,7 +2924,9 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/bayinx/dists/poisson/distribution.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
@@ -2825,31 +2946,29 @@
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span>
 <span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">Poisson</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    A Poisson distribution.</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        rate: Parameterizes a Poisson distribution by its rate.</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        log_rate: Parameterizes a Poisson distribution by the log-transformed rate.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-31">31</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">Poisson</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    A Poisson distribution.</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">        rate: Parameterizes a Poisson distribution by its rate.</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        log_rate: Parameterizes a Poisson distribution by the log-transformed rate.</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">log_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="p">):</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">RatePoisson</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">elif</span> <span class="n">log_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogRatePoisson</span><span class="p">(</span><span class="n">log_rate</span><span class="p">)</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a>        <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected rate: </span><span class="si">{</span><span class="n">rate</span><span class="si">}</span><span class="s2"> or log_rate: </span><span class="si">{</span><span class="n">log_rate</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="n">rate</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">log_rate</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="n">ArrayLike</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="p">):</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">RatePoisson</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="k">elif</span> <span class="n">log_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LogRatePoisson</span><span class="p">(</span><span class="n">log_rate</span><span class="p">)</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected rate: </span><span class="si">{</span><span class="n">rate</span><span class="si">}</span><span class="s2"> or log_rate: </span><span class="si">{</span><span class="n">log_rate</span><span class="si">}</span><span class="s2"> to be not None.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2908,7 +3027,7 @@
                 <code>df</code>
             </td>
             <td>
-                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+                  <code><span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2924,7 +3043,7 @@
                 <code>loc</code>
             </td>
             <td>
-                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+                  <code><span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2940,7 +3059,7 @@
                 <code>scale</code>
             </td>
             <td>
-                  <code><span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.ArrayLike">ArrayLike</span>, ...] | <span title="bayinx.core.node.Node">Node</span>[<span title="jaxtyping.Real">Real</span>[<span title="jaxtyping.Array">Array</span>, ...]]</code>
+                  <code><span title="jaxtyping.ArrayLike">ArrayLike</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2963,7 +3082,8 @@
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/bayinx/dists/studentst/distribution.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-10">10</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
@@ -2981,27 +3101,26 @@
 <span class="normal"><a href="#__codelineno-0-25">25</a></span>
 <span class="normal"><a href="#__codelineno-0-26">26</a></span>
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentsT</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    A Student&#39;s T distribution.</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    Parameters:</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        df: Parameterizes a Student&#39;s T distribution by its degrees of freedom.</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        loc: Parameterizes a Student&#39;s T distribution by its location.</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">        scale: Parameterizes a Student&#39;s T distribution by its scale.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<span class="normal"><a href="#__codelineno-0-28">28</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">StudentsT</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="sd">    A Student&#39;s T distribution.</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    Parameters:</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">        df: Parameterizes a Student&#39;s T distribution by its degrees of freedom.</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">        loc: Parameterizes a Student&#39;s T distribution by its location.</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        scale: Parameterizes a Student&#39;s T distribution by its scale.</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">par</span><span class="p">:</span> <span class="n">Parameterization</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a>
 <a id="__codelineno-0-21" name="__codelineno-0-21"></a>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="bp">self</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">df</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]],</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]],</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">Real</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="n">Node</span><span class="p">[</span><span class="n">Real</span><span class="p">[</span><span class="n">Array</span><span class="p">,</span> <span class="s2">&quot;...&quot;</span><span class="p">]]</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="p">):</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocScaleStudentsT</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a>        <span class="n">df</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a>        <span class="n">loc</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>        <span class="n">scale</span><span class="p">:</span> <span class="n">ArrayLike</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="p">):</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">par</span> <span class="o">=</span> <span class="n">LocScaleStudentsT</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 

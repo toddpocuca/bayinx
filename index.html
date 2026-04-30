@@ -480,34 +480,6 @@
   
   
     <li class="md-nav__item">
-      <a href="tutorials/stan/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Coming From Stan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="tutorials/basic/" class="md-nav__link">
         
   
@@ -544,6 +516,34 @@
     
   
     Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/stan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming From Stan
   
 
     
@@ -908,34 +908,6 @@
   
   
     <li class="md-nav__item">
-      <a href="api/nodes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nodes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="api/ops/" class="md-nav__link">
         
   
@@ -1067,57 +1039,57 @@ The easiest way to get started is by installing from PyPi using your favourite p
 <p>You can now get started!</p>
 <p>Models are defined by writing a class that inherits from the <code>Model</code> base class.
 For example, we can define a simple model that describes a collection of observations derived from a Normal distribution:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Exponential</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Continuous</span><span class="p">,</span> <span class="n">Observed</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">define</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNormalModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">mu</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">())</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">std</span><span class="p">:</span> <span class="n">Continuous</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># nodes support type hinting</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>        <span class="c1"># Accumulate likelihood</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jr</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span><span class="p">,</span> <span class="n">Exponential</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">observed</span><span class="p">,</span> <span class="n">stochastic</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scalar</span><span class="p">,</span> <span class="n">Array</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">SimpleNormalModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">mu</span><span class="p">:</span> <span class="n">Scalar</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">())</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">std</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        <span class="c1"># Accumulate likelihood</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">)</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="c1"># Simulate fake data</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="n">n_obs</span> <span class="o">=</span> <span class="mi">30</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="n">true_mu</span> <span class="o">=</span> <span class="mf">10.0</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="n">true_std</span> <span class="o">=</span> <span class="mf">3.0</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="c1"># Simulate data</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="n">x_data</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="p">))</span> <span class="o">*</span> <span class="n">true_std</span> <span class="o">+</span> <span class="n">true_mu</span>
 </code></pre></div>
-<p>Parameters are attributes annotated with the <code>Continuous</code> class while any data is annotated with <code>Observed</code>, where both are thin wrappers around an internal type that can be type hinted (e.g., <code>Continuous[T]</code> or <code>Observed[T]</code>).
-You can then define additional metadata for a node with the <code>define</code> function, for example by assigning shapes <code>define(shape = ...)</code> and bounds <code>define(lower = ..., upper = ...)</code>.</p>
+<p>Parameters are attributes with the <code>stochastic</code> descriptor, while any data is marked with the <code>observed</code> descriptor.
+Additional metadata for an attribute is passed as arguments to these descriptors, for example by assigning shapes <code>define(shape = ...)</code> or a constraint <code>define(lower = ..., upper = ...)</code>.</p>
 <h2 id="fitting-models-with-bayinx">Fitting Models With Bayinx<a class="headerlink" href="#fitting-models-with-bayinx" title="Permanent link">&para;</a></h2>
 <p>Bayinx uses variational inference with <a href="nf/">normalizing flows</a> (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
 We'll simulate some data for demonstration:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jr</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">n_obs</span> <span class="o">=</span> <span class="mi">30</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">true_mu</span> <span class="o">=</span> <span class="mf">10.0</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">true_std</span> <span class="o">=</span> <span class="mf">3.0</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Simulate data</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">x_data</span> <span class="o">=</span> <span class="n">jr</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">jr</span><span class="o">.</span><span class="n">key</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">n_obs</span><span class="p">,</span> <span class="p">))</span> <span class="o">*</span> <span class="n">true_std</span> <span class="o">+</span> <span class="n">true_mu</span>
-</code></pre></div>
 <p>The approximation to the posterior can then be created with the <code>Posterior</code> class and optimized later:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Posterior</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagAffine</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Construct approximation</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">posterior</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">SimpleNormalModel</span><span class="p">,</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">n_obs</span> <span class="o">=</span> <span class="n">n_obs</span><span class="p">,</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">x_data</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">)</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="n">posterior</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">flowspecs</span> <span class="o">=</span> <span class="p">[</span><span class="n">DiagAffine</span><span class="p">()])</span> <span class="c1"># Configure the NF architecture</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">posterior</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stl</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># Optimize the approximation</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Posterior</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagAffine</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Construct approximation</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">posterior</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">SimpleNormalModel</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">n_obs</span> <span class="o">=</span> <span class="n">n_obs</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">x</span> <span class="o">=</span> <span class="n">x_data</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">posterior</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">flowspecs</span> <span class="o">=</span> <span class="p">[</span><span class="n">DiagAffine</span><span class="p">()])</span> <span class="c1"># Configure the NF architecture</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="n">posterior</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stl</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># Optimize the approximation</span>
 </code></pre></div>
 <p>Once fitted, you can sample from the approximated posterior distribution to get Monte Carlo estimates for your parameters:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Sample the posterior distribution for &#39;mean&#39;</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">mu_draws</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">5e6</span><span class="p">),</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">))</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytic Posterior Mean for &#39;mu&#39;: </span><span class="si">{</span><span class="n">x_data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior Mean Estimate for &#39;mu&#39;: </span><span class="si">{</span><span class="n">mu_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">mu_draws</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">5e6</span><span class="o">**</span><span class="mf">0.5</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Sample the posterior distribution for &#39;mean&#39;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">mu_draws</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mf">5e6</span><span class="p">),</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">))</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytic Posterior Mean for &#39;mu&#39;: </span><span class="si">{</span><span class="n">x_data</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior Mean Estimate for &#39;mu&#39;: </span><span class="si">{</span><span class="n">mu_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">mu_draws</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">5e6</span><span class="o">**</span><span class="mf">0.5</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Analytic Posterior Mean for &#39;mu&#39;: 10.5465
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Posterior Mean Estimate for &#39;mu&#39;: 10.5467 ± 0.0005
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Analytic Posterior Mean for &#39;mu&#39;: 10.6796
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Posterior Mean Estimate for &#39;mu&#39;: 10.6792 ± 0.0003
 </code></pre></div></p>
 
 

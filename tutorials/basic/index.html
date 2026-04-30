@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://toddpocuca.github.io/bayinx/tutorials/basic/">
       
       
-        <link rel="prev" href="../stan/">
+        <link rel="prev" href="../../nf/">
       
       
         <link rel="next" href="../adv/">
@@ -373,34 +373,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../stan/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Coming From Stan
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -533,6 +505,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Fitting a Model">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuring-and-fitting-the-normalizing-flow-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring and Fitting the Normalizing Flow Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -570,6 +559,34 @@
     
   
     Advanced Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coming From Stan
   
 
     
@@ -934,34 +951,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/nodes/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Nodes
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../api/ops/" class="md-nav__link">
         
   
@@ -1069,14 +1058,14 @@
 <h1 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h1>
 <p>If you are new to probabilistic programming or want to quickly get up to speed with Bayinx, this tutorial goes through how to specify and fit a model with Bayinx.</p>
 <h2 id="starting-from-a-statistical-model">Starting From A Statistical Model<a class="headerlink" href="#starting-from-a-statistical-model" title="Permanent link">&para;</a></h2>
-<p>Suppose we would like to specify a simple linear model, in model notation this would be:</p>
+<p>Suppose we would like to specify a simple linear model, we would write this out like so:</p>
 <div class="arithmatex">\[
 \begin{aligned}
     y_i &amp;\sim \text{Normal}(\mu_i, \sigma) \\
     \mu_i &amp;= \mathbf{x}_i^\top \mathbf{\beta} \\
 \end{aligned}
 \]</div>
-<p>where <span class="arithmatex">\(y_i \in \mathbb{R}\)</span> denotes our response variable, <span class="arithmatex">\(\mathbf{x}_i^\top \in \mathbb{R}^p\)</span> denotes our predictors structured as a vector, and <span class="arithmatex">\(\mathbf{\beta} \in \mathbb{R}^p\)</span> denotes the true parameters we wish to estimate.</p>
+<p>where <span class="arithmatex">\(y_i \in \mathbb{R}\)</span> denotes our response variable, <span class="arithmatex">\(\mathbf{x}_i^\top \in \mathbb{R}^p\)</span> denotes our predictors structured as a vector, and <span class="arithmatex">\(\mathbf{\beta} \in \mathbb{R}^p\)</span> denotes the parameters we wish to estimate.</p>
 <p>or put in another way:</p>
 <div class="arithmatex">\[
     y_i = \mathbf{x}_i^\top \mathbf{\beta} + \epsilon_i
@@ -1084,111 +1073,119 @@
 <p>where <span class="arithmatex">\(\epsilon_i \sim \text{Normal}(0, \sigma)\)</span>.
 But since these two formulations are equivalent, we will use the first.</p>
 <h2 id="translating-to-bayinx">Translating to Bayinx<a class="headerlink" href="#translating-to-bayinx" title="Permanent link">&para;</a></h2>
-<p>In Bayinx, model definitions are Python classes inheriting from <code>bayinx.Model</code>, and just as we defined the objects we used above in our model equations, we similarly have to declare the objects we wish to use in our model:</p>
+<p>In Bayinx, model definitions are Python classes inheriting from <code>Model</code>, and just as we defined the model's logic and the objects used in said logic, we similarly have to declare both here:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byx</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byd</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byf</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">bayinx.nodes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">byn</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Define model</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">LinearModel</span><span class="p">(</span><span class="n">byx</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">beta</span><span class="p">:</span> <span class="n">byn</span><span class="o">.</span><span class="n">Continuous</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;n_pred&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">byn</span><span class="o">.</span><span class="n">Continuous</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">jaxtyping</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array</span><span class="p">,</span> <span class="n">Scalar</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Posterior</span><span class="p">,</span> <span class="n">observed</span><span class="p">,</span> <span class="n">stochastic</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.dists</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normal</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Define model</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">LinearModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="c1"># The Objects Used By The Model</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">beta</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;n_pred&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">sigma</span><span class="p">:</span> <span class="n">Scalar</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">X</span><span class="p">:</span> <span class="n">byn</span><span class="o">.</span><span class="n">Observed</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;n_obs&#39;</span><span class="p">,</span> <span class="s1">&#39;n_pred&#39;</span><span class="p">))</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">byn</span><span class="o">.</span><span class="n">Observed</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">X</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;n_obs&#39;</span><span class="p">,</span> <span class="s1">&#39;n_pred&#39;</span><span class="p">))</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="s1">&#39;n_obs&#39;</span><span class="p">)</span>
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="c1"># Compute expected value</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="c1"># Define likelihood</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;&lt;</span> <span class="n">byd</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="c1"># The Model&#39;s Logic</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="c1"># Compute expected value</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="c1"># Define likelihood</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;&lt;</span> <span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
 </code></pre></div>
-<p>Notice the attributes of the class are used to define <em>model nodes</em>, which are all the objects available to the model and represent data or parameters.
-Model nodes have their type specified by their type annotations (e.g., <code>beta: byn.Continuous</code> specifies <code>beta</code> as a continuous parameter) and are further defined using <code>bayinx.define</code>, which is used to provide shapes, default values, or constraints the node must satisfy:</p>
+<p>Notice the class's attributes are marked with field specifiers that denote whether an object is treated as a parameter (<code>stochastic</code>) or data (<code>observed</code>).
+These specifiers do not <em>require</em> any arguments, but Bayinx offers some for user convenience:</p>
 <h3 id="shape-specification">Shape Specification<a class="headerlink" href="#shape-specification" title="Permanent link">&para;</a></h3>
-<p>The <code>shape</code> argument of <code>define</code> accepts a string, integer, or a tuple of strings and integers representing the shape of an array.
-Depending on the type of the node it does two things:</p>
+<p>The <code>shape</code> argument of <code>stochastic</code>/<code>observed</code> accepts a string, integer, or a tuple of strings and integers representing the shape of an array.
+Depending on the type of the object it does two things:</p>
 <ul>
-<li>if the node is stochastic (e.g., <code>Continuous</code> inherits from <code>Stochastic</code>, so it is stochastic and represents a parameter), then an array is automatically constructed with the correct shape based on the shapes passed during posterior initialization (elaborated on later).</li>
-<li>if the node is passed explicitly during posterior initialization, the shape of the argument is checked against the shape specification.
-If the two disagree, an error will be thrown.</li>
+<li>if the attribute is passed explicitly either through a <a href="./#default-initialization">default initialization</a> or during <a href="./#fitting-a-model">posterior initialization</a> (elaborated on below), the shape of the argument is checked against the shape specification. If the two disagree, an error will be thrown.</li>
+<li>if the attribute is <code>stochastic</code> and no object was passed explicitly, then an array is automatically constructed with the correct shape based on the shapes passed during posterior initialization.</li>
 </ul>
-<p>This avoids some boilerplate for many models that involve parameters defined as arrays, and peace of mind knowing that all model nodes have the correct shape.</p>
+<p>This avoids boilerplate for many models that involve parameters defined as arrays, and peace of mind knowing that all arrays have the correct shape.</p>
 <p>However, note that you do not NEED to specify the shape parameter!
-It is always fine to leave the <code>shape</code> argument for an <code>Observed</code> node blank, and as long as you specify the structure for a stochastic either with <code>init</code> or during posterior initialization, the same is true for any <code>Stochastic</code> node.</p>
+It is always fine to leave the <code>shape</code> argument for an <code>observed</code> attribute blank, and as long as you specify the structure for a stochastic either with <code>init</code> (elaborated below) or during posterior initialization (elaborated further below), the same is true for a <code>stochastic</code> attribute.</p>
 <h3 id="default-initialization">Default Initialization<a class="headerlink" href="#default-initialization" title="Permanent link">&para;</a></h3>
-<p>The <code>init</code> argument of <code>define</code> is used to specify the default structure of a stochastic node at "definition"-time (when you're writing your model), or the default values for an observed node.
-For example, if I would like a model node to fallback to a list of arrays, that can be done like so:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExampleModel</span><span class="p">(</span><span class="n">byx</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">node_1</span><span class="p">:</span> <span class="n">byn</span><span class="o">.</span><span class="n">Continuous</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">init</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">node_2</span><span class="p">:</span> <span class="n">byn</span><span class="o">.</span><span class="n">Observed</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">init</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))])</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="c1"># ...</span>
+<p>The <code>init</code> argument of <code>stochastic</code>/<code>observed</code> is used to specify the default <em>structure</em> of a stochastic attribute at "definition"-time (when you're writing your model), or the default <em>values</em> for an observed attribute (note the distinction between <em>structure</em> and <em>value</em>).
+For example, if I would like a  to fallback to a list of arrays, that can be done like so:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExampleModel</span><span class="p">(</span><span class="n">byx</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">obj_1</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">(</span><span class="n">init</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">obj_2</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Array</span><span class="p">]</span> <span class="o">=</span> <span class="n">observed</span><span class="p">(</span><span class="n">init</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))])</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="c1"># ...</span>
 </code></pre></div>
-<p>Here, <code>init</code> specifies that <code>node_1</code> looks like <code>[Array([#, #]), Array([#, #, #])]</code> since it is <code>Continuous</code> (note that the values given are <em>placeholders</em>, they are just used to get the correct structure).
-For <code>node_2</code> however, <code>init</code> specifies that it is exactly <code>[Array([1., 1.]), Array([1., 1., 1.])]</code> as it is <code>Observed</code>!</p>
+<p>Here, <code>init</code> specifies that <code>obj_1</code> looks like <code>[Array([#, #]), Array([#, #, #])]</code> since it is <code>stochastic</code> (note that the values given are <em>placeholders</em>, they are just used to get the correct structure).
+For <code>obj_2</code> however, <code>init</code> specifies that it is exactly <code>[Array([1., 1.]), Array([1., 1., 1.])]</code> as it is <code>observed</code>!</p>
 <p>These rules apply to initialization when constructing the posterior as well, for example, if we would like to override the default we can write:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">post</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">Posterior</span><span class="p">(</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">post</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">ExampleModel</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">node_1</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span> <span class="c1"># new structure</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">obj_1</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">6</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">7</span><span class="p">)]</span> <span class="c1"># override structure</span>
 <a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">)</span>
 </code></pre></div>
 <h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
 <p>Sometimes we would like to restrict a parameter to a certain subset of its domain, or ensure the data we've inputted satisfies certain conditions.
-The last arguments of <code>define</code> are used to specify these constraints.
-For example, a Bernoulli distribution involves a single parameter <code>p</code> that denotes the probabiliy of success, if we were to define a model for this, we could write:</p>
+The last arguments of <code>stochastic</code>/<code>observed</code> are used to specify these constraints.
+For example, a Bernoulli distribution typically involves a single parameter <code>p</code> that denotes the probabiliy of success, if we were to define a model for this, we could write:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BernoulliModel</span><span class="p">(</span><span class="n">byx</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">p</span><span class="p">:</span> <span class="n">Continuous</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">((),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Observed</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">define</span><span class="p">()</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">p</span><span class="p">:</span> <span class="n">Scalar</span> <span class="o">=</span> <span class="n">stochastic</span><span class="p">((),</span> <span class="n">lower</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">x</span><span class="p">:</span> <span class="n">Array</span> <span class="o">=</span> <span class="n">observed</span><span class="p">()</span>
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">byd</span><span class="o">.</span><span class="n">Bernoulli</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
 </code></pre></div>
+<p>The bounds <code>lower</code> and <code>upper</code> are passed as arguments of <code>stochastic</code> and ensures that the posterior distribution for <code>p</code> is on the relevant domain.
+Similarly we could add a constraint to <code>x</code>, as we know for a Bernoulli-distributed random variable it must lie between 0 and 1 (more specifically, it must be <em>either</em> 0 or 1).</p>
 <h2 id="fitting-a-model">Fitting a Model<a class="headerlink" href="#fitting-a-model" title="Permanent link">&para;</a></h2>
 <p>Once the model is defined we can proceed with fitting an approximation to the posterior distribution.
-To initialize the posterior approximation, we pass all the necessary arguments to the <code>bayinx.Posterior</code> class constructor including all observed nodes, any shapes used in <code>define</code> statements, and lastly any stochastic nodes whose structure was not specified using <code>shape</code> or <code>init</code>.
-The architecture of the normalizing flow is specified with the <code>.configure</code> method of <code>Posterior</code> using the flows offered in the <code>bayinx.flows</code> module.
-The approximation can then optimized using the <code>.fit</code> method.
-Continuing with the <code>LinearModel</code> example, a full affine flow can be used to accurately approximate the posterior:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Initialize posterior approximation</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">post</span> <span class="o">=</span> <span class="n">byx</span><span class="o">.</span><span class="n">Posterior</span><span class="p">(</span>
+To initialize the posterior approximation, we pass all the necessary arguments to the <code>Posterior</code> class constructor including all observed data (if they do not have defaults), any shapes used, and lastly any <code>stochastic</code> attributes whose structure was not specified using <code>shape</code> or <code>init</code>.</p>
+<p>Continuing with the <code>LinearModel</code> example from above, we construct <code>Posterior[LinearModel]</code> like so:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Initialize posterior approximation</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">post</span><span class="p">:</span> <span class="n">Posterior</span><span class="p">[</span><span class="n">LinearModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Posterior</span><span class="p">(</span>
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">LinearModel</span><span class="p">,</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">n_pred</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">n_obs</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">X</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">]]),</span>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">13.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">27.</span><span class="p">])</span>
 <a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">)</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># Configure and optimize posterior</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">byf</span><span class="o">.</span><span class="n">FullAffine</span><span class="p">()])</span> <span class="c1"># equivalent to full-rank ADVI</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Fitting Variational Approximation: 100%|███████████████| 100000/100000 [00:00&lt;00:00, 167666.26it/s]
+<p>Currently this approximation does not reflect the actual posterior (it is initialized with default parameters for the underlying variational distribution), but we can now configure and then fit it to get a useful variational approximation:</p>
+<h3 id="configuring-and-fitting-the-normalizing-flow-architecture">Configuring and Fitting the Normalizing Flow Architecture<a class="headerlink" href="#configuring-and-fitting-the-normalizing-flow-architecture" title="Permanent link">&para;</a></h3>
+<details class="info">
+<summary>Confused: What is a normalizing flow?</summary>
+<p>Take a look at the overview on normalizing flows available <a href="../../nf/">here</a>.</p>
+</details>
+<p>Bayinx offers a variety of normalizing flow layers that can be used together in <code>bayinx.flows</code>, the simplest of which is the <a href="../../api/flows/#bayinx.flows.DiagAffine">diagonal affine layer</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayinx.flows</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiagAffine</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">post</span><span class="o">.</span><span class="n">configure</span><span class="p">([</span><span class="n">DiagAffine</span><span class="p">()])</span>
+</code></pre></div>
+<p>We can then fit the approximation:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">post</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Fitting Variational Approximation: 100%|████████████████████████████████████████████████████| 100000/100000 [00:00&lt;00:00, 205572.70it/s]
 </code></pre></div></p>
 <h2 id="generating-posterior-samples">Generating Posterior Samples<a class="headerlink" href="#generating-posterior-samples" title="Permanent link">&para;</a></h2>
 <p>Since we are given the variational approximation, new posterior samples can be generated as needed instead of needing to store a potentially large collection of draws:</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Generate posterior draws</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">beta_draws</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Generate posterior predictive draws for a new datapoint</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">new_x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">])</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">ppred_draws</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">predictive</span><span class="p">(</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">byd</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">new_x</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(()),</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="mi">10_000</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">)</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="c1"># Print posterior means</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior mean of &#39;beta&#39;: </span><span class="si">{</span><span class="n">beta_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior predictive mean of new datapoint: </span><span class="si">{</span><span class="n">ppred_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Generate posterior draws</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">beta_draws</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Generate posterior predictive draws for a new datapoint</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">new_x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">])</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="n">ppred_draws</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">predictive</span><span class="p">(</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="k">lambda</span> <span class="n">model</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Normal</span><span class="p">(</span><span class="n">new_x</span> <span class="o">@</span> <span class="n">model</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(()),</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="mi">10_000</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">)</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="c1"># Print posterior means</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior mean of &#39;beta&#39;: </span><span class="si">{</span><span class="n">beta_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Posterior predictive mean of new datapoint: </span><span class="si">{</span><span class="n">ppred_draws</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Posterior mean of &#39;beta&#39;: [6.0002875 6.9998145]
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Posterior predictive mean of new datapoint: 34.00600814819336
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Posterior mean of &#39;beta&#39;: [6.0002875 6.9998145]
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Posterior predictive mean of new datapoint: 34.00600814819336
 </code></pre></div></p>
 
 
