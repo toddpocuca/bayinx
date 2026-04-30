@@ -1,15 +1,10 @@
-from typing import Tuple
 
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 PI = 3.141592653589793
 
@@ -85,38 +80,31 @@ class LocPrecisionNormal(Parameterization):
     A loc-precision parameterization of the normal distribution.
     """
 
-    loc: Node[Array]
-    prec: Node[Array]
+    loc: Array
+    prec: Array
 
     def __init__(
         self,
-        loc: ArrayObject,
-        prec: ArrayObject
+        loc: ArrayLike,
+        prec: ArrayLike
     ):
-        # Initialize loc parameter
-        if isinstance(loc, Node):
-            if isinstance(loc._byx__obj, ArrayLike):
-                self.loc = loc # type: ignore
-        else:
-            self.loc = Observed(jnp.asarray(loc))
+        # Initialize parameters
+        for name, val in [("loc", loc), ("prec", prec)]:
+            # Cast to array
+            val = jnp.asarray(val)
 
-        # Initialize precision parameter
-        if isinstance(prec, Node):
-            if isinstance(prec._byx__obj, ArrayLike):
-                self.prec = prec # type: ignore
-        else:
-            self.prec = Observed(jnp.asarray(prec))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        loc = byo.obj(self.loc)
-        prec = byo.obj(self.prec)
+        loc = self.loc
+        prec = self.prec
 
         return _logprob(x, loc, prec)
 
-    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
+    def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        loc = byo.obj(self.loc)
-        prec = byo.obj(self.prec)
+        loc = self.loc
+        prec = self.prec
 
         return jr.normal(key, shape) / jnp.sqrt(prec) + loc

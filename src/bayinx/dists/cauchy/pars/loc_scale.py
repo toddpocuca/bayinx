@@ -2,11 +2,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 PI = 3.141592653589793
 
@@ -75,34 +71,30 @@ class LocationScaleCauchy(Parameterization):
     A location-scale parameterization of the Cauchy distribution.
     """
 
-    loc: Node[Array]
-    scale: Node[Array]
+    loc: Array
+    scale: Array
 
     def __init__(
         self,
-        loc: ArrayObject,
-        scale: ArrayObject
+        loc: ArrayLike,
+        scale: ArrayLike
     ):
         for name, val in [("loc", loc), ("scale", scale)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        loc = byo.obj(self.loc)
-        scale = byo.obj(self.scale)
+        loc = self.loc
+        scale = self.scale
 
         return _logprob(x, loc, scale)
 
     def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        loc = byo.obj(self.loc)
-        scale = byo.obj(self.scale)
+        loc = self.loc
+        scale = self.scale
 
         return jr.cauchy(key, shape) * scale + loc

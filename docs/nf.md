@@ -17,7 +17,7 @@ $$
 \end{aligned}
 $$
 
-where since we have reparameterized a fixed base distribution $Q_0$ through a deterministic and differentiable mapping, the reparameterized gradient estimator can be used.
+where since we have reparameterized a fixed base distribution $Q_0$ through a deterministic and differentiable mapping, the reparameterized gradient or stick-the-landing estimator can be used.
 
 To keep this computationally efficient, Bayinx uses flows with triangular Jacobians.
 This means the determinant used when evaluating the variational density can be simplified to the product of $D$ diagonal elements,
@@ -27,15 +27,3 @@ ensuring that even models with thousands of parameters remain fast.
 
 Since the default base distribution in Bayinx is a standard Student's T distribution (with learnable degrees of freedom), affine transformations will likely work for most models.
 However, Bayinx also offers nonlinear flows to account for more complex posterior distributions.
-
-### Affine Flows
-
-* [Diagonal Affine](api/flows.md/#bayinx.flows.DiagAffine): Equivalent to [mean-field ADVI](https://mc-stan.org/docs/cmdstan-guide/variational_config.html) with a standard normal base distribution.
-It scales and shifts each parameter independently, meaning it is cheap to compute but underestimates dispersion in the posterior when correlations are present.
-* [Full Affine](api/flows.md/#bayinx.flows.FullAffine): Equivalent to [full-rank ADVI](https://mc-stan.org/docs/cmdstan-guide/variational_config.html) with a standard normal base distribution.
-It improves the diagonal affine flow by using a lower-triangular matrix to capture every possible correlation between parameters, meaning it is highly expressive for Gaussian-like shapes, but memory-intensive.
-* [Low-rank Affine](api/flows.md/#bayinx.flows.LowRankAffine): A middle ground that captures major correlations using a low-rank update, making it suitable for high-dimensional models where `FullAffine` would not fit in memory.
-
-### Non-Linear Flows
-
-If your posterior isn't just a "tilted ellipse" and has complex non-linear dependencies, stacking a series of [Sylvester flows]() will work for basically all cases.

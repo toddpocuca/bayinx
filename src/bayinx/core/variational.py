@@ -141,7 +141,7 @@ class Variational[M: Model](eqx.Module):
         # Partition variational
         dyn, static = eqx.partition(self, self.filter_spec)
 
-        # Construct schedulers
+        # Construct scheduler
         lr_schedule: Callable = opx.warmup_cosine_decay_schedule(
             jnp.finfo(jnp.array(0.0)).eps.item(),
             learning_rate,
@@ -152,9 +152,9 @@ class Variational[M: Model](eqx.Module):
 
         # Initialize optimizer
         optim: GradientTransformation = opx.chain(
-            opx.zero_nans(), # hmm
+            opx.zero_nans(),
             opx.adamax(lr_schedule),
-            opx.ema(decay=0.999),
+            opx.ema(0.99),
             opx.scale(-1.0)
         )
         opt_state: OptState = optim.init(dyn)
@@ -195,7 +195,7 @@ class Variational[M: Model](eqx.Module):
 
             # Transform update through optimizer
             update, opt_state = optim.update( # type: ignore
-                update, opt_state, dyn
+                update, opt_state, dyn # type: ignore
             )
 
             # Update variational distribution

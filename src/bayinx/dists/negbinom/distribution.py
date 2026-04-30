@@ -1,7 +1,7 @@
-from typing import Optional
+
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 
 from .pars import MeanInvOverdispNegBinom
 
@@ -19,8 +19,8 @@ class NegBinom(Distribution):
 
     def __init__(
         self,
-        mu: Optional[ArrayObject] = None,
-        theta: Optional[ArrayObject] = None,
+        mu: None | ArrayLike = None,
+        theta: None | ArrayLike = None,
     ):
         if mu is not None and theta is not None:
             self.par = MeanInvOverdispNegBinom(mu, theta)

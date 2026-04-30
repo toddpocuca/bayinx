@@ -5,11 +5,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, PRNGKeyArray
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 
 def _prob(
@@ -93,30 +89,26 @@ class LogitProbSuccessBernoulli(Parameterization):
     A logit probability-of-success parameterization of the Bernoulli distribution.
     """
 
-    logit_p: Node[Array]
+    logit_p: Array
 
     def __init__(
         self,
-        logit_p: ArrayObject,
+        logit_p: ArrayLike,
     ):
         for name, val in [("logit_p", logit_p)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Array:
         # Extract logit probability of success
-        logit_p = byo.obj(self.logit_p)
+        logit_p = self.logit_p
 
         return _logprob(x, logit_p)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray) -> Array:
         # Extract probability of success
-        p = jnn.sigmoid(byo.obj(self.logit_p))
+        p = jnn.sigmoid(self.logit_p)
 
         return jr.bernoulli(key, p, shape)

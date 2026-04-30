@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING, Any, Optional
-
-import jax.tree as jt
-from jaxtyping import PyTree
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from bayinx.core.node import Node
+    pass
 
 def _extract_shape_params(shape_spec: int | str | tuple[int | str, ...]) -> set[str]:
     """
@@ -61,50 +58,3 @@ def _resolve_shape_spec(
             raise TypeError(f"Shape parameter {dim} was incorrectly specified (must be 'int' or 'str', got '{type(dim).__name__}').")
 
     return tuple(resolved_spec)
-
-def _extract_obj[T: PyTree](x: "Node[T]" | T) -> tuple[T, PyTree]:
-    """
-    Extract an object and its (potentially implicit) filter specification.
-    """
-    from bayinx.core.node import Node
-
-    if isinstance(x, Node):
-        obj = x._byx__obj
-        filter_spec = x._byx__filter_spec
-    else:
-        obj: Any = x
-        filter_spec = True # implicit filter specification
-
-    return (obj, filter_spec)
-
-
-def _merge_filter_specs(
-    filter_specs: list[PyTree],
-    objs: Optional[list[PyTree]] = None,
-    obj: Optional[PyTree] = None
-) -> PyTree:
-    """
-    Merge filter specifications that share the type of `obj`.
-
-    If `obj` and `objs` are not provided then `filter_specs` will be merged as is.
-    """
-
-    def _merge(*args):
-        return all(args)
-
-    if objs is None and obj is None:
-        filter_spec: Any = jt.map(_merge, *filter_specs)
-    else:
-        selected_specs: list[PyTree] = []
-
-        # Include filter specs whose objects share the correct type
-        for cur_obj, cur_spec in zip(objs, filter_specs): # type: ignore
-            if type(obj) is type(cur_obj):
-                selected_specs.append(cur_spec)
-
-        if len(selected_specs) != 0:
-            filter_spec = jt.map(_merge, *selected_specs)
-        else:
-            filter_spec = True
-
-    return filter_spec

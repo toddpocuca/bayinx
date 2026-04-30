@@ -1,15 +1,10 @@
-from typing import Tuple
 
 import jax.numpy as jnp
 import jax.random as jr
 from jax.scipy.stats import norm
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 PI = 3.141592653589793
 
@@ -104,38 +99,31 @@ class LocVarNormal(Parameterization):
     A loc-variance parameterization of the normal distribution.
     """
 
-    loc: Node[Array]
-    var: Node[Array]
+    loc: Array
+    var: Array
 
     def __init__(
         self,
-        loc: ArrayObject,
-        var: ArrayObject
+        loc: ArrayLike,
+        var: ArrayLike
     ):
         # Initialize loc parameter
-        if isinstance(loc, Node):
-            if isinstance(loc._byx__obj, ArrayLike):
-                self.loc: Node[ArrayLike] = loc
-        else:
-            self.loc = Observed(jnp.asarray(loc))
+        for name, val in [("loc", loc), ("var", var)]:
+            # Cast to array
+            val = jnp.asarray(val)
 
-        # Initialize scale parameter
-        if isinstance(var, Node):
-            if isinstance(var._byx__obj, ArrayLike):
-                self.var: Node[ArrayLike] = var
-        else:
-            self.var = Observed(jnp.asarray(var))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        loc = byo.obj(self.loc)
-        var = byo.obj(self.var)
+        loc = self.loc
+        var = self.var
 
         return _logprob(x, loc, var)
 
-    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
+    def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        loc = byo.obj(self.loc)
-        var = byo.obj(self.var)
+        loc = self.loc
+        var = self.var
 
         return jr.normal(key, shape) * jnp.sqrt(var) + loc

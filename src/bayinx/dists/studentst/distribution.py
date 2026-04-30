@@ -1,8 +1,7 @@
 
-from jaxtyping import Array, ArrayLike, Real
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.node import Node
 
 from .pars import LocScaleStudentsT
 
@@ -22,8 +21,8 @@ class StudentsT(Distribution):
 
     def __init__(
         self,
-        df: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        loc: Real[ArrayLike, "..."] | Node[Real[Array, "..."]],
-        scale: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        df: ArrayLike,
+        loc: ArrayLike,
+        scale: ArrayLike
     ):
         self.par = LocScaleStudentsT(loc, scale, df)

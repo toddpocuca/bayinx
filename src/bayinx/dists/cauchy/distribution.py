@@ -1,7 +1,6 @@
-
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 
 from .pars import LocationScaleCauchy
 
@@ -16,8 +15,8 @@ class Cauchy(Distribution):
 
     def __init__(
         self,
-        loc: ArrayObject,
-        scale: ArrayObject
+        loc: ArrayLike,
+        scale: ArrayLike
     ):
         """
         Construct a Cauchy distribution by selecting a parameterization.

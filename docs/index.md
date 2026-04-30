@@ -43,32 +43,23 @@ Models are defined by writing a class that inherits from the `Model` base class.
 For example, we can define a simple model that describes a collection of observations derived from a Normal distribution:
 
 ```py
+import jax.random as jr
+
 from bayinx.dists import Normal, Exponential
-from bayinx.nodes import Continuous, Observed
-from bayinx import Model, define
-from jaxtyping import Array
+from bayinx import Model, observed, stochastic
+from jaxtyping import Scalar, Array
 
 class SimpleNormalModel(Model):
-    mu: Continuous = define(shape = ())
-    std: Continuous[Array] = define(shape = (), lower = 0) # nodes support type hinting
+    mu: Scalar = stochastic(shape = ())
+    std: Array = stochastic(shape = (), lower = 0)
 
-    x: Observed[Array] = define(shape = 'n_obs')
+    x: Array = observed(shape = 'n_obs')
 
     def model(self, target):
         # Accumulate likelihood
         self.x << Normal(self.mu, self.std)
-```
 
-Parameters are attributes annotated with the `Continuous` class while any data is annotated with `Observed`, where both are thin wrappers around an internal type that can be type hinted (e.g., `Continuous[T]` or `Observed[T]`).
-You can then define additional metadata for a node with the `define` function, for example by assigning shapes `define(shape = ...)` and bounds `define(lower = ..., upper = ...)`.
-
-## Fitting Models With Bayinx
-Bayinx uses variational inference with [normalizing flows](nf.md) (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
-We'll simulate some data for demonstration:
-
-```py
-import jax.random as jr
-
+# Simulate fake data
 n_obs = 30
 true_mu = 10.0
 true_std = 3.0
@@ -76,6 +67,13 @@ true_std = 3.0
 # Simulate data
 x_data = jr.normal(jr.key(0), (n_obs, )) * true_std + true_mu
 ```
+
+Parameters are attributes with the `stochastic` descriptor, while any data is marked with the `observed` descriptor.
+Additional metadata for an attribute is passed as arguments to these descriptors, for example by assigning shapes `define(shape = ...)` or a constraint `define(lower = ..., upper = ...)`.
+
+## Fitting Models With Bayinx
+Bayinx uses variational inference with [normalizing flows](nf.md) (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
+We'll simulate some data for demonstration:
 
 The approximation to the posterior can then be created with the `Posterior` class and optimized later:
 
@@ -103,6 +101,6 @@ print(f"Analytic Posterior Mean for 'mu': {x_data.mean():.4f}")
 print(f"Posterior Mean Estimate for 'mu': {mu_draws.mean():.4f} ± {mu_draws.std() / 5e6**0.5:.4f}")
 ```
 ```
-Analytic Posterior Mean for 'mu': 10.5465
-Posterior Mean Estimate for 'mu': 10.5467 ± 0.0005
+Analytic Posterior Mean for 'mu': 10.6796
+Posterior Mean Estimate for 'mu': 10.6792 ± 0.0003
 ```

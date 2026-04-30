@@ -1,21 +1,17 @@
-from typing import Tuple
 
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
-from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.nodes import Observed
 
 
 def _prob(
-    x: Integer[ArrayLike, "..."],
-    log_rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    log_rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
@@ -23,9 +19,9 @@ def _prob(
 
 
 def _logprob(
-    x: Integer[ArrayLike, "..."],
-    log_rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    log_rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
@@ -33,9 +29,9 @@ def _logprob(
 
 
 def _cdf(
-    x: Integer[ArrayLike, "..."],
-    log_rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    log_rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
@@ -46,9 +42,9 @@ def _cdf(
 
 
 def _logcdf(
-    x: Integer[ArrayLike, "..."],
-    log_rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    log_rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
@@ -56,9 +52,9 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Integer[ArrayLike, "..."],
-    log_rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    log_rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
@@ -69,9 +65,9 @@ def _ccdf(
 
 
 def logccdf(
-    x: Integer[ArrayLike, "..."],
-    log_rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    log_rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, log_rate = jnp.asarray(x), jnp.asarray(log_rate)
 
@@ -86,28 +82,28 @@ class LogRatePoisson(Parameterization):
     - `log_rate`: The log of the rate parameter.
     """
 
-    log_rate: Node[Real[Array, "..."]]
+    log_rate: Array
 
     def __init__(
         self,
-        log_rate: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        log_rate: ArrayLike
     ):
-        # Initialize log_rate parameter
-        if isinstance(log_rate, Node):
-            if isinstance(log_rate._byx__obj, ArrayLike):
-                self.log_rate = log_rate # type: ignore
-        else:
-            self.log_rate = Observed(jnp.asarray(log_rate))
+        # Initialize parameters
+        for name, val in [("log_rate", log_rate)]:
+            # Cast to array
+            val = jnp.asarray(val)
+
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameter
-        log_rate = byo.obj(self.log_rate)
+        log_rate = self.log_rate
 
         return _logprob(x, log_rate)
 
-    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
+    def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameter
-        log_rate = byo.obj(self.log_rate)
+        log_rate = self.log_rate
 
         # Transform to rate
         rate = jnp.exp(log_rate)

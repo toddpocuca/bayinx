@@ -1,7 +1,6 @@
-from typing import Optional
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 
 from .pars import LocScaleLogNormal
 
@@ -13,16 +12,14 @@ class LogNormal(Distribution):
     Parameters:
         loc: Parameterizes a Log-Normal distribution by its location (mean of log X).
         scale: Parameterizes a Log-Normal distribution by its scale (standard-deviation of log X).
-        var: Parameterizes a Log-Normal distribution by its variance (variance of log X).
-        prec: Parameterizes a Log-Normal distribution by its precision (precision of log X).
     """
 
     par: Parameterization
 
     def __init__(
         self,
-        loc: Optional[ArrayObject] = None,
-        scale: Optional[ArrayObject] = None
+        loc: None | ArrayLike = None,
+        scale: None | ArrayLike = None
     ):
         if loc is not None and scale is not None:
             self.par = LocScaleLogNormal(loc, scale)

@@ -4,18 +4,15 @@ import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
-from jaxtyping import Array, ArrayLike, Integer, PRNGKeyArray, Real, Scalar
+from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.nodes import Observed
 
 
 def _prob(
-    x: Integer[ArrayLike, "..."],
-    rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
@@ -23,9 +20,9 @@ def _prob(
 
 
 def _logprob(
-    x: Integer[ArrayLike, "..."],
-    rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
@@ -33,9 +30,9 @@ def _logprob(
 
 
 def _cdf(
-    x: Integer[ArrayLike, "..."],
-    rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
@@ -46,9 +43,9 @@ def _cdf(
 
 
 def _logcdf(
-    x: Integer[ArrayLike, "..."],
-    rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
@@ -56,9 +53,9 @@ def _logcdf(
 
 
 def _ccdf(
-    x: Integer[ArrayLike, "..."],
-    rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
@@ -69,9 +66,9 @@ def _ccdf(
 
 
 def logccdf(
-    x: Integer[ArrayLike, "..."],
-    rate: Real[ArrayLike, "..."],
-) -> Real[Array, "..."]:
+    x: ArrayLike,
+    rate: ArrayLike,
+) -> Array:
     # Cast to Array
     x, rate = jnp.asarray(x), jnp.asarray(rate)
 
@@ -86,27 +83,27 @@ class RatePoisson(Parameterization):
     - `rate`: The rate parameter.
     """
 
-    rate: Node[Real[Array, "..."]]
+    rate: Array
 
     def __init__(
         self,
-        rate: Real[ArrayLike, "..."] | Node[Real[Array, "..."]]
+        rate: ArrayLike
     ):
-        # Initialize rate parameter
-        if isinstance(rate, Node):
-            if isinstance(rate._byx__obj, ArrayLike):
-                self.rate = rate # type: ignore
-        else:
-            self.rate = Observed(jnp.asarray(rate))
+        # Initialize parameters
+        for name, val in [("rate", rate)]:
+            # Cast to array
+            val = jnp.asarray(val)
+
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameter
-        rate = byo.obj(self.rate)
+        rate = self.rate
 
         return _logprob(x, rate)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
         # Extract parameter
-        rate = byo.obj(self.rate)
+        rate = self.rate
 
         return jr.poisson(key, rate, shape)

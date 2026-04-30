@@ -12,7 +12,7 @@ from bayinx.core.flow import FlowLayer, FlowSpec
 
 class AffineNeuralTransform(eqx.Module):
     """
-    A neural network that learns outputs the parameters of an affine transformation.
+    A neural network that outputs the parameters of an affine transformation.
 
     # Attributes
     - `nn`: The neural network.

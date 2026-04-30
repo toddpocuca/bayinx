@@ -1,15 +1,9 @@
-from typing import Tuple
-
 import jax.numpy as jnp
 import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 
 def _prob(
@@ -93,35 +87,31 @@ class MeanInvOverdispNegBinom(Parameterization):
     A mean-inverse overdispersion parameterization of the negative binomial distribution.
     """
 
-    mu: Node[Array]
-    theta: Node[Array]
+    mu: Array
+    theta: Array
 
     def __init__(
         self,
-        mu: ArrayObject,
-        theta: ArrayObject
+        mu: ArrayLike,
+        theta: ArrayLike
     ):
         for name, val in [("mu", mu), ("theta", theta)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        mu = byo.obj(self.mu)
-        theta = byo.obj(self.theta)
+        mu = self.mu
+        theta = self.theta
 
         return _logprob(x, mu, theta)
 
-    def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
+    def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        mu = byo.obj(self.mu)
-        theta = byo.obj(self.theta)
+        mu = self.mu
+        theta = self.theta
 
         key1, key2 = jr.split(key)
         rate = jr.gamma(key1, theta, shape) * mu / theta

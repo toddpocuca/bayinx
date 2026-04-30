@@ -7,11 +7,7 @@ import jax.random as jr
 import jax.scipy.special as jssp
 from jaxtyping import Array, ArrayLike, Float, PRNGKeyArray, Real, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 
 def _prob(
@@ -100,34 +96,30 @@ class ScaleShapeGamma(Parameterization):
     - `scale`: The scale parameter (theta).
     """
 
-    shape: Node[Array]
-    scale: Node[Array]
+    shape: Array
+    scale: Array
 
     def __init__(
         self,
-        scale: ArrayObject,
-        shape: ArrayObject
+        scale: ArrayLike,
+        shape: ArrayLike
     ):
         for name, val in [("scale", scale), ("shape", shape)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        shape = byo.obj(self.shape)
-        scale = byo.obj(self.scale)
+        shape = self.shape
+        scale = self.scale
 
         return _logprob(x, shape, scale)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        shp = byo.obj(self.shape)
-        scale = byo.obj(self.scale)
+        shp = self.shape
+        scale = self.scale
 
         return jr.gamma(key, shp, shape=shape) * scale

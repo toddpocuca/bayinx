@@ -6,9 +6,6 @@ import jax.random as jr
 import jax.tree as jt
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, PyTree, Scalar
 
-from bayinx.core.node import Node
-from bayinx.core.utils import _extract_obj
-
 
 class Parameterization(Protocol):
     """
@@ -26,12 +23,12 @@ class Distribution(Protocol):
     """
     par: Parameterization
 
-    def eval[T: PyTree](self, node: Node[T] | T) -> Scalar:
+    def eval(self, obj: PyTree) -> Scalar:
         """
         Evaluate log-probability accumulation.
         """
         # Evaluate log-probability across object
-        obj = self.logprob(node)
+        obj = self.logprob(obj)
 
         # Compute log probabilities across leaves
         obj = jt.map(jnp.sum, obj)
@@ -41,18 +38,17 @@ class Distribution(Protocol):
 
         return jnp.asarray(total)
 
-    def logprob[T: PyTree](self, node: Node[T] | T) -> T:
+    def logprob[T: PyTree](self, obj: T) -> T:
         """
         Compute log-probabilities across a PyTree.
         """
-        obj, filter_spec = _extract_obj(node)
-        par = self.par
+        filter_spec = jt.map(eqx.is_array_like, obj)
 
         # Filter out irrelevant values
         obj, _ = eqx.partition(obj, filter_spec)
 
         # Compute log probabilities across leaves
-        obj = jt.map(lambda x: par.logprob(x), obj)
+        obj = jt.map(lambda x: self.par.logprob(x), obj)
 
         return obj
 
@@ -63,14 +59,14 @@ class Distribution(Protocol):
 
         return self.par.sample(shape, key)
 
-    def __rlshift__[T: PyTree](self, node: Node[T] | T):
+    def __rlshift__[T: PyTree](self, obj: T):
         """
         Implicitly accumulate the log probability into the current model context.
         """
         from bayinx.core.context import _model_context
 
         # Evaluate log posterior
-        log_prob = self.eval(node)
+        log_prob = self.eval(obj)
 
         # Accumulate log probability into context
         if hasattr(_model_context, "target"):

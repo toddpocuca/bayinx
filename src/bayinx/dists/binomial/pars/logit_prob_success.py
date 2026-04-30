@@ -6,11 +6,7 @@ import jax.random as jr
 import jax.scipy.special as jsp
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 
 def _log_binom_coeff(n: ArrayLike, x: ArrayLike) -> Array:
@@ -89,35 +85,31 @@ class LogitProbSuccessBinomial(Parameterization):
     A logit-of-probability-of-success parameterization of the Binomial distribution.
     """
 
-    n: Node[Array]
-    logit_p: Node[Array]
+    n: Array
+    logit_p: Array
 
     def __init__(
         self,
-        n: ArrayObject,
-        logit_p: ArrayObject
+        n: ArrayLike,
+        logit_p: ArrayLike
     ):
         for name, val in [("n", n), ("logit_p", logit_p)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        n = byo.obj(self.n)
-        logit_p = byo.obj(self.logit_p)
+        n = self.n
+        logit_p = self.logit_p
 
         return _logprob(x, n, logit_p)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        n = byo.obj(self.n)
-        logit_p = byo.obj(self.logit_p)
+        n = self.n
+        logit_p = self.logit_p
 
         # Transform to probability of success
         p = jnn.sigmoid(logit_p)

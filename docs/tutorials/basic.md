@@ -4,7 +4,7 @@ If you are new to probabilistic programming or want to quickly get up to speed w
 
 ## Starting From A Statistical Model
 
-Suppose we would like to specify a simple linear model, in model notation this would be:
+Suppose we would like to specify a simple linear model, we would write this out like so:
 
 $$
 \begin{aligned}
@@ -13,7 +13,7 @@ $$
 \end{aligned}
 $$
 
-where $y_i \in \mathbb{R}$ denotes our response variable, $\mathbf{x}_i^\top \in \mathbb{R}^p$ denotes our predictors structured as a vector, and $\mathbf{\beta} \in \mathbb{R}^p$ denotes the true parameters we wish to estimate.
+where $y_i \in \mathbb{R}$ denotes our response variable, $\mathbf{x}_i^\top \in \mathbb{R}^p$ denotes our predictors structured as a vector, and $\mathbf{\beta} \in \mathbb{R}^p$ denotes the parameters we wish to estimate.
 
 or put in another way:
 
@@ -26,113 +26,129 @@ But since these two formulations are equivalent, we will use the first.
 
 ## Translating to Bayinx
 
-In Bayinx, model definitions are Python classes inheriting from `bayinx.Model`, and just as we defined the objects we used above in our model equations, we similarly have to declare the objects we wish to use in our model:
+In Bayinx, model definitions are Python classes inheriting from `Model`, and just as we defined the model's logic and the objects used in said logic, we similarly have to declare both here:
 
 ```python
 import jax.numpy as jnp
+from jaxtyping import Array, Scalar
 
-import bayinx as byx
-import bayinx.dists as byd
-import bayinx.flows as byf
-import bayinx.nodes as byn
+from bayinx import Model, Posterior, observed, stochastic
+from bayinx.dists import Normal
 
 # Define model
-class LinearModel(byx.Model):
-    beta: byn.Continuous = byx.define(shape = 'n_pred')
-    sigma: byn.Continuous = byx.define(shape = (), lower = 0)
+class LinearModel(Model):
+    # The Objects Used By The Model
+    beta: Array = stochastic(shape = 'n_pred')
+    sigma: Scalar = stochastic(shape = (), lower = 0)
 
-    X: byn.Observed = byx.define(shape = ('n_obs', 'n_pred'))
-    y: byn.Observed = byx.define(shape = 'n_obs')
+    X: Array = observed(shape = ('n_obs', 'n_pred'))
+    y: Array = observed(shape = 'n_obs')
 
+    # The Model's Logic
     def model(self, target):
         # Compute expected value
         mu = self.X @ self.beta
 
         # Define likelihood
-        self.y << byd.Normal(mu, self.sigma)
+        self.y << Normal(mu, self.sigma)
 ```
 
-Notice the attributes of the class are used to define _model nodes_, which are all the objects available to the model and represent data or parameters.
-Model nodes have their type specified by their type annotations (e.g., `beta: byn.Continuous` specifies `beta` as a continuous parameter) and are further defined using `bayinx.define`, which is used to provide shapes, default values, or constraints the node must satisfy:
+Notice the class's attributes are marked with field specifiers that denote whether an object is treated as a parameter (`stochastic`) or data (`observed`).
+These specifiers do not *require* any arguments, but Bayinx offers some for user convenience:
 
 ### Shape Specification
-The `shape` argument of `define` accepts a string, integer, or a tuple of strings and integers representing the shape of an array.
-Depending on the type of the node it does two things:
+The `shape` argument of `stochastic`/`observed` accepts a string, integer, or a tuple of strings and integers representing the shape of an array.
+Depending on the type of the object it does two things:
 
-- if the node is stochastic (e.g., `Continuous` inherits from `Stochastic`, so it is stochastic and represents a parameter), then an array is automatically constructed with the correct shape based on the shapes passed during posterior initialization (elaborated on later).
-- if the node is passed explicitly during posterior initialization, the shape of the argument is checked against the shape specification.
-If the two disagree, an error will be thrown.
+- if the attribute is passed explicitly either through a [default initialization](../tutorials/basic.md#default-initialization) or during [posterior initialization](../tutorials/basic.md#fitting-a-model) (elaborated on below), the shape of the argument is checked against the shape specification. If the two disagree, an error will be thrown.
+- if the attribute is `stochastic` and no object was passed explicitly, then an array is automatically constructed with the correct shape based on the shapes passed during posterior initialization.
 
-This avoids some boilerplate for many models that involve parameters defined as arrays, and peace of mind knowing that all model nodes have the correct shape.
+This avoids boilerplate for many models that involve parameters defined as arrays, and peace of mind knowing that all arrays have the correct shape.
 
 However, note that you do not NEED to specify the shape parameter!
-It is always fine to leave the `shape` argument for an `Observed` node blank, and as long as you specify the structure for a stochastic either with `init` or during posterior initialization, the same is true for any `Stochastic` node.
+It is always fine to leave the `shape` argument for an `observed` attribute blank, and as long as you specify the structure for a stochastic either with `init` (elaborated below) or during posterior initialization (elaborated further below), the same is true for a `stochastic` attribute.
 
 ### Default Initialization
-The `init` argument of `define` is used to specify the default structure of a stochastic node at "definition"-time (when you're writing your model), or the default values for an observed node.
-For example, if I would like a model node to fallback to a list of arrays, that can be done like so:
+The `init` argument of `stochastic`/`observed` is used to specify the default _structure_ of a stochastic attribute at "definition"-time (when you're writing your model), or the default _values_ for an observed attribute (note the distinction between _structure_ and _value_).
+For example, if I would like a  to fallback to a list of arrays, that can be done like so:
 
 ```python
-import jax.numpy as jnp
-
 class ExampleModel(byx.Model):
-    node_1: byn.Continuous = byx.define(init = [jnp.ones(2), jnp.ones(3)])
-    node_2: byn.Observed = byx.define(init = [jnp.ones(2), jnp.ones((2, 2))])
+    obj_1: list[Array] = stochastic(init = [jnp.ones(2), jnp.ones(3)])
+    obj_2: list[Array] = observed(init = [jnp.ones(2), jnp.ones((2, 2))])
 
     # ...
 ```
 
-Here, `init` specifies that `node_1` looks like `[Array([#, #]), Array([#, #, #])]` since it is `Continuous` (note that the values given are _placeholders_, they are just used to get the correct structure).
-For `node_2` however, `init` specifies that it is exactly `[Array([1., 1.]), Array([1., 1., 1.])]` as it is `Observed`!
+Here, `init` specifies that `obj_1` looks like `[Array([#, #]), Array([#, #, #])]` since it is `stochastic` (note that the values given are _placeholders_, they are just used to get the correct structure).
+For `obj_2` however, `init` specifies that it is exactly `[Array([1., 1.]), Array([1., 1., 1.])]` as it is `observed`!
 
 These rules apply to initialization when constructing the posterior as well, for example, if we would like to override the default we can write:
 
 ```python
-post = byx.Posterior(
+post = Posterior(
     ExampleModel,
-    node_1 = [jnp.ones(6), jnp.ones(7)] # new structure
+    obj_1 = [jnp.ones(6), jnp.ones(7)] # override structure
 )
 ```
 
 ### Constraints
 Sometimes we would like to restrict a parameter to a certain subset of its domain, or ensure the data we've inputted satisfies certain conditions.
-The last arguments of `define` are used to specify these constraints.
-For example, a Bernoulli distribution involves a single parameter `p` that denotes the probabiliy of success, if we were to define a model for this, we could write:
+The last arguments of `stochastic`/`observed` are used to specify these constraints.
+For example, a Bernoulli distribution typically involves a single parameter `p` that denotes the probabiliy of success, if we were to define a model for this, we could write:
 
 ```python
 class BernoulliModel(byx.Model):
-    p: Continuous = byx.define((), lower = 0, upper = 1)
-    x: Observed = byx.define()
+    p: Scalar = stochastic((), lower = 0, upper = 1)
+    x: Array = observed()
 
     def model(self, target):
         self.x << byd.Bernoulli(self.p)
 ```
 
+The bounds `lower` and `upper` are passed as arguments of `stochastic` and ensures that the posterior distribution for `p` is on the relevant domain.
+Similarly we could add a constraint to `x`, as we know for a Bernoulli-distributed random variable it must lie between 0 and 1 (more specifically, it must be *either* 0 or 1).
 
 ## Fitting a Model
 
 Once the model is defined we can proceed with fitting an approximation to the posterior distribution.
-To initialize the posterior approximation, we pass all the necessary arguments to the `bayinx.Posterior` class constructor including all observed nodes, any shapes used in `define` statements, and lastly any stochastic nodes whose structure was not specified using `shape` or `init`.
-The architecture of the normalizing flow is specified with the `.configure` method of `Posterior` using the flows offered in the `bayinx.flows` module.
-The approximation can then optimized using the `.fit` method.
-Continuing with the `LinearModel` example, a full affine flow can be used to accurately approximate the posterior:
+To initialize the posterior approximation, we pass all the necessary arguments to the `Posterior` class constructor including all observed data (if they do not have defaults), any shapes used, and lastly any `stochastic` attributes whose structure was not specified using `shape` or `init`.
+
+Continuing with the `LinearModel` example from above, we construct `Posterior[LinearModel]` like so:
 
 ```python
 # Initialize posterior approximation
-post = byx.Posterior(
+post: Posterior[LinearModel] = Posterior(
     LinearModel,
     n_pred = 2,
     n_obs = 4,
     X = jnp.array([[1., 0.], [1., 1.], [1., 2.], [1., 3.]]),
     y = jnp.array([6.0, 13., 20., 27.])
 )
+```
 
-# Configure and optimize posterior
-post.configure([byf.FullAffine()]) # equivalent to full-rank ADVI
+Currently this approximation does not reflect the actual posterior (it is initialized with default parameters for the underlying variational distribution), but we can now configure and then fit it to get a useful variational approximation:
+
+### Configuring and Fitting the Normalizing Flow Architecture
+
+??? info "Confused: What is a normalizing flow?"
+    Take a look at the overview on normalizing flows available [here](../nf.md).
+
+Bayinx offers a variety of normalizing flow layers that can be used together in `bayinx.flows`, the simplest of which is the [diagonal affine layer](../api/flows.md#bayinx.flows.DiagAffine):
+
+```py
+from bayinx.flows import DiagAffine
+
+post.configure([DiagAffine()])
+```
+
+We can then fit the approximation:
+
+```py
 post.fit()
 ```
 ```
-Fitting Variational Approximation: 100%|███████████████| 100000/100000 [00:00<00:00, 167666.26it/s]
+Fitting Variational Approximation: 100%|████████████████████████████████████████████████████| 100000/100000 [00:00<00:00, 205572.70it/s]
 ```
 
 ## Generating Posterior Samples
@@ -146,7 +162,7 @@ beta_draws = post.sample('beta', 10_000)
 # Generate posterior predictive draws for a new datapoint
 new_x = jnp.array([1., 4.])
 ppred_draws = post.predictive(
-    lambda model, key: byd.Normal(new_x @ model.beta, model.sigma).sample(()),
+    lambda model, key: Normal(new_x @ model.beta, model.sigma).sample(()),
     10_000
 )
 

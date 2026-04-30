@@ -1,7 +1,7 @@
-from typing import Optional
+
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 
 from .pars import (
     LogitProbFailureBernoulli,
@@ -21,10 +21,10 @@ class Bernoulli(Distribution):
 
     def __init__(
         self,
-        p: Optional[ArrayObject] = None,
-        q: Optional[ArrayObject] = None,
-        logit_p: Optional[ArrayObject] = None,
-        logit_q: Optional[ArrayObject] = None
+        p: None | ArrayLike = None,
+        q: None | ArrayLike = None,
+        logit_p: None | ArrayLike = None,
+        logit_q: None | ArrayLike = None
     ):
         """
         Construct a Bernoulli distribution by selecting a parameterization.

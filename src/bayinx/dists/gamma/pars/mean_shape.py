@@ -4,11 +4,7 @@ import jax.random as jr
 import jax.scipy.special as jssp
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 
 def _prob(
@@ -104,34 +100,30 @@ class MeanShapeGamma(Parameterization):
     - `shape`: The shape parameter.
     """
 
-    mean: Node[Array]
-    shape: Node[Array]
+    mean: Array
+    shape: Array
 
     def __init__(
         self,
-        mean: ArrayObject,
-        shape: ArrayObject,
+        mean: ArrayLike,
+        shape: ArrayLike,
     ):
         for name, val in [("mean", mean), ("shape", shape)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract parameters
-        mean = byo.obj(self.mean)
-        shape = byo.obj(self.shape)
+        mean = self.mean
+        shape = self.shape
 
         return _logprob(x, mean, shape)
 
     def sample(self, shape: tuple[int, ...], key: PRNGKeyArray):
         # Extract parameters
-        mean = byo.obj(self.mean)
-        shp = byo.obj(self.shape)
+        mean = self.mean
+        shp = self.shape
 
         return jr.gamma(key, shp, shape=shape) * (mean / shp)

@@ -155,17 +155,16 @@ Instead of storing all my data into a single array, I'm going to structure my co
 ```py
 import bayinx as byx
 import bayinx.dists as byd
-import bayinx.nodes as byn
 
 from jaxtyping import Scalar, Array
 
 # Define my original model with complete pooling
 class BinomialCompletePooling(byx.Model):
-    alpha: byn.Continuous[Scalar] = byx.define(())
-    beta: byn.Continuous[Scalar] = byx.define(())
+    alpha: Scalar = byx.stochastic(())
+    beta: Scalar = byx.stochastic(())
 
-    counts: byn.Observed[Array] = byx.define(('n_beakers', 'n_timepoints'), lower = 0)
-    time: byn.Observed[Array] = byx.define('n_timepoints', lower = 0, upper = 20)
+    counts: Array = byx.observed(('n_beakers', 'n_timepoints'), lower = 0)
+    time: Array = byx.observed('n_timepoints', lower = 0, upper = 20)
 
     def model(self, target):
         # Priors
@@ -180,11 +179,11 @@ Then we can fit our model and recreate the same plot from before:
 
 ```py
 import plotnine as gg
+import jax.nn as jnn
 import jax.numpy as jnp
 import numpy as np
 
 import bayinx.flows as byf
-import bayinx.ops as byo
 
 # Construct and fit posterior approximation
 post = byx.Posterior(
@@ -195,12 +194,12 @@ post = byx.Posterior(
     time = data.get_column('time').to_jax()
 )
 post.configure([byf.FullAffine()])
-post.fit()
+post.fit(stl = True)
 
 # Compute posterior predictives
 time = jnp.linspace(0, 20, 200)
 pred_mean = post.predictive(
-    lambda model, key: byo.sigmoid(model.alpha + model.beta * time) * 10,
+    lambda model, key: jnn.sigmoid(model.alpha + model.beta * time) * 10,
     int(2e4)
 )
 pred_new = post.predictive(

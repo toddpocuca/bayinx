@@ -1,7 +1,7 @@
-from typing import Optional
+
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 from bayinx.dists.gamma.pars import MeanShapeGamma, RateShapeGamma, ScaleShapeGamma
 
 
@@ -21,10 +21,10 @@ class Gamma(Distribution):
 
     def __init__(
         self,
-        rate: Optional[ArrayObject] = None,
-        shape: Optional[ArrayObject] = None,
-        scale: Optional[ArrayObject] = None,
-        mean: Optional[ArrayObject] = None
+        rate: None | ArrayLike = None,
+        shape: None | ArrayLike = None,
+        scale: None | ArrayLike = None,
+        mean: None | ArrayLike = None
     ):
         if rate is not None and shape is not None:
             self.par = RateShapeGamma(rate, shape)

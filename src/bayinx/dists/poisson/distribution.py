@@ -1,9 +1,7 @@
-from typing import Optional
 
-from jaxtyping import Array, ArrayLike, Real
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.node import Node
 
 from .pars import LogRatePoisson, RatePoisson
 
@@ -22,8 +20,8 @@ class Poisson(Distribution):
 
     def __init__(
         self,
-        rate: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None,
-        log_rate: Optional[Real[ArrayLike, "..."] | Node[Real[Array, "..."]]] = None
+        rate: None | ArrayLike = None,
+        log_rate: None | ArrayLike = None
     ):
         if rate is not None:
             self.par = RatePoisson(rate)

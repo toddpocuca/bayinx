@@ -10,10 +10,8 @@ import numpy as np
 from jaxtyping import Array, PRNGKeyArray, PyTree, Scalar
 from scipy.stats import genpareto
 
-import bayinx.ops as byo
 from bayinx.core.flow import FlowSpec
 from bayinx.core.model import Model
-from bayinx.core.node import Node
 from bayinx.vi.normalizing_flow import NormalizingFlow
 from bayinx.vi.stdstudentst import StandardStudentsT
 
@@ -45,7 +43,7 @@ class Posterior[M: Model]():
         base = StandardStudentsT(model)
 
         # Construct default normalizing flow
-        self.vari = NormalizingFlow(
+        self.vari = NormalizingFlow( # type: ignore
             base = base,
             flows = [],
             model = model
@@ -88,7 +86,7 @@ class Posterior[M: Model]():
         tolerance: None | float = None,
         grad_draws: int = 1,
         batch_size: int = 1,
-        stl = False,
+        stl: bool = True,
         key: PRNGKeyArray = jr.key(0),
         verbose: bool = True,
         print_rate: int = 5000
@@ -109,7 +107,7 @@ class Posterior[M: Model]():
         """
         # Include settings
         if learning_rate is None:
-            learning_rate = 1.0 / self.vari.n_pars**0.5
+            learning_rate = 0.1 / self.vari.n_pars**0.5
 
         # Optimize variational approximation with user-specified flows
         self.vari = self.vari.fit(
@@ -126,7 +124,7 @@ class Posterior[M: Model]():
 
     def __reg_sample(
         self,
-        func: Callable[[M, PRNGKeyArray], Node[PyTree[Array]] | PyTree[Array]],
+        func: Callable[[M, PRNGKeyArray], PyTree[Array]],
         n_draws: int,
         batch_size: int,
         key: PRNGKeyArray
@@ -136,69 +134,12 @@ class Posterior[M: Model]():
         # Split keys
         per_batch_keys = jr.split(key, n_draws // batch_size)
 
-        def safe_obj(x: Any) -> Any:
-            return byo.obj(x) if isinstance(x, Node) else x
-
         @partial(jax.vmap, in_axes = (0, 0))
         def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> PyTree[Array]:
             model = vari.reconstruct_model(draw).constrain()[0]
 
             # Evaluate callable
             obj = func(model, key)
-
-            # Coerce from Node if needed
-            obj = jt.map(safe_obj, obj, is_leaf = lambda x: isinstance(x, Node))
-
-            return obj
-
-        # Sample in batches
-        def batched_sample(per_batch_key: PRNGKeyArray) -> PyTree[Array]:
-            # Sample draws
-            draws = vari.sample(batch_size, key = per_batch_key)
-
-            # Generate keys for each draw
-            within_batch_keys = jr.split(per_batch_key, batch_size)
-
-            return reconstruct_and_query(draws, within_batch_keys)
-
-        # Generate samples of the posterior/posterior predictive
-        post_draws: PyTree[Array] = lax.map(
-            batched_sample,
-            per_batch_keys
-        )
-
-        # Reshape to remove batch axis
-        post_draws = jt.map(lambda x: x.reshape(-1, *x.shape[2:]), post_draws, is_leaf = lambda x: isinstance(x, Array))
-
-        return post_draws
-
-    def __reg_sample2(
-        self,
-        func: Callable[[M, PRNGKeyArray], Node[PyTree[Array]] | PyTree[Array]],
-        n_draws: int,
-        batch_size: int,
-        key: PRNGKeyArray
-    ) -> Array:
-        vari = self.vari
-
-        # Split key for sampling & resampling
-        s_key, rs_key = jr.split(key)
-
-        # Split keys across batches
-        per_batch_keys = jr.split(s_key, n_draws // batch_size)
-
-        def safe_obj(x: Any) -> Any:
-            return byo.obj(x) if isinstance(x, Node) else x
-
-        @partial(jax.vmap, in_axes = (0, 0))
-        def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> PyTree[Array]:
-            model = vari.reconstruct_model(draw).constrain()[0]
-
-            # Evaluate callable
-            obj = func(model, key)
-
-            # Coerce from Node if needed
-            obj = jt.map(safe_obj, obj, is_leaf = lambda x: isinstance(x, Node))
 
             return obj
 
@@ -225,7 +166,7 @@ class Posterior[M: Model]():
 
     def __sir_sample(
         self,
-        func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
+        func: Callable[[M, PRNGKeyArray], Array],
         n_draws: int,
         batch_size: int,
         key: PRNGKeyArray
@@ -238,18 +179,12 @@ class Posterior[M: Model]():
         # Split keys across batches
         per_batch_keys = jr.split(s_key, n_draws // batch_size)
 
-        def safe_obj(x: Any) -> Any:
-            return byo.obj(x) if isinstance(x, Node) else x
-
         @partial(jax.vmap, in_axes = (0, 0))
         def reconstruct_and_query(draw: Array, key: PRNGKeyArray) -> PyTree[Array]:
             model = vari.reconstruct_model(draw).constrain()[0]
 
             # Evaluate callable
             obj = func(model, key)
-
-            # Coerce from Node if needed
-            obj = jt.map(safe_obj, obj, is_leaf = lambda x: isinstance(x, Node))
 
             return obj
 
@@ -300,17 +235,17 @@ class Posterior[M: Model]():
 
     def sample(
         self,
-        node: str,
+        attr: str,
         n_draws: int,
         batch_size: Optional[int] = 1,
         sir: bool = False,
         key: PRNGKeyArray = jr.key(0)
-    ) -> Array:
+    ) -> PyTree[Array]:
         """
-        Sample a node from the posterior distribution.
+        Sample a variable from the posterior distribution.
 
         Parameters:
-            node: The name of the node.
+            attr: The name of the attribute of the model.
             n_draws: The number of draws to sample from the posterior.
             batch_size: The maximum number of full draws (essentially full instances of a model) ever in memory.
             sir: Whether to use sampling-importance-resampling.
@@ -323,7 +258,7 @@ class Posterior[M: Model]():
 
         # Construct callable to extract node
         def func(model, key):
-            return getattr(model, node)
+            return getattr(model, attr)
 
         if sir:
             # Do sampling-importance-resampling
@@ -335,17 +270,17 @@ class Posterior[M: Model]():
 
     def predictive(
         self,
-        func: Callable[[M, PRNGKeyArray], Node[Array] | Array],
+        func: Callable[[M, PRNGKeyArray], PyTree[Array]],
         n_draws: int,
         batch_size: None | int = None,
         sir: bool = False,
         key: PRNGKeyArray = jr.key(0)
-    ) -> Array:
+    ) -> PyTree[Array]:
         """
         Generate predictives from the posterior distribution.
 
         Parameters:
-            func: A function that maps the model and a PRNG key to some output.
+            func: A function that maps the model and a PRNG key to an output.
             n_draws: The number of draws to sample from the posterior.
             batch_size: The maximum number of full draws (essentially full instances of a model) ever in memory.
             sir: Whether to use sampling-importance-resampling.
@@ -366,8 +301,25 @@ class Posterior[M: Model]():
         self,
         n_draws: int = 10_000,
         batch_size: None | int = 1,
-        key = jr.key(0)
+        key: PRNGKeyArray = jr.key(0)
     ) -> Scalar:
+        """
+        Compute the proportional Effective Sample Size (ESS) for the variational approximation.
+
+        The proportional ESS is the ratio of the ESS to the total number of draws ($ESS / S$).
+        It measures the efficiency of the variational distribution as an importance sampling proposal for the true posterior.
+
+        - ESS $\\approx$ 1.0: The variational approximation is a close match to the posterior.
+        - ESS $\\ll$ 1.0: The approximation does not reflect the posterior well.
+
+        Parameters:
+            n_draws: The number of draws $S$ used to estimate the importance weights.
+            batch_size: The maximum number of full model instances processed in memory at once.
+            key: The PRNG key used for sampling from the base distribution.
+
+        Returns:
+            A scalar representing the proportional ESS, bounded between $1/S$ and $1.0$.
+        """
         # Extract approximation
         vari = self.vari
 
@@ -415,9 +367,8 @@ class Posterior[M: Model]():
 
         The Pareto-smoothed importance sampling (PSIS) diagnostic gives a goodness of fit
         measurement for joint distributions. The estimated continuous hat_k value
-        identifies the discrepancy between the approximate and true distribution[cite: 34].
+        identifies the discrepancy between the approximate and true distribution.
 
-        Interpretation of k[cite: 104, 109, 111]:
         - k < 0.5: Fast convergence rate; the variational approximation is close to the true density.
         - 0.5 <= k < 0.7: Useful finite sample convergence rates; the approximation is acceptable.
         - k >= 0.7: Convergence rate becomes impractically slow; the approximation is unreliable.
@@ -458,9 +409,7 @@ class Posterior[M: Model]():
             per_batch_keys
         ).flatten()
 
-        # Shift log weights for numerical stability and convert to importance ratios
-        # r_s = p(theta_s, y) / q(theta_s) [cite: 49]
-        # Since hat_k is invariant under constant multiplication, shifting by the max is safe [cite: 89]
+        # Shift log weights for numerical stability
         log_weights_shifted = log_uweights - jnp.max(log_uweights)
         r = jnp.exp(log_weights_shifted)
 
@@ -473,15 +422,14 @@ class Posterior[M: Model]():
         # Fit generalized Pareto distribution to the M largest r_s
         tail_r = r_sorted[-M:]
 
-        # Convert to numpy for scipy's genpareto fit (CPU bound)
+        # Convert to numpy for scipy's genpareto fit
         tail_r_np = np.asarray(tail_r)
 
-        # Shift the tail by the threshold (smallest value in the tail)
+        # Shift the tail by the threshold
         threshold = tail_r_np[0]
         tail_shifted = tail_r_np - threshold
 
         # Report the shape parameter k
-        # In scipy.stats.genpareto, the shape parameter 'c' corresponds to 'k'
         k, loc, scale = genpareto.fit(tail_shifted, floc=0)
 
         return float(k)

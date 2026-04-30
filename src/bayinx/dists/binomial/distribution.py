@@ -1,7 +1,7 @@
-from typing import Optional
+
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 
 from .pars import (
     LogitProbFailureBinomial,
@@ -21,11 +21,11 @@ class Binomial(Distribution):
 
     def __init__(
         self,
-        n: ArrayObject,
-        p: Optional[ArrayObject] = None,
-        q: Optional[ArrayObject] = None,
-        logit_p: Optional[ArrayObject] = None,
-        logit_q: Optional[ArrayObject] = None
+        n: ArrayLike,
+        p: None | ArrayLike = None,
+        q: None | ArrayLike = None,
+        logit_p: None | ArrayLike = None,
+        logit_q: None | ArrayLike = None
     ):
         """
         Construct a Binomial distribution by selecting a parameterization.

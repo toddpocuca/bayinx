@@ -1,7 +1,7 @@
-from typing import Optional
+
+from jaxtyping import ArrayLike
 
 from bayinx.core.distribution import Distribution, Parameterization
-from bayinx.core.types import ArrayObject
 
 from .pars import LogProbsCategorical, ProbsCategorical
 
@@ -15,8 +15,8 @@ class Categorical(Distribution):
 
     def __init__(
         self,
-        probs: Optional[ArrayObject] = None,
-        logprobs: Optional[ArrayObject] = None
+        probs: None | ArrayLike = None,
+        logprobs: None | ArrayLike = None
     ):
         if probs is not None:
             self.par = ProbsCategorical(probs)

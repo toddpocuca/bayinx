@@ -5,11 +5,7 @@ import jax.numpy as jnp
 import jax.random as jr
 from jaxtyping import Array, ArrayLike, PRNGKeyArray, Scalar
 
-import bayinx.ops as byo
 from bayinx.core.distribution import Parameterization
-from bayinx.core.node import Node
-from bayinx.core.types import ArrayObject
-from bayinx.nodes import Observed
 
 
 def _prob(
@@ -37,31 +33,27 @@ class ProbsMultinoulli(Parameterization):
     A probability parameterization of the Multinoulli distribution.
     """
 
-    probs: Node[Array]
+    probs: Array
 
     def __init__(
         self,
-        probs: ArrayObject,
+        probs: ArrayLike,
     ):
         for name, val in [("probs", probs)]:
-            if isinstance(val, Node):
-                if isinstance(byo.obj(val), ArrayLike):
-                    # Cast to array
-                    val = byo.asarray(val) # type: ignore
+            # Cast to array
+            val = jnp.asarray(val)
 
-                    setattr(self, name, val)
-            else:
-                setattr(self, name, Observed(jnp.asarray(val)))
+            setattr(self, name, val)
 
     def logprob(self, x: ArrayLike) -> Scalar:
         # Extract probabilities
-        probs = byo.obj(self.probs)
+        probs = self.probs
 
         return _logprob(x, probs)
 
     def sample(self, shape: Tuple[int, ...], key: PRNGKeyArray):
         # Extract log-probabilities
-        logprobs = jnp.log(byo.obj(self.probs))
+        logprobs = jnp.log(self.probs)
 
         # Determine number of cases
         n_classes = logprobs.shape[-1]
