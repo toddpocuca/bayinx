@@ -190,4 +190,4 @@ class LowRankAffine(FlowSpec):
         if (self.rank > (dim - 1)/2):
             raise ValueError(f"Rank {self.rank} is large, consider using a full affine flow instead.")
 
-        return LowRankAffineLayer(dim, self.rank)
+        return LowRankAffineLayer(dim, self.rank) # type: ignore
