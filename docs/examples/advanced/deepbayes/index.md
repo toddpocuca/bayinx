@@ -3,7 +3,7 @@
 ## What is a Bayesian Neural Network?
 
 A standard neural network is trained to find a single set of weights $\mathbf{w}$ that minimises some loss.
-This point estimate says nothing about how *certain* the network is in its predictions — a network can be confidently wrong, especially far from the training data.
+This point estimate says nothing about how *certain* the network is in its predictions, a network can be confidently wrong, especially far from the training data.
 
 A **Bayesian Neural Network (BNN)** instead treats the weights as random variables and places a prior distribution over them:
 
@@ -13,24 +13,11 @@ After observing data $\mathcal{D} = \{(\mathbf{x}_i, y_i)\}$, we seek the poster
 
 $$p(\mathbf{w} \mid \mathcal{D}) \propto p(\mathcal{D} \mid \mathbf{w})\, p(\mathbf{w})$$
 
-Predictions are then made by integrating over all plausible weight configurations — a process called **posterior predictive inference**:
+Predictions are then made by integrating over all plausible weight configurations:
 
 $$p(y^* \mid \mathbf{x}^*, \mathcal{D}) = \int p(y^* \mid \mathbf{x}^*, \mathbf{w})\, p(\mathbf{w} \mid \mathcal{D})\, d\mathbf{w}$$
 
 This gives us **uncertainty-aware predictions**: the model can express that it doesn't know the answer, not just what its best guess is.
-
-## Why "Deep"?
-
-A *deep* BNN simply uses a multi-layer (deep) neural network within the model logic, for example parameterizing the functional form of the effect of some predictors on a response variable.
-Each layer applies a linear transformation followed by a nonlinearity, building up increasingly abstract representations of the input.
-The posterior is then placed over the weights of all layers simultaneously. Depth brings expressive power; the Bayesian treatment brings calibrated uncertainty.
-
-## Inference via Variational Inference
-
-The exact posterior $p(\mathbf{w} \mid \mathcal{D})$ is intractable for any non-trivial network. Bayinx approximates it using **variational inference with normalizing flows**:
-we find a flexible distribution $q_\phi(\mathbf{w})$ that minimises the KL divergence to the true posterior by maximising the Evidence Lower Bound (ELBO).
-
----
 
 ## Example: Fitting a BNN with Bayinx and Equinox
 
@@ -101,7 +88,7 @@ posterior.fit(max_iters=1_000_000, stl=True)
 
 X_test = jnp.array([-jnp.pi / 2, 0, jnp.pi/2])[:, None]
 
-def predict(model: MyModel, key: jax.Array) -> Array:
+def predict(model: MyModel, ksey: jax.Array) -> Array:
     mu = jax.vmap(model.nn)(X_test)
     return byd.Normal(mu, model.sigma).sample(mu.shape, key=key)
 
