@@ -726,28 +726,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-deep" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Why "Deep"?
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inference-via-variational-inference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Inference via Variational Inference
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#example-fitting-a-bnn-with-bayinx-and-equinox" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1004,22 +982,14 @@
 <h1 id="deep-bayesian-neural-networks">Deep Bayesian Neural Networks<a class="headerlink" href="#deep-bayesian-neural-networks" title="Permanent link">&para;</a></h1>
 <h2 id="what-is-a-bayesian-neural-network">What is a Bayesian Neural Network?<a class="headerlink" href="#what-is-a-bayesian-neural-network" title="Permanent link">&para;</a></h2>
 <p>A standard neural network is trained to find a single set of weights <span class="arithmatex">\(\mathbf{w}\)</span> that minimises some loss.
-This point estimate says nothing about how <em>certain</em> the network is in its predictions — a network can be confidently wrong, especially far from the training data.</p>
+This point estimate says nothing about how <em>certain</em> the network is in its predictions, a network can be confidently wrong, especially far from the training data.</p>
 <p>A <strong>Bayesian Neural Network (BNN)</strong> instead treats the weights as random variables and places a prior distribution over them:</p>
 <div class="arithmatex">\[p(\mathbf{w}) = \prod_i \mathcal{N}(w_i \mid 0, 1)\]</div>
 <p>After observing data <span class="arithmatex">\(\mathcal{D} = \{(\mathbf{x}_i, y_i)\}\)</span>, we seek the posterior:</p>
 <div class="arithmatex">\[p(\mathbf{w} \mid \mathcal{D}) \propto p(\mathcal{D} \mid \mathbf{w})\, p(\mathbf{w})\]</div>
-<p>Predictions are then made by integrating over all plausible weight configurations — a process called <strong>posterior predictive inference</strong>:</p>
+<p>Predictions are then made by integrating over all plausible weight configurations:</p>
 <div class="arithmatex">\[p(y^* \mid \mathbf{x}^*, \mathcal{D}) = \int p(y^* \mid \mathbf{x}^*, \mathbf{w})\, p(\mathbf{w} \mid \mathcal{D})\, d\mathbf{w}\]</div>
 <p>This gives us <strong>uncertainty-aware predictions</strong>: the model can express that it doesn't know the answer, not just what its best guess is.</p>
-<h2 id="why-deep">Why "Deep"?<a class="headerlink" href="#why-deep" title="Permanent link">&para;</a></h2>
-<p>A <em>deep</em> BNN simply uses a multi-layer (deep) neural network within the model logic, for example parameterizing the functional form of the effect of some predictors on a response variable.
-Each layer applies a linear transformation followed by a nonlinearity, building up increasingly abstract representations of the input.
-The posterior is then placed over the weights of all layers simultaneously. Depth brings expressive power; the Bayesian treatment brings calibrated uncertainty.</p>
-<h2 id="inference-via-variational-inference">Inference via Variational Inference<a class="headerlink" href="#inference-via-variational-inference" title="Permanent link">&para;</a></h2>
-<p>The exact posterior <span class="arithmatex">\(p(\mathbf{w} \mid \mathcal{D})\)</span> is intractable for any non-trivial network. Bayinx approximates it using <strong>variational inference with normalizing flows</strong>:
-we find a flexible distribution <span class="arithmatex">\(q_\phi(\mathbf{w})\)</span> that minimises the KL divergence to the true posterior by maximising the Evidence Lower Bound (ELBO).</p>
-<hr />
 <h2 id="example-fitting-a-bnn-with-bayinx-and-equinox">Example: Fitting a BNN with Bayinx and Equinox<a class="headerlink" href="#example-fitting-a-bnn-with-bayinx-and-equinox" title="Permanent link">&para;</a></h2>
 <p>Below is a complete example fitting a deep BNN to a 1-D regression problem.
 The network is defined with <a href="https://docs.kidger.site/equinox/">Equinox</a> and embedded inside a Bayinx <code>Model</code> as a <code>stochastic</code> node, so every weight and bias is automatically treated as a latent variable.</p>
@@ -1086,7 +1056,7 @@ The network is defined with <a href="https://docs.kidger.site/equinox/">Equinox<
 <a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>
 <a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a><span class="n">X_test</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">])[:,</span> <span class="kc">None</span><span class="p">]</span>
 <a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>
-<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a><span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">jax</span><span class="o">.</span><span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a><span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">,</span> <span class="n">ksey</span><span class="p">:</span> <span class="n">jax</span><span class="o">.</span><span class="n">Array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Array</span><span class="p">:</span>
 <a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>    <span class="n">mu</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">vmap</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">nn</span><span class="p">)(</span><span class="n">X_test</span><span class="p">)</span>
 <a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>    <span class="k">return</span> <span class="n">byd</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">mu</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
 <a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>
