@@ -14,6 +14,16 @@ wheels/
 # Other
 .ruff_cache
 uv.lock
+<<<<<<< HEAD
+
+# emacs chaff
+*~
+
+# jupyter chaff
+.ipynb_*
+
+# bmb uv project
+bayinx_example/
 site/
 uv.toml
 .DS_Store
