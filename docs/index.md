@@ -51,13 +51,13 @@ from jaxtyping import Scalar, Array
 
 class SimpleNormalModel(Model):
     mu: Scalar = stochastic(shape = ())
-    std: Array = stochastic(shape = (), lower = 0)
+    #std: Array = stochastic(shape = (), lower = 0)
 
     x: Array = observed(shape = 'n_obs')
 
     def model(self, target):
         # Accumulate likelihood
-        self.x << Normal(self.mu, self.std)
+        self.x << Normal(self.mu, 3.0)
 
 # Simulate fake data
 n_obs = 30
@@ -66,29 +66,32 @@ true_std = 3.0
 
 # Simulate data
 x_data = jr.normal(jr.key(0), (n_obs, )) * true_std + true_mu
+
+# Initialize model
+model = SimpleNormalModel(n_obs = n_obs, x = x_data)
 ```
 
 Parameters are attributes with the `stochastic` descriptor, while any data is marked with the `observed` descriptor.
 Additional metadata for an attribute is passed as arguments to these descriptors, for example by assigning shapes `define(shape = ...)` or a constraint `define(lower = ..., upper = ...)`.
 
 ## Fitting Models With Bayinx
-Bayinx uses variational inference with [normalizing flows](nf.md) (NFs) to approximate the posterior distribution, where the NF architecture can be customized to your preference.
-We'll simulate some data for demonstration:
-
-The approximation to the posterior can then be created with the `Posterior` class and optimized later:
+Bayinx offers many methods for inference that all share
 
 ```py
-from bayinx import Posterior
 from bayinx.flows import DiagAffine
+from bayinx.vi import NormalizingFlow, StandardNormal
+from bayinx.mcmc import FlowMH
 
 # Construct approximation
-posterior = Posterior(
-    SimpleNormalModel,
-    n_obs = n_obs,
-    x = x_data
+variational = NormalizingFlow(
+    StandardNormal(model),
+    flow_specs = [DiagAffine()]
 )
-posterior.configure(flowspecs = [DiagAffine()]) # Configure the NF architecture
-posterior.fit(stl = True) # Optimize the approximation
+variational = variational.fit()
+
+# Use approximation for flow-augmented MCMC
+mcmc = FlowMH(variational, n_chains = 4)
+mcmc, draws = mcmc.sample_draws(10000)
 ```
 
 Once fitted, you can sample from the approximated posterior distribution to get Monte Carlo estimates for your parameters:

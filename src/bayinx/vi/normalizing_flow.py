@@ -1,40 +1,38 @@
-from typing import Callable, Optional, Self
+from typing import Callable, Self
 
 import equinox as eqx
-import jax.flatten_util as jfu
 import jax.lax as lax
 import jax.numpy as jnp
 import jax.random as jr
 import jax.tree_util as jtu
 from jaxtyping import Array, PRNGKeyArray, Scalar
 
-from bayinx.core.flow import FlowLayer
+from bayinx.core.flow import FlowLayer, FlowSpec
 from bayinx.core.model import Model
 from bayinx.core.variational import Variational
 
 
-class NormalizingFlow[M: Model](Variational[M]):
+class NormalizingFlow[M: Model, V: Variational](Variational[M]):
     """
     An ordered collection of diffeomorphisms that map a base distribution to a variational approximation.
 
     Attributes:
-        dim: The dimension of the support.
+        dim: The dimension of the parameter space.
+        _unflatten: A function to transform draws from the variational distribution back to a `Model`.
+        _static: The static component of a partitioned `Model` used to initialize the `Variational` object.
         base: A base variational distribution.
         flows: An ordered collection of continuously parameterized diffeomorphisms.
         static_base: Whether the base distribution is fixed during optimization.
     """
     flows: list[FlowLayer]
-    base: Variational[M]
+    base: V
     static_base: bool
 
     def __init__(
         self,
-        base: Variational[M],
-        flows: list[FlowLayer],
+        base: V,
+        flow_specs: list[FlowSpec],
         static_base: bool = False,
-        model: Optional[M] = None,
-        _static: Optional[M] = None,
-        _unflatten: Optional[Callable[[Array], M]] = None
     ):
         """
         Constructs an unoptimized normalizing flow posterior approximation.
@@ -42,23 +40,12 @@ class NormalizingFlow[M: Model](Variational[M]):
         # Parameters
         - `base`: The base variational distribution.
         - `flows`: A list of flows.
-        - `model`: A probabilistic `Model` object.
         """
-        if model is not None:
-            # Partition model
-            params, self._static = eqx.partition(model, model.filter_spec)
-
-            # Flatten params component
-            _, self._unflatten = jfu.ravel_pytree(params)
-        elif _static is not None and _unflatten is not None:
-            self._static = _static
-            self._unflatten = _unflatten
-        else:
-            raise ValueError("Either 'model' or '_static' and '_unflatten' must be specified.")
-
         self.dim = base.dim
+        self._static = base._static
+        self._unflatten = base._unflatten
         self.base = base
-        self.flows = flows
+        self.flows = [spec.construct(self.dim) for spec in flow_specs]
         self.static_base = static_base
 
     @property
@@ -104,13 +91,13 @@ class NormalizingFlow[M: Model](Variational[M]):
         return filter_spec
 
     @eqx.filter_jit
-    def sample(
+    def sample_draws(
         self,
         n: int,
         key: PRNGKeyArray = jr.PRNGKey(0)
     ) -> Array:
         # Sample from the base distribution
-        draws: Array = self.base.sample(n, key = key)
+        draws: Array = self.base.sample_draws(n, key = key)
 
         # Apply forward transformations
         for map in self.flows:
@@ -131,23 +118,18 @@ class NormalizingFlow[M: Model](Variational[M]):
         # Returns
             The variational density at `draws`.
         """
-        # Allocate an object for the variational density evals
-        variational_evals: Array = jnp.zeros(draws.shape[0])
+        base_draws, total_log_jacs = self.reverse_and_eval(draws)
 
-        for map in reversed(self.flows):
-            # Apply reverse transformation and accumulate the log-Jacobian adjustments
-            draws, log_jacs = map.reverse_and_adjust(draws)
+        # Evaluate base variational density
+        base_evals = self.base.eval(base_draws)
 
-            # Adjust variational density: P_X (x) = P_Y (y) / |det d/dy[f^-1](y)| ==> P_Y (y) = P_X (x) * |det d/dy[f^-1](y)|
-            variational_evals += log_jacs
-
-        # Accumulate base density
-        variational_evals += self.base.eval(draws)
+        # Accumulate log-Jacobian adjustment: P_X (x) = P_Y (y) / |det d/dy[f^-1](y)| ==> P_Y (y) = P_X (x) * |det d/dy[f^-1](y)|
+        variational_evals = base_evals + total_log_jacs
 
         return variational_evals
 
     @eqx.filter_jit
-    def _eval(self, base_draws: Array, return_draws: bool = False) -> tuple[Array, Array] | tuple[Array, Array, Array]:
+    def __eval(self, base_draws: Array, return_draws: bool = False) -> tuple[Array, Array]:
         """
         Evaluate the posterior and variational densities together with draws of the base distribution to avoid extra compute.
 
@@ -155,26 +137,21 @@ class NormalizingFlow[M: Model](Variational[M]):
         - `base_draws`: Draws from the base variational distribution.
 
         # Returns
-        The posterior and variational densities as JAX Arrays (accompanied by the variational draws if requested).
+        The posterior and variational densities as JAX Arrays.
         """
         # Evaluate base density
-        variational_evals: Array = self.base.eval(base_draws)
+        variational_evals = self.base.eval(base_draws)
 
-        draws = base_draws
-        for map in self.flows:
-            # Apply transformation
-            draws, log_jacs = map.forward_and_adjust(draws)
+        # Apply forward-flow
+        draws, total_log_jacs = self.forward_and_eval(base_draws)
 
-            # Adjust variational density: P_Y (y) = P_X (x) / |det d/dx[f](x)|
-            variational_evals -= log_jacs
+        # Accumulate Jacobian adjustment: P_Y (y) = P_X (x) / |det d/dx[f](x)|
+        variational_evals -= total_log_jacs
 
         # Evaluate posterior at the variational draws
         posterior_evals = self.eval_model(draws)
 
-        if return_draws:
-            return posterior_evals, variational_evals, draws
-        else:
-            return posterior_evals, variational_evals
+        return posterior_evals, variational_evals
 
     @eqx.filter_jit
     def elbo(self, n: int, batch_size: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Scalar:
@@ -190,10 +167,10 @@ class NormalizingFlow[M: Model](Variational[M]):
             # Split ELBO calculation into batches
             def batched_elbo(batch_key: PRNGKeyArray) -> Array:
                 # Draw from variational distribution
-                draws: Array = self.base.sample(batch_size, key = batch_key)
+                draws: Array = self.base.sample_draws(batch_size, key = batch_key)
 
                 # Evaluate posterior and variational densities
-                batched_post_evals, batched_vari_evals = self._eval(draws)
+                batched_post_evals, batched_vari_evals = self.__eval(draws)
 
                 # Compute batched ELBO evals
                 batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
@@ -227,7 +204,7 @@ class NormalizingFlow[M: Model](Variational[M]):
             def batched_elbo(batch_key: PRNGKeyArray) -> Array:
                 if stl:
                     # Draw from variational distribution
-                    draws: Array = self.sample(batch_size, key = batch_key)
+                    draws: Array = self.sample_draws(batch_size, key = batch_key)
 
                     # Evaluate posterior density
                     batched_post_evals = self.eval_model(draws)
@@ -239,10 +216,10 @@ class NormalizingFlow[M: Model](Variational[M]):
                     batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
                 else:
                     # Draw from base distribution
-                    base_draws: Array = self.base.sample(batch_size, key = batch_key)
+                    base_draws: Array = self.base.sample_draws(batch_size, key = batch_key)
 
                     # Evaluate posterior and variational densities together from base samples
-                    batched_post_evals, batched_vari_evals = self._eval(base_draws)
+                    batched_post_evals, batched_vari_evals = self.__eval(base_draws)
 
                     # Compute batched ELBO evals
                     batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
@@ -281,7 +258,7 @@ class NormalizingFlow[M: Model](Variational[M]):
             def batched_elbo(batch_key: PRNGKeyArray) -> Array:
                 if stl:
                     # Draw from variational distribution
-                    draws: Array = self.sample(batch_size, key = batch_key)
+                    draws: Array = self.sample_draws(batch_size, key = batch_key)
 
                     # Evaluate posterior density
                     batched_post_evals = self.eval_model(draws)
@@ -293,10 +270,10 @@ class NormalizingFlow[M: Model](Variational[M]):
                     batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
                 else:
                     # Draw from base distribution
-                    base_draws: Array = self.base.sample(batch_size, key = batch_key)
+                    base_draws: Array = self.base.sample_draws(batch_size, key = batch_key)
 
                     # Evaluate posterior and variational densities together from base samples
-                    batched_post_evals, batched_vari_evals = self._eval(base_draws)
+                    batched_post_evals, batched_vari_evals = self.__eval(base_draws)
 
                     # Compute batched ELBO evals
                     batched_elbo_evals: Array = batched_post_evals - batched_vari_evals
@@ -317,3 +294,79 @@ class NormalizingFlow[M: Model](Variational[M]):
         ] = eqx.filter_value_and_grad(elbo)
 
         return elbo_and_grad(dyn, n, key)
+
+    def forward(self, base_draws: Array) -> Array:
+        """
+        Applies the forward flow at `base_draws`.
+
+        Parameters:
+            base_draws: Draws from the base distribution.
+
+        Returns:
+            The forward-flow transformed base draws (equivalent to draws from the variational distribution).
+        """
+        # Apply forward transformations
+        draws = base_draws
+        for map in self.flows:
+            draws = map.forward(draws)
+
+        return draws
+
+    def forward_and_eval(self, base_draws: Array) -> tuple[Array, Array]:
+        """
+        Applies the forward flow and accumulates the log-Jacobian adjustment.
+
+        Parameters:
+            base_draws: Draws from the base distribution.
+
+        Returns:
+            The forward-flow transformed base draws and the associated log-Jacobian adjustment.
+        """
+        total_log_jacs: Array = jnp.zeros(base_draws.shape[0])
+
+        draws = base_draws
+        for map in self.flows:
+            # Apply transformation
+            draws, log_jacs = map.forward_and_adjust(draws)
+
+            # Accumulate log-Jacobian adjustments
+            total_log_jacs += log_jacs
+
+        return draws, total_log_jacs
+
+    def reverse(self, draws: Array) -> Array:
+        """
+        Applies the reverse flow at `draws`.
+
+        Parameters:
+            draws: Draws from the variational distribution.
+
+        Returns:
+            The reverse-flow transformed draws.
+        """
+        # Apply reverse transformations
+        for map in reversed(self.flows):
+            draws = map.forward(draws)
+
+        return draws
+
+    def reverse_and_eval(self, draws: Array) -> tuple[Array, Array]:
+        """
+        Applies the reverse flow and evaluates the variational density at `draws`.
+
+        Parameters:
+            draws: Draws from the variational distribution.
+
+        Returns:
+            The reverse-flow transformed draws (equivalent to draws from the base distribution).
+        """
+        total_log_jacs: Array = jnp.zeros(draws.shape[0])
+
+        for map in reversed(self.flows):
+            # Apply reverse transformation and accumulate the log-Jacobian adjustments
+            draws, log_jacs = map.reverse_and_adjust(draws)
+
+            # Accumulate log-Jacobian adjustments
+            total_log_jacs += log_jacs
+
+        return draws, total_log_jacs

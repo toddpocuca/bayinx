@@ -36,9 +36,9 @@ def define(
         case (float() | int(), float() | int(), None, None):
             constraint = Interval(lower, upper)
         case (None, None, float() | bool(), None):
-            constraint = Simplex(float(simplex)) # type: ignore
+            constraint = Simplex(float(simplex))
         case (None, None, None, float() | bool()):
-            constraint = LogSimplex(float(logsimplex)) # type: ignore
+            constraint = LogSimplex(float(logsimplex))
         case (None, None, None, None):
             constraint = Identity()
         case (_):
@@ -48,7 +48,7 @@ def define(
         "type": type,
         "shape": shape,
         "init": init,
-        "constraint": constraint # type: ignore
+        "constraint": constraint
     }
 
     return field(metadata=metadata)
@@ -103,16 +103,11 @@ class Model(eqx.Module):
     A base class used to define probabilistic models.
     """
 
-    def __init_subclass__(cls, **kwargs):
-        # Consume 'init' argument before passing it up to Equinox
-        kwargs.pop('init', None)
-        super().__init_subclass__(**kwargs)
-
     def __init__(self, **kwargs):
         cls = self.__class__
         all_fields = {f.name for f in fields(cls)}
 
-        # Grab initialized parameters
+        # Grab names of all initialized parameters
         init_params: set[str] = {f.name for f in fields(cls) if f.name in kwargs.keys()} # TODO
 
         # Grab shape parameters from model definition
@@ -134,7 +129,7 @@ class Model(eqx.Module):
             )
 
 
-        # Define all initialized dimensions
+        # Initialize all dimensions
         shape_values: dict = {
             shape_param: kwargs[shape_param]
             for shape_param in shape_params

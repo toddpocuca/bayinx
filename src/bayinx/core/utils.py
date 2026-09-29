@@ -19,7 +19,7 @@ def _extract_shape_params(shape_spec: int | str | tuple[int | str, ...]) -> set[
 
 def _resolve_shape_spec(
     shape_spec: None | int | str | tuple[int | str, ...],
-    shape_values: dict[str, int]
+    shape_values: dict[str, int | tuple[int, ...]]
 ) -> None | tuple[int, ...]:
     """
     Replaces named dimensions in a shape specification with their integer or tuple values.

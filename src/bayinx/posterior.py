@@ -363,11 +363,7 @@ class Posterior[M: Model]():
         key: PRNGKeyArray = jr.key(0)
     ) -> float:
         """
-        Compute the Pareto k diagnostic for variational inference.
-
-        The Pareto-smoothed importance sampling (PSIS) diagnostic gives a goodness of fit
-        measurement for joint distributions. The estimated continuous hat_k value
-        identifies the discrepancy between the approximate and true distribution.
+        Compute the Pareto k diagnostic for a variational approximation.
 
         - k < 0.5: Fast convergence rate; the variational approximation is close to the true density.
         - 0.5 <= k < 0.7: Useful finite sample convergence rates; the approximation is acceptable.

@@ -16,6 +16,12 @@ from bayinx.dists.studentst.pars.loc_scale_df import _logprob
 class StandardStudentsT[M: Model](Variational[M]):
     """
     A standard Student's T approximation of a posterior distribution with learnable degrees of freedom.
+
+    Attributes:
+        dim: The dimension of the parameter space.
+        _unflatten: A function to transform draws from the variational distribution back to a `Model`.
+        _static: The static component of a partitioned `Model` used to initialize the `Variational` object.
+        log_df: The (log) degrees of freedom.
     """
     log_df: Float[Array, " n_dims"]
 
@@ -49,7 +55,7 @@ class StandardStudentsT[M: Model](Variational[M]):
         return self.log_df.size
 
     @eqx.filter_jit
-    def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
+    def sample_draws(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
         # Split key
         k1, k2, k3 = jr.split(key, 3)
 
@@ -100,7 +106,7 @@ class StandardStudentsT[M: Model](Variational[M]):
             # Split ELBO calculation into batches
             def batched_elbo(_, batch_key):
                 # Draw from variational distribution
-                draws = self.sample(batch_size, batch_key)
+                draws = self.sample_draws(batch_size, batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_vari_evals = self.eval(draws)
@@ -138,7 +144,7 @@ class StandardStudentsT[M: Model](Variational[M]):
             # Split ELBO calculation into batches
             def batched_elbo(_, batch_key):
                 # Draw from variational distribution
-                draws = self.sample(batch_size, batch_key)
+                draws = self.sample_draws(batch_size, batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_vari_evals = self.eval(draws)
@@ -181,7 +187,7 @@ class StandardStudentsT[M: Model](Variational[M]):
             # Split ELBO calculation into batches
             def batched_elbo(_, batch_key):
                 # Draw from variational distribution
-                draws = self.sample(batch_size, batch_key)
+                draws = self.sample_draws(batch_size, batch_key)
 
                 # Evaluate posterior and variational densities
                 batched_vari_evals = self.eval(draws)

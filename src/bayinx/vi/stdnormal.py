@@ -16,8 +16,10 @@ class StandardNormal[M: Model](Variational[M]):
     """
     A standard normal approximation of a posterior distribution.
 
-    # Attributes
-    - `dim`: The dimension of the support.
+    Attributes:
+        dim: The dimension of the parameter space.
+        _unflatten: A function to transform draws from the variational distribution back to a `Model`.
+        _static: The static component of a partitioned `Model` used to initialize the `Variational` object.
     """
 
     def __init__(self, model: M):
@@ -47,7 +49,7 @@ class StandardNormal[M: Model](Variational[M]):
         return filter_spec
 
     @eqx.filter_jit
-    def sample(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
+    def sample_draws(self, n: int, key: PRNGKeyArray = jr.PRNGKey(0)) -> Array:
         # Sample variational draws
         draws: Array = jr.normal(key=key, shape=(n, self.dim))
 
@@ -71,7 +73,7 @@ class StandardNormal[M: Model](Variational[M]):
             vari = eqx.combine(dyn, static)
 
             # Sample draws from variational distribution
-            draws: Array = vari.sample(n, key)
+            draws: Array = vari.sample_draws(n, key)
 
             # Evaluate posterior density for each draw
             posterior_evals: Array = vari.eval_model(draws)

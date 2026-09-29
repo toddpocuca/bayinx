@@ -6,9 +6,10 @@ import pytest
 from jaxtyping import Array
 
 import bayinx.flows as flows
-from bayinx import Model, Posterior, stochastic
+from bayinx import Model, stochastic
 from bayinx.core.flow import FlowSpec
 from bayinx.dists import Normal
+from bayinx.vi import NormalizingFlow, StandardNormal
 
 jax.config.update("jax_enable_x64", True)
 
@@ -49,15 +50,15 @@ def test_normal_fit(flowspec):
     """
     Test that every flow can be instantiated and fits a simple distribution.
     """
-    # Construct posterior
-    posterior = Posterior(
-        MyModel
+    # Initialize model
+    posterior = NormalizingFlow(
+        StandardNormal(MyModel()),
+        flow_specs = init_flowspec(flowspec)
     )
-    posterior.configure(init_flowspec(flowspec))
-    posterior.fit(stl = False)
+    posterior = posterior.fit(stl = False)
 
     # Check samples
-    x_draws = posterior.sample('x', int(1e6), 1000)
+    x_draws = posterior.sample_parameter('x', int(1e6), 1000)
     assert (abs(x_draws.mean(0) - 1.0) / 1.0 < 1e-1).all()
     assert (abs(x_draws.var(0) - 4.0) / 4.0 < 1e-1).all()
 
@@ -67,13 +68,13 @@ def test_stl_fit(flowspec):
     Test that every flow can be instantiated and fits a simple distribution.
     """
     # Construct posterior
-    posterior = Posterior(
-        MyModel
+    posterior = NormalizingFlow(
+        StandardNormal(MyModel()),
+        flow_specs = init_flowspec(flowspec)
     )
-    posterior.configure(init_flowspec(flowspec))
-    posterior.fit(stl = True)
+    posterior = posterior.fit(stl = True)
 
     # Check samples
-    x_draws = posterior.sample('x', int(1e6), 1000)
+    x_draws = posterior.sample_parameter('x', int(1e6), 1000)
     assert (abs(x_draws.mean(0) - 1.0) / 1.0 < 1e-1).all()
     assert (abs(x_draws.var(0) - 4.0) / 4.0 < 1e-1).all()

@@ -160,11 +160,11 @@ from jaxtyping import Scalar, Array
 
 # Define my original model with complete pooling
 class BinomialCompletePooling(byx.Model):
-    alpha: Scalar = byx.stochastic(())
-    beta: Scalar = byx.stochastic(())
+    alpha: Scalar = byx.stochastic(shape = ())
+    beta: Scalar = byx.stochastic(shape = ())
 
-    counts: Array = byx.observed(('n_beakers', 'n_timepoints'), lower = 0)
-    time: Array = byx.observed('n_timepoints', lower = 0, upper = 20)
+    counts: Array = byx.observed(shape = ('n_beakers', 'n_timepoints'), lower = 0)
+    time: Array = byx.observed(shape = 'n_timepoints', lower = 0, upper = 20)
 
     def model(self, target):
         # Priors
@@ -193,7 +193,7 @@ post = byx.Posterior(
     counts = data.select(pl.exclude('time')).to_jax().T,
     time = data.get_column('time').to_jax()
 )
-post.configure([byf.FullAffine()])
+post.configure([byf.DiagAffine(), byf.RealNVP(), byf.RealNVP(flip=True)])
 post.fit(stl = True)
 
 # Compute posterior predictives
@@ -276,16 +276,16 @@ plot.save('docs/examples/intro/leaf_discs/images/new_binomial_glm_plot.png', wid
 ```py
 # Define my modified model with partial pooling
 class BinomialPartialPooling(byx.Model):
-    mean_alpha: byn.Continuous[Scalar] = byx.define(())
-    scale_alpha: byn.Continuous[Scalar] = byx.define((), lower = 0)
-    mean_beta: byn.Continuous[Scalar] = byx.define(())
-    scale_beta: byn.Continuous[Scalar] = byx.define((), lower = 0)
+    mean_alpha: Scalar = byx.stochastic(shape = ())
+    scale_alpha: Scalar = byx.stochastic(shape = (), lower = 0)
+    mean_beta: Scalar = byx.stochastic(shape = ())
+    scale_beta: Scalar = byx.stochastic(shape = (), lower = 0)
 
-    alpha: byn.Continuous[Array] = byx.define(('n_beakers', 1))
-    beta: byn.Continuous[Array] = byx.define(('n_beakers', 1))
+    alpha: Array = byx.stochastic(shape = ('n_beakers', 1))
+    beta: Array = byx.stochastic(shape = ('n_beakers', 1))
 
-    counts: byn.Observed[Array] = byx.define(('n_beakers', 'n_timepoints'), lower = 0)
-    time: byn.Observed[Array] = byx.define('n_timepoints', lower = 0, upper = 20)
+    counts: Array = byx.observed(('n_beakers', 'n_timepoints'), lower = 0)
+    time: Array = byx.observed('n_timepoints', lower = 0, upper = 20)
 
     def model(self, target):
         # Hyperpriors
@@ -311,17 +311,17 @@ post = byx.Posterior(
     counts = data.select(pl.exclude('time')).to_jax().T,
     time = data.get_column('time').to_jax()
 )
-post.configure([byf.FullAffine()] + [byf.Sylvester(6)] * 6)
-post.fit(learning_rate = 1e-2)
+post.configure([byf.DiagAffine()])
+post.fit(learning_rate = 1e-2, max_iters = 100_000)
 
 # Compute posterior predictives
 time = jnp.linspace(0, 20, 200)
 
 # Posterior predictive of the expected count for each beaker
 pred_means = post.predictive(
-    lambda model, key: byo.sigmoid(model.alpha + model.beta * time) * 10,
+    lambda model, key: jnn.sigmoid(model.alpha + model.beta * time) * 10,
     int(1e4),
-    max_batch_size = int(1e3),
+    batch_size = int(1e3),
     sir = True
 )
 
@@ -341,11 +341,10 @@ def new_beaker(model: BinomialPartialPooling, key):
 pred_new = post.predictive(
     new_beaker,
     int(1e5),
-    max_batch_size = int(1e3),
-    sir = True
+    batch_size = int(1e3)
 )
 
-# Format observed data for plotting
+# Format observed data for plotting <-- FOR SOME REASON THIS CODE LEADS TO 36GB OF MEMORY USED??
 plot_data = data.unpivot(
     index = 'time',
     variable_name = 'beaker_id',
